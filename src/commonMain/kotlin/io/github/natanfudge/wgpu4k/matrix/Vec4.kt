@@ -26,7 +26,7 @@ data class Vec4(
          * @param y - Initial y value.
          * @param z - Initial z value.
          * @param w - Initial w value.
-         * @returns the created vector
+         * @return the created vector
          */
         fun create(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0): Vec4 {
             return Vec4(x, y, z, w)
@@ -38,7 +38,7 @@ data class Vec4(
          * @param y - Initial y value.
          * @param z - Initial z value.
          * @param w - Initial w value.
-         * @returns the created vector
+         * @return the created vector
          */
         fun fromValues(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0): Vec4 {
             return Vec4(x, y, z, w)
@@ -52,7 +52,7 @@ data class Vec4(
      * @param y second value
      * @param z third value
      * @param w fourth value
-     * @returns This vector with its elements set.
+     * @return This vector with its elements set.
      */
     fun set(x: Double, y: Double, z: Double, w: Double): Vec4 {
         this.x = x
@@ -65,7 +65,7 @@ data class Vec4(
     /**
      * Applies Math.ceil to each element of vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the ceil of each element of this vector.
+     * @return A vector that is the ceil of each element of this vector.
      */
     fun ceil(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -79,7 +79,7 @@ data class Vec4(
     /**
      * Applies Math.floor to each element of vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the floor of each element of this vector.
+     * @return A vector that is the floor of each element of this vector.
      */
     fun floor(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -93,7 +93,7 @@ data class Vec4(
     /**
      * Applies Math.round to each element of vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the round of each element of this vector.
+     * @return A vector that is the round of each element of this vector.
      */
     fun round(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -109,7 +109,7 @@ data class Vec4(
      * @param min - Min value, default 0.0
      * @param max - Max value, default 1.0
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that the clamped value of each element of this vector.
+     * @return A vector that the clamped value of each element of this vector.
      */
     fun clamp(min: Double = 0.0, max: Double = 1.0, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -124,7 +124,7 @@ data class Vec4(
      * Adds another vector to this vector.
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the sum of this vector and the other vector.
+     * @return A vector that is the sum of this vector and the other vector.
      */
     fun add(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -140,7 +140,7 @@ data class Vec4(
      * @param other - Operand vector.
      * @param scale - Amount to scale other vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the sum of this vector + other * scale.
+     * @return A vector that is the sum of this vector + other * scale.
      */
     fun addScaled(other: Vec4, scale: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -155,7 +155,7 @@ data class Vec4(
      * Subtracts another vector from this vector.
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the difference of this vector and the other vector.
+     * @return A vector that is the difference of this vector and the other vector.
      */
     fun subtract(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -170,7 +170,7 @@ data class Vec4(
      * Subtracts another vector from this vector. (Alias for subtract)
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A vector that is the difference of this vector and the other vector.
+     * @return A vector that is the difference of this vector and the other vector.
      */
     fun sub(other: Vec4, dst: Vec4? = null): Vec4 = subtract(other, dst)
 
@@ -178,7 +178,7 @@ data class Vec4(
      * Check if this vector is approximately equal to another vector.
      * @param other - Operand vector.
      * @param epsilon - Threshold for equality check.
-     * @returns true if vectors are approximately equal.
+     * @return true if vectors are approximately equal.
      */
     fun equalsApproximately(other: Vec4, epsilon: Double = EPSILON): Boolean {
         return abs(this.x - other.x) < epsilon &&
@@ -191,7 +191,7 @@ data class Vec4(
      * Check if this vector is exactly equal to another vector.
      * Note: Prefer equalsApproximately for floating-point comparisons.
      * @param other - Operand vector.
-     * @returns true if vectors are exactly equal.
+     * @return true if vectors are exactly equal.
      */
     fun equals(other: Vec4): Boolean {
         return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
@@ -206,7 +206,7 @@ data class Vec4(
      * @param other - Operand vector (b).
      * @param t - Interpolation coefficient.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The linear interpolated result.
+     * @return The linear interpolated result.
      */
     fun lerp(other: Vec4, t: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -224,7 +224,7 @@ data class Vec4(
      * @param other - Operand vector (b).
      * @param t - Interpolation coefficients vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns the linear interpolated result.
+     * @return the linear interpolated result.
      */
     fun lerpV(other: Vec4, t: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -239,7 +239,7 @@ data class Vec4(
      * Return max values of this vector and another vector.
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The max components vector.
+     * @return The max components vector.
      */
     fun max(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -254,7 +254,7 @@ data class Vec4(
      * Return min values of this vector and another vector.
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The min components vector.
+     * @return The min components vector.
      */
     fun min(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -269,7 +269,7 @@ data class Vec4(
      * Multiplies this vector by a scalar.
      * @param k - The scalar.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The scaled vector.
+     * @return The scaled vector.
      */
     fun mulScalar(k: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -284,7 +284,7 @@ data class Vec4(
      * Multiplies this vector by a scalar. (Alias for mulScalar)
      * @param k - The scalar.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The scaled vector.
+     * @return The scaled vector.
      */
     fun scale(k: Double, dst: Vec4? = null): Vec4 = mulScalar(k, dst)
 
@@ -292,7 +292,7 @@ data class Vec4(
      * Divides this vector by a scalar.
      * @param k - The scalar.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The scaled vector.
+     * @return The scaled vector.
      */
     fun divScalar(k: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -306,7 +306,7 @@ data class Vec4(
     /**
      * Computes the component-wise inverse (1/x) of this vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The inverted vector.
+     * @return The inverted vector.
      */
     fun inverse(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -320,14 +320,14 @@ data class Vec4(
     /**
      * Computes the component-wise inverse (1/x) of this vector. (Alias for inverse)
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The inverted vector.
+     * @return The inverted vector.
      */
     fun invert(dst: Vec4? = null): Vec4 = inverse(dst)
 
     /**
      * Computes the dot product of this vector and another vector.
      * @param other - Operand vector.
-     * @returns dot product.
+     * @return dot product.
      */
     fun dot(other: Vec4): Double {
         return (this.x * other.x) + (this.y * other.y) + (this.z * other.z) + (this.w * other.w)
@@ -360,7 +360,7 @@ data class Vec4(
     /**
      * Computes the distance between this vector and another vector.
      * @param other - Operand vector.
-     * @returns distance between this vector and the other vector.
+     * @return distance between this vector and the other vector.
      */
     fun distance(other: Vec4): Double {
         val dx = this.x - other.x
@@ -373,14 +373,14 @@ data class Vec4(
     /**
      * Computes the distance between this vector and another vector. (Alias for distance)
      * @param other - Operand vector.
-     * @returns distance between this vector and the other vector.
+     * @return distance between this vector and the other vector.
      */
     fun dist(other: Vec4): Double = distance(other)
 
     /**
      * Computes the square of the distance between this vector and another vector.
      * @param other - Operand vector.
-     * @returns square of the distance between this vector and the other vector.
+     * @return square of the distance between this vector and the other vector.
      */
     fun distanceSq(other: Vec4): Double {
         val dx = this.x - other.x
@@ -393,14 +393,14 @@ data class Vec4(
     /**
      * Computes the square of the distance between this vector and another vector. (Alias for distanceSq)
      * @param other - Operand vector.
-     * @returns square of the distance between this vector and the other vector.
+     * @return square of the distance between this vector and the other vector.
      */
     fun distSq(other: Vec4): Double = distanceSq(other)
 
     /**
      * Divides this vector by its Euclidean length.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The normalized vector. Returns a zero vector if the length is too small.
+     * @return The normalized vector. Returns a zero vector if the length is too small.
      */
     fun normalize(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -422,7 +422,7 @@ data class Vec4(
     /**
      * Negates this vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The negated vector.
+     * @return The negated vector.
      */
     fun negate(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -436,7 +436,7 @@ data class Vec4(
     /**
      * Copies the values from this vector to another vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A copy of this vector.
+     * @return A copy of this vector.
      */
     fun copy(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -452,7 +452,7 @@ data class Vec4(
     /**
      * Clones this vector. (Alias for copy)
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns A copy of this vector.
+     * @return A copy of this vector.
      */
     fun clone(dst: Vec4? = null): Vec4 = copy(dst)
 
@@ -460,7 +460,7 @@ data class Vec4(
      * Multiplies this vector by another vector (component-wise).
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The vector of products of entries of this vector and the other vector.
+     * @return The vector of products of entries of this vector and the other vector.
      */
     fun multiply(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -475,7 +475,7 @@ data class Vec4(
      * Multiplies this vector by another vector (component-wise). (Alias for multiply)
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The vector of products of entries of this vector and the other vector.
+     * @return The vector of products of entries of this vector and the other vector.
      */
     fun mul(other: Vec4, dst: Vec4? = null): Vec4 = multiply(other, dst)
 
@@ -483,7 +483,7 @@ data class Vec4(
      * Divides this vector by another vector (component-wise).
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The vector of quotients of entries of this vector and the other vector.
+     * @return The vector of quotients of entries of this vector and the other vector.
      */
     fun divide(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -498,14 +498,14 @@ data class Vec4(
      * Divides this vector by another vector (component-wise). (Alias for divide)
      * @param other - Operand vector.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The vector of quotients of entries of this vector and the other vector.
+     * @return The vector of quotients of entries of this vector and the other vector.
      */
     fun div(other: Vec4, dst: Vec4? = null): Vec4 = divide(other, dst)
 
     /**
      * Sets the components of this vector to zero.
      * @param dst - vector to hold result. If null, modifies this vector.
-     * @returns The zeroed vector.
+     * @return The zeroed vector.
      */
     fun zero(dst: Vec4? = null): Vec4 {
         val target = dst ?: this
@@ -522,7 +522,7 @@ data class Vec4(
      * (m[0]=m00, m[1]=m10, m[2]=m20, m[3]=m30, m[4]=m01, m[5]=m11, ...)
      * @param m - The matrix.
      * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @returns the transformed vector.
+     * @return the transformed vector.
      */
     fun transformMat4(m: Mat4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -544,7 +544,7 @@ data class Vec4(
      *
      * @param length The length of the resulting vector.
      * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @returns The lengthened vector.
+     * @return The lengthened vector.
      */
     fun setLength(length: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -557,7 +557,7 @@ data class Vec4(
      *
      * @param maxLen The longest length of the resulting vector.
      * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @returns The vector, shortened to maxLen if it's too long, otherwise a copy of the original.
+     * @return The vector, shortened to maxLen if it's too long, otherwise a copy of the original.
      */
     fun truncate(maxLen: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -572,7 +572,7 @@ data class Vec4(
      *
      * @param other Endpoint vector.
      * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @returns The vector exactly residing between this vector and the other endpoint.
+     * @return The vector exactly residing between this vector and the other endpoint.
      */
     fun midpoint(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()

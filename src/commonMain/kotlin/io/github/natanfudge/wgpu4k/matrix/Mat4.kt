@@ -101,7 +101,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a new identity Mat4.
          * @param dst - Mat4 to hold the result. If null, a new one is created.
-         * @returns A 4-by-4 identity matrix.
+         * @return A 4-by-4 identity matrix.
          */
         fun identity(dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -117,7 +117,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a Mat4 from a Mat3.
          * @param m3 - source matrix.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns Mat4 made from m3.
+         * @return Mat4 made from m3.
          */
         fun fromMat3(m3: Mat3, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -133,7 +133,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a Mat4 rotation matrix from a quaternion.
          * @param q - quaternion to create matrix from.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns Mat4 made from q.
+         * @return Mat4 made from q.
          */
         fun fromQuat(q: Quat, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -163,7 +163,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which translates by the given vector v.
          * @param v - The vector by which to translate (3-element vector).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The translation matrix.
+         * @return The translation matrix.
          */
         fun translation(v: Vec3, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -180,7 +180,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which rotates around the x-axis by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotationX(angleInRadians: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -200,7 +200,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which rotates around the y-axis by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotationY(angleInRadians: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -220,7 +220,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which rotates around the z-axis by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotationZ(angleInRadians: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -241,7 +241,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param axis - The axis about which to rotate.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns A matrix which rotates angle radians around the axis.
+         * @return A matrix which rotates angle radians around the axis.
          */
         fun axisRotation(axis: Vec3, angleInRadians: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -296,7 +296,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * corresponding entry in the given vector.
          * @param v - A vector of 3 entries specifying the factor by which to scale in each dimension.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The scaling matrix.
+         * @return The scaling matrix.
          */
         fun scaling(v: Vec3, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -313,7 +313,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which scales uniformly in each dimension.
          * @param s - The factor by which to scale.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The scaling matrix.
+         * @return The scaling matrix.
          */
         fun uniformScaling(s: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -333,7 +333,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param zNear - The distance to the near clipping plane.
          * @param zFar - The distance to the far clipping plane.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The perspective projection matrix.
+         * @return The perspective projection matrix.
          */
         fun perspective(fieldOfViewYInRadians: Float, aspect: Float, zNear: Float, zFar: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -358,7 +358,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param near - The distance to the near clipping plane.
          * @param far - The distance to the far clipping plane.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The orthographic projection matrix.
+         * @return The orthographic projection matrix.
          */
         fun ortho(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -384,7 +384,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param near - The distance to the near clipping plane.
          * @param far - The distance to the far clipping plane.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The frustum matrix.
+         * @return The frustum matrix.
          */
         fun frustum(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -407,7 +407,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param target - The position to look at.
          * @param up - The up vector.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The look-at matrix.
+         * @return The look-at matrix.
          */
         fun lookAt(eye: Vec3, target: Vec3, up: Vec3, dst: Mat4? = null): Mat4 {
             val newDst = dst ?: Mat4()
@@ -494,7 +494,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * @param v13 - value for element 13
      * @param v14 - value for element 14
      * @param v15 - value for element 15
-     * @returns This Mat4 with values set.
+     * @return This Mat4 with values set.
      */
     fun set(
         v0: Float, v1: Float, v2: Float, v3: Float,
@@ -511,7 +511,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Negates this matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns -this.
+     * @return -this.
      */
     fun negate(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -528,7 +528,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * multiply this matrix by a scalar.
      * @param s - the scalar
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns this * s.
+     * @return this * s.
      */
     fun multiplyScalar(s: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -545,7 +545,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * add another matrix to this matrix.
      * @param other - the other matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns this + other.
+     * @return this + other.
      */
     fun add(other: Mat4, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -565,7 +565,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Copies this matrix.
      * @param dst - The matrix to copy into. If null, a new one is created.
-     * @returns A copy of this.
+     * @return A copy of this.
      */
     fun copy(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -576,7 +576,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Copies this matrix (same as copy).
      * @param dst - The matrix to copy into. If null, a new one is created.
-     * @returns A copy of this.
+     * @return A copy of this.
      */
     fun clone(dst: Mat4? = null): Mat4 = copy(dst)
 
@@ -584,7 +584,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Multiplies this matrix by another matrix `other` (this * other).
      * @param other - The matrix on the right.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The matrix product of this and other.
+     * @return The matrix product of this and other.
      */
     fun multiply(other: Mat4, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -647,14 +647,14 @@ class Mat4 private constructor(val array: FloatArray) {
      * Multiplies this matrix by another matrix `other` (this * other). (same as multiply)
      * @param other - The matrix on the right.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The matrix product of this and other.
+     * @return The matrix product of this and other.
      */
     fun mul(other: Mat4, dst: Mat4? = null): Mat4 = multiply(other, dst)
 
     /**
      * Takes the transpose of this matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The transpose of this.
+     * @return The transpose of this.
      */
     fun transpose(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -701,7 +701,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Computes the inverse of this 4-by-4 matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The inverse of this.
+     * @return The inverse of this.
      */
     fun inverse(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -794,13 +794,13 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Computes the inverse of this 4-by-4 matrix. (same as inverse)
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The inverse of this.
+     * @return The inverse of this.
      */
     fun invert(dst: Mat4? = null): Mat4 = inverse(dst)
 
     /**
      * Compute the determinant of this matrix.
-     * @returns the determinant.
+     * @return the determinant.
      */
     fun determinant(): Float {
         val m00 = array[0]
@@ -849,7 +849,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Sets the translation component of this 4-by-4 matrix to the given vector.
      * @param v - The vector (3-element vector).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns This matrix with translation set.
+     * @return This matrix with translation set.
      */
     fun setTranslation(v: Vec3, dst: Mat4? = null): Mat4 {
         val newDst = if (dst === this) this else copy(dst)
@@ -864,7 +864,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Returns the translation component of this 4-by-4 matrix as a vector with 3 entries.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The translation component of this matrix.
+     * @return The translation component of this matrix.
      */
     fun getTranslation(dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -878,7 +878,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Returns an axis of this 4x4 matrix as a vector with 3 entries.
      * @param axis - The axis 0 = x, 1 = y, 2 = z.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The axis component of this matrix.
+     * @return The axis component of this matrix.
      */
     fun getAxis(axis: Int, dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -894,7 +894,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * @param v - the axis vector (3-element vector).
      * @param axis - The axis 0 = x, 1 = y, 2 = z.
      * @param dst - The matrix to set. If null, a new one is created.
-     * @returns The matrix with axis set.
+     * @return The matrix with axis set.
      */
     fun setAxis(v: Vec3, axis: Int, dst: Mat4? = null): Mat4 {
         val newDst = if (dst === this) this else copy(dst)
@@ -910,7 +910,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Returns the scaling component of the matrix as a Vec3.
      * @param dst - The vector to set. If null, a new one is created.
-     * @returns The scaling vector.
+     * @return The scaling vector.
      */
     fun getScaling(dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -936,7 +936,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Translates this 4-by-4 matrix by the given vector v.
      * @param v - The vector by which to translate (3-element vector).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The translated matrix.
+     * @return The translated matrix.
      */
     fun translate(v: Vec3, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -985,7 +985,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Rotates this 4-by-4 matrix around the x-axis by the given angle.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotateX(angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1029,7 +1029,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Rotates this 4-by-4 matrix around the y-axis by the given angle.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotateY(angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1073,7 +1073,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Rotates this 4-by-4 matrix around the z-axis by the given angle.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotateZ(angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1118,7 +1118,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * @param axis - The axis about which to rotate.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun axisRotate(axis: Vec3, angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1148,7 +1148,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * corresponding entry in the given vector.
      * @param v - A vector of 3 entries specifying the factor by which to scale in each dimension.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The scaled matrix.
+     * @return The scaled matrix.
      */
     fun scale(v: Vec3, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1184,7 +1184,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Scales this 4-by-4 matrix uniformly in each dimension by the given factor.
      * @param s - The factor by which to scale.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The scaled matrix.
+     * @return The scaled matrix.
      */
     fun uniformScale(s: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1215,7 +1215,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Check if this matrix is approximately equal to another matrix.
      * @param other Operand matrix.
-     * @returns true if matrices are approximately equal.
+     * @return true if matrices are approximately equal.
      */
     fun equalsApproximately(other: Mat4): Boolean {
         return abs(array[0] - other.array[0]) < EPSILON &&
@@ -1239,7 +1239,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Check if this matrix is exactly equal to another matrix.
      * @param other Operand matrix.
-     * @returns true if matrices are exactly equal.
+     * @return true if matrices are exactly equal.
      */
     override fun equals(other: Any?): Boolean {
         return other is Mat4 &&

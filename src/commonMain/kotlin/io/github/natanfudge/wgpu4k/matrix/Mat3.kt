@@ -110,7 +110,7 @@ import kotlin.math.sqrt
         /**
          * Creates a new identity Mat3.
          * @param dst - Mat3 to hold the result. If null, a new one is created.
-         * @returns A 3-by-3 identity matrix.
+         * @return A 3-by-3 identity matrix.
          */
         fun identity(dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -125,7 +125,7 @@ import kotlin.math.sqrt
          * Creates a Mat3 from the upper left 3x3 part of a Mat4.
          * @param m4 - source matrix (16-element FloatArray).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns Mat3 made from m4.
+         * @return Mat3 made from m4.
          */
         fun fromMat4(m4: Mat4, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -140,7 +140,7 @@ import kotlin.math.sqrt
          * Creates a Mat3 rotation matrix from a quaternion.
          * @param q - quaternion to create matrix from (4-element FloatArray).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns Mat3 made from q.
+         * @return Mat3 made from q.
          */
         fun fromQuat(q: Quat, dst: Mat3? = null): Mat3 { // Assuming QuatArg is FloatArray
             val newDst = dst ?: Mat3()
@@ -169,7 +169,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which translates by the given vector v.
          * @param v - The vector by which to translate (2-element FloatArray).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The translation matrix.
+         * @return The translation matrix.
          */
         fun translation(v: Vec2, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -185,7 +185,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotation(angleInRadians: Float, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -204,7 +204,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates around the x-axis by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotationX(angleInRadians: Float, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -223,7 +223,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates around the y-axis by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotationY(angleInRadians: Float, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -242,7 +242,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates around the z-axis by the given angle.
          * @param angleInRadians - The angle by which to rotate (in radians).
          * @param dst - matrix to hold result. If not passed a new one is created.
-         * @returns The rotation matrix.
+         * @return The rotation matrix.
          */
         fun rotationZ(angleInRadians: Float, dst: Mat3? = null): Mat3 = rotation(angleInRadians, dst)
 
@@ -253,7 +253,7 @@ import kotlin.math.sqrt
          * entries.
          * @param v - A vector of 2 entries specifying the factor by which to scale in each dimension.
          * @param dst - matrix to hold result. If null, a new one is created.
-         * @returns The scaling matrix.
+         * @return The scaling matrix.
          */
         fun scaling(v: Vec2, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -271,7 +271,7 @@ import kotlin.math.sqrt
          * entries.
          * @param v - A vector of 3 entries specifying the factor by which to scale in each dimension.
          * @param dst - matrix to hold result. If not passed a new one is created.
-         * @returns The scaling matrix.
+         * @return The scaling matrix.
          */
         fun scaling3D(v: Vec3, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -287,7 +287,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which scales uniformly in the X and Y dimensions.
          * @param s - Amount to scale.
          * @param dst - matrix to hold result. If not passed a new one is created.
-         * @returns The scaling matrix.
+         * @return The scaling matrix.
          */
         fun uniformScaling(s: Float, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -303,7 +303,7 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which scales uniformly in each dimension.
          * @param s - Amount to scale.
          * @param dst - matrix to hold result. If not passed a new one is created.
-         * @returns The scaling matrix.
+         * @return The scaling matrix.
          */
         fun uniformScaling3D(s: Float, dst: Mat3? = null): Mat3 {
             val newDst = dst ?: Mat3()
@@ -335,7 +335,7 @@ import kotlin.math.sqrt
      * @param v6 - value for element 6
      * @param v7 - value for element 7
      * @param v8 - value for element 8
-     * @returns This Mat3 with values set.
+     * @return This Mat3 with values set.
      */
     fun set(
         v0: Float, v1: Float, v2: Float,
@@ -350,7 +350,7 @@ import kotlin.math.sqrt
     /**
      * Negates this matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns -this.
+     * @return -this.
      */
     fun negate(dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -366,7 +366,7 @@ import kotlin.math.sqrt
      * multiply this matrix by a scalar.
      * @param s - the scalar
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns this * s.
+     * @return this * s.
      */
     fun multiplyScalar(s: Float, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -382,7 +382,7 @@ import kotlin.math.sqrt
      * add another matrix to this matrix.
      * @param other - the other matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns this + other.
+     * @return this + other.
      */
     fun add(other: Mat3, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -397,7 +397,7 @@ import kotlin.math.sqrt
     /**
      * Copies this matrix.
      * @param dst - The matrix to copy into. If null, a new one is created.
-     * @returns A copy of this.
+     * @return A copy of this.
      */
     fun copy(dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -408,14 +408,14 @@ import kotlin.math.sqrt
     /**
      * Copies this matrix (same as copy).
      * @param dst - The matrix to copy into. If null, a new one is created.
-     * @returns A copy of this.
+     * @return A copy of this.
      */
     fun clone(dst: Mat3? = null): Mat3 = copy(dst)
 
     /**
      * Check if this matrix is approximately equal to another matrix.
      * @param other Operand matrix.
-     * @returns true if matrices are approximately equal.
+     * @return true if matrices are approximately equal.
      */
     fun equalsApproximately(other: Mat3): Boolean {
         return abs(arrays[ 0] - other.arrays[ 0]) < EPSILON &&
@@ -432,7 +432,7 @@ import kotlin.math.sqrt
     /**
      * Check if this matrix is exactly equal to another matrix.
      * @param other Operand matrix.
-     * @returns true if matrices are exactly equal.
+     * @return true if matrices are exactly equal.
      */
     override fun equals(other: Any?): Boolean {
         return other is Mat3 &&
@@ -467,7 +467,7 @@ import kotlin.math.sqrt
      * Creates a 3-by-3 identity matrix.
      *
      * @param dst - matrix to hold result. If not passed a new one is created.
-     * @returns A 3-by-3 identity matrix.
+     * @return A 3-by-3 identity matrix.
      */
     fun identity(dst: Mat3? = null): Mat3  {
         val newDst = (dst ?: Mat3());
@@ -482,7 +482,7 @@ import kotlin.math.sqrt
     /**
      * Takes the transpose of this matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The transpose of this.
+     * @return The transpose of this.
      */
     fun transpose(dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -521,7 +521,7 @@ import kotlin.math.sqrt
     /**
      * Computes the inverse of this 3-by-3 matrix.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The inverse of this.
+     * @return The inverse of this.
      */
     fun inverse(dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -562,7 +562,7 @@ import kotlin.math.sqrt
 
     /**
      * Compute the determinant of this matrix.
-     * @returns the determinant.
+     * @return the determinant.
      */
     fun determinant(): Float {
         val m00 = arrays[0 * 4 + 0]
@@ -583,7 +583,7 @@ import kotlin.math.sqrt
     /**
      * Computes the inverse of this 3-by-3 matrix. (same as inverse)
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The inverse of this.
+     * @return The inverse of this.
      */
     fun invert(dst: Mat3? = null): Mat3 = inverse(dst)
 
@@ -591,7 +591,7 @@ import kotlin.math.sqrt
      * Multiplies this matrix by another matrix `other` (this * other).
      * @param other - The matrix on the right.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The matrix product of this and other.
+     * @return The matrix product of this and other.
      */
     fun multiply(other: Mat3, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -632,7 +632,7 @@ import kotlin.math.sqrt
      * Multiplies this matrix by another matrix `other` (this * other). (same as multiply)
      * @param other - The matrix on the right.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The matrix product of this and other.
+     * @return The matrix product of this and other.
      */
     fun mul(other: Mat3, dst: Mat3? = null): Mat3 = multiply(other, dst)
 
@@ -640,7 +640,7 @@ import kotlin.math.sqrt
      * Sets the translation component of this 3-by-3 matrix to the given vector.
      * @param v - The vector (2-element FloatArray).
      * @param dst - matrix to hold result. If null, a new one is created (as an identity matrix).
-     * @returns This matrix with translation set.
+     * @return This matrix with translation set.
      */
     fun setTranslation(v: Vec2, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: identity() // Use identity if dst is null
@@ -663,7 +663,7 @@ import kotlin.math.sqrt
      * Returns the translation component of this 3-by-3 matrix as a vector with 2
      * entries.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The translation component of this matrix.
+     * @return The translation component of this matrix.
      */
     fun getTranslation(dst: Vec2? = null): Vec2 {
         val newDst = dst ?: Vec2.create()
@@ -676,7 +676,7 @@ import kotlin.math.sqrt
      * Returns an axis of this 3x3 matrix as a vector with 2 entries.
      * @param axis - The axis 0 = x, 1 = y.
      * @param dst - vector to hold result. If null, a new one is created.
-     * @returns The axis component of this matrix.
+     * @return The axis component of this matrix.
      */
     fun getAxis(axis: Int, dst: Vec2? = null): Vec2 {
         val newDst = dst ?: Vec2.create()
@@ -691,7 +691,7 @@ import kotlin.math.sqrt
      * @param v - the axis vector (2-element FloatArray).
      * @param axis - The axis 0 = x, 1 = y.
      * @param dst - The matrix to set. If null, a new one is created (as a copy of this).
-     * @returns The matrix with axis set.
+     * @return The matrix with axis set.
      */
     fun setAxis(v: Vec2, axis: Int, dst: Mat3? = null): Mat3 {
         val newDst = if (dst === this) this else copy(dst)
@@ -705,7 +705,7 @@ import kotlin.math.sqrt
     /**
      * Returns the "2d" scaling component of the matrix as a Vec2.
      * @param dst - The vector to set. If null, a new one is created.
-     * @returns The scaling vector.
+     * @return The scaling vector.
      */
     fun getScaling(dst: Vec2? = null): Vec2 {
         val newDst = dst ?: Vec2.create()
@@ -725,7 +725,7 @@ import kotlin.math.sqrt
     /**
      * Returns the "3d" scaling component of the matrix as a Vec3.
      * @param dst - The vector to set. If null, a new one is created.
-     * @returns The scaling vector.
+     * @return The scaling vector.
      */
     fun get3DScaling(dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -751,7 +751,7 @@ import kotlin.math.sqrt
      * Translates this 3-by-3 matrix by the given vector v.
      * @param v - The vector by which to translate (2-element FloatArray).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The translated matrix.
+     * @return The translated matrix.
      */
     fun translate(v: Vec2, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -789,7 +789,7 @@ import kotlin.math.sqrt
      * Rotates this 3-by-3 matrix by the given angle around the Z axis (2D rotation).
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotate(angleInRadians: Float, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -825,7 +825,7 @@ import kotlin.math.sqrt
      * Rotates this 3-by-3 matrix around the x-axis by the given angle.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotateX(angleInRadians: Float, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -860,7 +860,7 @@ import kotlin.math.sqrt
      * Rotates the given 3-by-3 matrix around the y-axis by the given angle.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotateY(angleInRadians: Float, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -894,7 +894,7 @@ import kotlin.math.sqrt
      * Rotates the given 3-by-3 matrix around the z-axis by the given angle.
      * @param angleInRadians - The angle by which to rotate (in radians).
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The rotated matrix.
+     * @return The rotated matrix.
      */
     fun rotateZ(angleInRadians: Float, dst: Mat3? = null): Mat3 = rotate(angleInRadians, dst)
 
@@ -904,7 +904,7 @@ import kotlin.math.sqrt
      * two entries.
      * @param v - A vector of 2 entries specifying the factor by which to scale in each dimension.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The scaled matrix.
+     * @return The scaled matrix.
      */
     fun scale(v: Vec2, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -935,7 +935,7 @@ import kotlin.math.sqrt
      * three entries.
      * @param v - A vector of 3 entries specifying the factor by which to scale in each dimension.
      * @param dst - matrix to hold result. If not passed a new one is created.
-     * @returns The scaled matrix.
+     * @return The scaled matrix.
      */
     fun scale3D(v: Vec3, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -963,7 +963,7 @@ import kotlin.math.sqrt
      * Scales this 3-by-3 matrix uniformly in the X and Y dimension by an amount given.
      * @param s - Amount to scale.
      * @param dst - matrix to hold result. If null, a new one is created.
-     * @returns The scaled matrix.
+     * @return The scaled matrix.
      */
     fun uniformScale(s: Float, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()
@@ -989,7 +989,7 @@ import kotlin.math.sqrt
      * Scales this 3-by-3 matrix uniformly in each dimension by an amount given.
      * @param s - Amount to scale.
      * @param dst - matrix to hold result. If not passed a new one is created.
-     * @returns The scaled matrix.
+     * @return The scaled matrix.
      */
     fun uniformScale3D(s: Float, dst: Mat3? = null): Mat3 {
         val newDst = dst ?: Mat3()

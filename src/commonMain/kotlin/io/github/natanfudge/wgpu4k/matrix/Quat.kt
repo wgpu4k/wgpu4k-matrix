@@ -34,7 +34,7 @@ data class Quat(
          * @param y - Initial y value.
          * @param z - Initial z value.
          * @param w - Initial w value.
-         * @returns the created quaternion
+         * @return the created quaternion
          */
         fun create(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 1.0): Quat {
             return Quat(x, y, z, w)
@@ -47,7 +47,7 @@ data class Quat(
          * @param y - Initial y value.
          * @param z - Initial z value.
          * @param w - Initial w value.
-         * @returns the created quaternion
+         * @return the created quaternion
          */
         fun fromValues(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 1.0): Quat {
             return Quat(x, y, z, w)
@@ -56,7 +56,7 @@ data class Quat(
         /**
          * Creates an identity quaternion.
          * @param dst - quaternion to hold result. If null, a new one is created.
-         * @returns an identity quaternion (0, 0, 0, 1).
+         * @return an identity quaternion (0, 0, 0, 1).
          */
         fun identity(dst: Quat? = null): Quat {
             val target = dst ?: Quat()
@@ -74,7 +74,7 @@ data class Quat(
          * @param axis - the axis to rotate around (must be normalized).
          * @param angleInRadians - the angle.
          * @param dst - quaternion to hold result. If null, a new one is created.
-         * @returns The quaternion that represents the given axis and angle.
+         * @return The quaternion that represents the given axis and angle.
          **/
         fun fromAxisAngle(axis: Vec3, angleInRadians: Double, dst: Quat? = null): Quat {
             val target = dst ?: Quat()
@@ -94,7 +94,7 @@ data class Quat(
          *
          * @param m - rotation matrix (Mat3 or Mat4).
          * @param dst - quaternion to hold result. If null, a new one is created.
-         * @returns the result quaternion.
+         * @return the result quaternion.
          */
         fun fromMat(m: Any, dst: Quat? = null): Quat {
             val target = dst ?: Quat()
@@ -177,7 +177,7 @@ data class Quat(
          * @param zAngleInRadians - angle to rotate around Z axis in radians.
          * @param order - order to apply euler angles (e.g., "xyz", "zyx").
          * @param dst - quaternion to hold result. If null, a new one is created.
-         * @returns A quaternion representing the same rotation as the euler angles applied in the given order.
+         * @return A quaternion representing the same rotation as the euler angles applied in the given order.
          */
         fun fromEuler(
             xAngleInRadians: Double,
@@ -261,7 +261,7 @@ data class Quat(
          * @param aUnit - the start unit vector.
          * @param bUnit - the end unit vector.
          * @param dst - quaternion to hold result. If null, a new one is created.
-         * @returns the quaternion representing the rotation.
+         * @return the quaternion representing the rotation.
          */
         fun rotationTo(aUnit: Vec3, bUnit: Vec3, dst: Quat? = null): Quat {
             val target = dst ?: Quat()
@@ -310,7 +310,7 @@ data class Quat(
          * @param d - the fourth quaternion keyframe.
          * @param t - Interpolation coefficient (0 to 1).
          * @param dst - quaternion to hold result. If null, a new one is created.
-         * @returns The interpolated quaternion.
+         * @return The interpolated quaternion.
          */
         fun sqlerp(
             a: Quat,
@@ -336,7 +336,7 @@ data class Quat(
      * @param y second value
      * @param z third value
      * @param w fourth value
-     * @returns This quaternion with its elements set.
+     * @return This quaternion with its elements set.
      */
     fun set(x: Double, y: Double, z: Double, w: Double): Quat {
         this.x = x
@@ -390,7 +390,7 @@ data class Quat(
      *
      * @param other - The second quaternion operand.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The resulting quaternion (this * other).
+     * @return The resulting quaternion (this * other).
      */
     fun multiply(other: Quat, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -415,7 +415,7 @@ data class Quat(
      * Multiplies this quaternion by another quaternion (this * other). (Alias for multiply)
      * @param other - The second quaternion operand.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The resulting quaternion (this * other).
+     * @return The resulting quaternion (this * other).
      */
     fun mul(other: Quat, dst: Quat? = null): Quat = multiply(other, dst)
 
@@ -424,7 +424,7 @@ data class Quat(
      * Equivalent to multiplying by a quaternion representing rotation about the X axis.
      * @param angleInRadians - The angle by which to rotate.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The rotated quaternion.
+     * @return The rotated quaternion.
      */
     fun rotateX(angleInRadians: Double, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -448,7 +448,7 @@ data class Quat(
      * Rotates this quaternion around the Y axis by the given angle.
      * @param angleInRadians - The angle by which to rotate.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The rotated quaternion.
+     * @return The rotated quaternion.
      */
     fun rotateY(angleInRadians: Double, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -472,7 +472,7 @@ data class Quat(
      * Rotates this quaternion around the Z axis by the given angle.
      * @param angleInRadians - The angle by which to rotate.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The rotated quaternion.
+     * @return The rotated quaternion.
      */
     fun rotateZ(angleInRadians: Double, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -499,7 +499,7 @@ data class Quat(
      * @param other - The ending quaternion value.
      * @param t - Interpolation coefficient (0 = this, 1 = other).
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The interpolated quaternion.
+     * @return The interpolated quaternion.
      */
     fun slerp(other: Quat, t: Double, dst: Quat? = null): Quat {
         val newDst = dst ?: Quat()
@@ -551,7 +551,7 @@ data class Quat(
      * For unit quaternions, conjugate is equivalent and faster.
      *
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The inverted quaternion.
+     * @return The inverted quaternion.
      */
     fun inverse(dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -575,7 +575,7 @@ data class Quat(
      * If the quaternion is normalized (unit length), conjugate is the same as inverse.
      *
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The conjugate quaternion.
+     * @return The conjugate quaternion.
      */
     fun conjugate(dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -589,7 +589,7 @@ data class Quat(
     /**
      * Copies the values from this quaternion to another.
      * @param dst - quaternion to hold result. If null, a new one is created
-     * @returns A copy of this quaternion (either dst or a new instance).
+     * @return A copy of this quaternion (either dst or a new instance).
      */
     fun copy(dst: Quat = Quat()): Quat {
         dst.x = this.x
@@ -602,7 +602,7 @@ data class Quat(
     /**
      * Clones this quaternion. (Alias for copy)
      * @param dst - quaternion to hold result. If null, a new one is created using the data class copy.
-     * @returns A copy of this quaternion (either dst or a new instance).
+     * @return A copy of this quaternion (either dst or a new instance).
      */
     fun clone(dst: Quat = Quat()): Quat = copy(dst)
 
@@ -610,7 +610,7 @@ data class Quat(
      * Adds another quaternion to this quaternion.
      * @param other - Operand quaternion.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns A quaternion that is the sum of this and other.
+     * @return A quaternion that is the sum of this and other.
      */
     fun add(other: Quat, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -625,7 +625,7 @@ data class Quat(
      * Subtracts another quaternion from this quaternion.
      * @param other - Operand quaternion.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns A quaternion that is the difference (this - other).
+     * @return A quaternion that is the difference (this - other).
      */
     fun subtract(other: Quat, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -640,7 +640,7 @@ data class Quat(
      * Subtracts another quaternion from this quaternion. (Alias for subtract)
      * @param other - Operand quaternion.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns A quaternion that is the difference (this - other).
+     * @return A quaternion that is the difference (this - other).
      */
     fun sub(other: Quat, dst: Quat? = null): Quat = subtract(other, dst)
 
@@ -648,7 +648,7 @@ data class Quat(
      * Multiplies this quaternion by a scalar.
      * @param k - The scalar.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The scaled quaternion.
+     * @return The scaled quaternion.
      */
     fun mulScalar(k: Double, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -663,7 +663,7 @@ data class Quat(
      * Multiplies this quaternion by a scalar. (Alias for mulScalar)
      * @param k - The scalar.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The scaled quaternion.
+     * @return The scaled quaternion.
      */
     fun scale(k: Double, dst: Quat? = null): Quat = mulScalar(k, dst)
 
@@ -671,7 +671,7 @@ data class Quat(
      * Divides this quaternion by a scalar.
      * @param k - The scalar.
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The scaled quaternion.
+     * @return The scaled quaternion.
      */
     fun divScalar(k: Double, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -686,7 +686,7 @@ data class Quat(
     /**
      * Computes the dot product of this quaternion and another.
      * @param other - Operand quaternion.
-     * @returns The dot product.
+     * @return The dot product.
      */
     fun dot(other: Quat): Double {
         return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w
@@ -698,7 +698,7 @@ data class Quat(
      * @param other - Operand quaternion.
      * @param t - Interpolation coefficient (0 = this, 1 = other).
      * @param dst - Optional quaternion to hold the result. If null, a new one is created.
-     * @returns The linearly interpolated quaternion.
+     * @return The linearly interpolated quaternion.
      */
     fun lerp(other: Quat, t: Double, dst: Quat? = null): Quat {
         val target = dst ?: Quat()
@@ -738,7 +738,7 @@ data class Quat(
      * Normalizes this quaternion (divides by its length).
      * Modifies this quaternion if dst is null, otherwise modifies dst.
      * @param dst - Optional quaternion to hold the result. If null, modifies this instance.
-     * @returns The normalized quaternion (this or dst). Returns identity if length is near zero.
+     * @return The normalized quaternion (this or dst). Returns identity if length is near zero.
      */
     fun normalize(dst: Quat? = null): Quat {
         // Determine the destination array: use 'dst' if provided, otherwise create a new DoubleArray(4)
@@ -782,7 +782,7 @@ data class Quat(
      * Checks if this quaternion is approximately equal to another.
      * @param other - Operand quaternion.
      * @param epsilon - Tolerance for comparison.
-     * @returns true if quaternions are approximately equal.
+     * @return true if quaternions are approximately equal.
      */
     fun equalsApproximately(other: Quat, epsilon: Double = EPSILON): Boolean {
         return abs(this.x - other.x) < epsilon &&
@@ -795,7 +795,7 @@ data class Quat(
      * Checks if this quaternion is exactly equal to another.
      * Use with caution for floating-point numbers; prefer equalsApproximately.
      * @param other - Operand quaternion.
-     * @returns true if quaternions are exactly equal.
+     * @return true if quaternions are exactly equal.
      */
     fun equals(other: Quat): Boolean {
         return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w

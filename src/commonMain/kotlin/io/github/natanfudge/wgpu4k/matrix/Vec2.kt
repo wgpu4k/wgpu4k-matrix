@@ -113,7 +113,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Returns the angle in radians between this vector and another vector ('other').
      * @param other The other vector.
-     * @returns The angle in radians.
+     * @return The angle in radians.
      */
     fun angle(other: Vec2): Float {
         // length() method now refers to 'this.length()'
@@ -142,7 +142,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Checks if this vector is approximately equal to another vector ('other').
      * @param other The vector to compare against.
-     * @returns true if vectors are approximately equal.
+     * @return true if vectors are approximately equal.
      */
     fun equalsApproximately(other: Vec2): Boolean {
         return abs(this.x - other.x) < EPSILON &&
@@ -159,7 +159,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * @param other The target vector.
      * @param t Interpolation coefficient.
      * @param dst Vector to hold result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the interpolated result.
+     * @return The Vec2 instance (`dst` or a new one) holding the interpolated result.
      */
     fun lerp(other: Vec2, t: Float, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -174,7 +174,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * @param other The target vector.
      * @param t Interpolation coefficients vector.
      * @param dst vector to hold result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the interpolated result.
+     * @return The Vec2 instance (`dst` or a new one) holding the interpolated result.
      */
     fun lerpV(other: Vec2, t: Vec2, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -187,7 +187,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * Returns a vector containing the component-wise max of this vector and 'other'.
      * @param other The other vector.
      * @param dst Vector to hold result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the max components.
+     * @return The Vec2 instance (`dst` or a new one) holding the max components.
      */
     fun max(other: Vec2, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -200,7 +200,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * Returns a vector containing the component-wise min of this vector and 'other'.
      * @param other The other vector.
      * @param dst Vector to hold result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the min components.
+     * @return The Vec2 instance (`dst` or a new one) holding the min components.
      */
     fun min(other: Vec2, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -257,7 +257,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * Computes the cross product of this vector and 'other', returning a 3D vector (FloatArray[3]).
      * @param other The other vector.
      * @param dst FloatArray (size 3) to hold result. If null, a new one is created.
-     * @returns The 3D vector result [0, 0, z].
+     * @return The 3D vector result [0, 0, z].
      */
     fun cross(other: Vec2, dst: FloatArray? = null): FloatArray {
         val target = dst ?: FloatArray(3)
@@ -271,7 +271,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Computes the dot product of this vector and 'other'.
      * @param other The other vector.
-     * @returns dot product.
+     * @return dot product.
      */
     fun dot(other: Vec2): Float {
         return this.x * other.x + this.y * other.y
@@ -279,7 +279,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
 
     /**
      * Computes the length (magnitude) of this vector.
-     * @returns length of this vector.
+     * @return length of this vector.
      */
     fun length(): Float {
         return sqrt(this.lengthSq()) // Call lengthSq instance method
@@ -290,7 +290,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
 
     /**
      * Computes the square of the length of this vector.
-     * @returns square of the length of this vector.
+     * @return square of the length of this vector.
      */
     fun lengthSq(): Float {
         return x * x + y * y
@@ -302,7 +302,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Computes the distance between this point and 'other'.
      * @param other The other point.
-     * @returns distance between this and other.
+     * @return distance between this and other.
      */
     fun distance(other: Vec2): Float {
         return sqrt(this.distanceSq(other)) // Call distanceSq instance method
@@ -314,7 +314,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Computes the square of the distance between this point and 'other'.
      * @param other The other point.
-     * @returns square of the distance between this and other.
+     * @return square of the distance between this and other.
      */
     fun distanceSq(other: Vec2): Float {
         val dx = this.x - other.x
@@ -328,7 +328,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Normalizes this vector (scales to unit length).
      * @param dst vector to hold result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the normalized vector.
+     * @return The Vec2 instance (`dst` or a new one) holding the normalized vector.
      */
     fun normalize(dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -347,7 +347,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Negates this vector.
      * @param dst vector to hold result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the negated vector.
+     * @return The Vec2 instance (`dst` or a new one) holding the negated vector.
      */
     fun negate(dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -438,7 +438,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * @param origin The origin of the rotation.
      * @param rad The angle of rotation in radians.
      * @param dst Optional Vec2 to store result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the rotated vector.
+     * @return The Vec2 instance (`dst` or a new one) holding the rotated vector.
      */
     fun rotate(origin: Vec2, rad: Float, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -457,7 +457,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * Sets the length of this vector. Modifies the vector components in 'dst' or a new Vec2.
      * @param len The desired length.
      * @param dst Optional Vec2 to store result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) with the specified length.
+     * @return The Vec2 instance (`dst` or a new one) with the specified length.
      */
     fun setLength(len: Float, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -473,7 +473,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * Truncates this vector if its length exceeds 'maxLen'.
      * @param maxLen The maximum allowed length.
      * @param dst Optional Vec2 to store result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the truncated vector or a copy of the original.
+     * @return The Vec2 instance (`dst` or a new one) holding the truncated vector or a copy of the original.
      */
     fun truncate(maxLen: Float, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -493,7 +493,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
      * Calculates the midpoint between this vector and 'other'.
      * @param other The other endpoint.
      * @param dst Optional Vec2 to store result. If null, a new one is created.
-     * @returns The Vec2 instance (`dst` or a new one) holding the midpoint vector.
+     * @return The Vec2 instance (`dst` or a new one) holding the midpoint vector.
      */
     fun midpoint(other: Vec2, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
