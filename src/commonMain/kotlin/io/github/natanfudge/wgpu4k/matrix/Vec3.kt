@@ -575,21 +575,6 @@ class Vec3(
         // Simplified calculation:
         val x = this.x; val y = this.y; val z = this.z
 
-        // uv = q.xyz (vector part of quaternion)
-        // uuv = cross(uv, cross(uv, v)) + dot(uv, v) * uv
-        // v' = v + 2 * cross(uv, w*v + cross(uv, v))
-        // Implementation based on common optimized formula:
-        // t = 2 * cross(q.xyz, v)
-        // v' = v + q.w * t + cross(q.xyz, t)
-
-        val uvX = qy * z - qz * y
-        val uvY = qz * x - qx * z
-        val uvZ = qx * y - qy * x
-
-        val uuvX = qy * uvZ - qz * uvY
-        val uuvY = qz * uvX - qx * uvZ
-        val uuvZ = qx * uvY - qy * uvX
-
         // Correct calculation: v' = v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v)
         // Or using the optimized formula:
         val tx = 2f * (qy * z - qz * y)
