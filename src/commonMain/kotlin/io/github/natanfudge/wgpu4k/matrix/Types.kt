@@ -16,6 +16,6 @@ interface MutableNumberArray {
 typealias BaseArgType = FloatArray
 
 /**
- * Creates a zero-filled float array of the specified size.
+ * Creates a zero-filled float array of the specified [size].
  */
 fun zeroArray(size: Int): FloatArray = FloatArray(size) { 0f }
