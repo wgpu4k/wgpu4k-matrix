@@ -1,0 +1,32 @@
+name: Run Tests on PR
+
+on:
+  # Runs for any branch opened as a Pull Request
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: macOS-latest
+
+    # Cancel older runs of the same PR/branch so you only keep the newest one
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+          cache: 'gradle'
+
+      - name: Run all tests
+        run: ./gradlew allTests --no-daemon --info
