@@ -1,3 +1,5 @@
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.natanfudge/wgpu4k-matrix)
+
 # wgpu4k-matrix
 
 Kotlin Multiplatform matrix implementation for WebGPU, inspired by [wgpu-matrix](https://github.com/greggman/wgpu-matrix). This library provides a comprehensive set of matrix and vector operations optimized for WebGPU applications across multiple platforms.
@@ -22,4 +24,4 @@ val normalized = vec4.normalize()
 ```
 
 ## Project Status
-Actively maintained with full test coverage for core operations. See [potential_improvements.md](src/commonMain/kotlin/io/github/natanfudge/wgpu4k/matrix/potential_improvements.md) for current development priorities.
+Actively maintained with full test coverage for core operations. 
