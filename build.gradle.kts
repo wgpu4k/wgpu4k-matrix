@@ -51,6 +51,7 @@ version = "0.1.0"
 val artifactId = "wgpu4k-matrix"
 val githubUrl = "https://github.com/natanfudge/wgpu4k-matrix"
 
+
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
@@ -75,6 +76,10 @@ mavenPublishing {
             url = githubUrl
         }
     }
+}
+
+afterEvaluate {
+    tasks["publishAndReleaseToMavenCentral"].dependsOn("allTests")
 }
 
 
