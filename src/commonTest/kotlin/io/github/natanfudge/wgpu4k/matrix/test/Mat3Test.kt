@@ -204,17 +204,17 @@ class Mat3Test {
 
         for (i in relevantIndices.indices) {
             val idxToDiff = relevantIndices[i]
-            assert(
+            assertTrue(
                 Mat3.fromFloatArray(genAlmostEqualMat(-1)).equalsApproximately(
                     Mat3.fromFloatArray(genAlmostEqualMat(idxToDiff))
                 ),
-                { "Should be approximately equal when differing by small amount at index $idxToDiff" }
+                "Should be approximately equal when differing by small amount at index $idxToDiff"
             )
-            assert(
+            assertTrue(
                 !Mat3.fromFloatArray(genNotAlmostEqualMat(-1)).equalsApproximately(
                     Mat3.fromFloatArray(genNotAlmostEqualMat(idxToDiff))
                 ),
-                { "Should not be approximately equal when differing by large amount at index $idxToDiff" }
+                 "Should not be approximately equal when differing by large amount at index $idxToDiff"
             )
         }
     }
@@ -231,15 +231,15 @@ class Mat3Test {
 
         for (i in relevantIndices.indices) {
             val idxToDiff = relevantIndices[i]
-            assert(
+            assertTrue(
                 Mat3.fromFloatArray(genNotEqualMat(idxToDiff)) == // Uses the overridden equals operator
                         Mat3.fromFloatArray(genNotEqualMat(idxToDiff)),
-                { "Should be exactly equal when values are the same at index $idxToDiff" }
+                 "Should be exactly equal when values are the same at index $idxToDiff"
             )
-            assert(
+            assertTrue(
                 Mat3.fromFloatArray(genNotEqualMat(-1)) != // Uses the overridden equals operator
                         Mat3.fromFloatArray(genNotEqualMat(idxToDiff)),
-                { "Should not be exactly equal when values are different at index $idxToDiff" }
+                "Should not be exactly equal when values are different at index $idxToDiff"
             )
         }
     }

@@ -636,7 +636,7 @@ class Vec2Tests {
     private val testTolerance = 1e-6f
 
     @Test
-    fun `rotation around world origin 0, 0`() {
+    fun `rotation around world origin 0 0`() {
         val expected = Vec2(0f, -1f)
         run {
             val v = Vec2(0f, 1f)

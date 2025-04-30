@@ -147,17 +147,17 @@ class Mat4Test {
         }
 
         for (i in 0..15) {
-            assert(
+            assertTrue(
                 Mat4.fromFloatArray(genAlmostEqualMat(-1)).equalsApproximately(
                     Mat4.fromFloatArray(genAlmostEqualMat(i))
                 ),
-                { "Should be approximately equal when differing by small amount at index $i" }
+                "Should be approximately equal when differing by small amount at index $i"
             )
-            assert(
+            assertTrue(
                 !Mat4.fromFloatArray(genNotAlmostEqualMat(-1)).equalsApproximately(
                     Mat4.fromFloatArray(genNotAlmostEqualMat(i))
                 ),
-                { "Should not be approximately equal when differing by large amount at index $i" }
+                 "Should not be approximately equal when differing by large amount at index $i"
             )
         }
     }
@@ -170,15 +170,15 @@ class Mat4Test {
         }
 
         for (i in 0..15) {
-            assert(
+            assertTrue(
                 Mat4.fromFloatArray(genNotEqualMat(i)) == // Uses the overridden equals operator
                         Mat4.fromFloatArray(genNotEqualMat(i)),
-                { "Should be exactly equal when values are the same at index $i" }
+                 "Should be exactly equal when values are the same at index $i"
             )
-            assert(
+            assertTrue(
                 Mat4.fromFloatArray(genNotEqualMat(-1)) != // Uses the overridden equals operator
                         Mat4.fromFloatArray(genNotEqualMat(i)),
-                { "Should not be exactly equal when values are different at index $i" }
+                 "Should not be exactly equal when values are different at index $i"
             )
         }
     }

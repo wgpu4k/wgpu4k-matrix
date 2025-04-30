@@ -668,10 +668,8 @@ class Vec3(
     // and 'equalsApproximately' which are preserved as explicit methods.
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Vec3
-
+        if (other !is Vec3) return false
+        
         if (x != other.x) return false
         if (y != other.y) return false
         if (z != other.z) return false

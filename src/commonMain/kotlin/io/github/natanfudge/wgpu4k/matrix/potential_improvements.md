@@ -1,4 +1,4 @@
-1. Get rid of the shitty docs and write something more useful
+1. Get rid of the shitty docs and write something more useful - just Vec4 remaining
 
 Visit the source kotlin files in the project and update the kdocs according to this rule:
 

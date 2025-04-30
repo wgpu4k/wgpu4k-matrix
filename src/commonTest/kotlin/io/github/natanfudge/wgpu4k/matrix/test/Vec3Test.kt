@@ -736,7 +736,7 @@ class Vec3Tests {
     // --- Rotation Tests (No longer nested) ---
 
     @Test
-    fun `rotateX rotation around world origin 0, 0, 0`() {
+    fun `rotateX rotation around world origin 0 0 0`() {
         val expected = Vec3(0f, -1f, 0f)
         val rotateOperation = { args: Array<out Any?>, dst: Vec3? ->
             val target = args[0] as Vec3
@@ -760,7 +760,7 @@ class Vec3Tests {
     }
 
     @Test
-    fun `rotateY rotation around world origin 0, 0, 0`() {
+    fun `rotateY rotation around world origin 0 0 0`() {
         val expected = Vec3(-1f, 0f, 0f)
         val rotateOperation = { args: Array<out Any?>, dst: Vec3? ->
             val target = args[0] as Vec3
@@ -784,7 +784,7 @@ class Vec3Tests {
     }
 
     @Test
-    fun `rotateZ rotation around world origin 0, 0, 0`() {
+    fun `rotateZ rotation around world origin 0 0 0`() {
         val expected = Vec3(0f, -1f, 0f)
         val rotateOperation = { args: Array<out Any?>, dst: Vec3? ->
             val target = args[0] as Vec3
