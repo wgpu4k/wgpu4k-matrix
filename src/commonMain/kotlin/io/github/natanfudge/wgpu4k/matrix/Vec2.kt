@@ -11,21 +11,13 @@ import kotlin.random.Random
 /**
  * Represents a mutable 2D Vector with instance methods mimicking the JS API structure,
  * including optional 'dst' parameter support.
- *
- * @property x The x component.
- * @property y The y component.
  */
 data class Vec2(var x: Float = 0f, var y: Float = 0f) {
 
-    // --- Instance Methods (Operating on 'this', supporting 'dst') ---
+    // --- Instance Methods (Operating on `this`, supporting 'dst') ---
 
     /**
-     * Sets the components of this vector.
-     *
-     *
-     * @param x The new x value.
-     * @param y The new y value.
-     * @return This Vec2 instance after modification.
+     * Sets the components of `this` to [x] and [y].
      */
     fun set(x: Float, y: Float): Vec2 {
         this.x = x
@@ -34,9 +26,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     /**
-     * Applies Math.ceil to each component of this vector.
-     * @param dst Vector to hold result. If null, a new one is created.
-     * @return The Vec2 instance (`dst` or a new one) holding the ceiled components of the original `this`.
+     * Applies Math.ceil to each component of `this`.
      */
     fun ceil(dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -46,9 +36,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     /**
-     * Applies Math.floor to each component of this vector.
-     * @param dst Vector to hold result. If null, a new one is created.
-     * @return The Vec2 instance (`dst` or a new one) holding the floored components of the original `this`.
+     * Applies Math.floor to each component of `this`.
      */
     fun floor(dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -58,9 +46,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     /**
-     * Applies Math.round to each component of this vector.
-     * @param dst Vector to hold result. If null, a new one is created.
-     * @return The Vec2 instance (`dst` or a new one) holding the rounded components of the original `this`.
+     * Applies Math.round to each component of `this`.
      */
     fun round(dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -70,11 +56,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     /**
-     * Clamps each component of this vector between min and max.
-     * @param min Min value (default 0f).
-     * @param max Max value (default 1f).
-     * @param dst Vector to hold result. If null, a new one is created.
-     * @return The Vec2 instance (`dst` or a new one) holding the clamped components of the original `this`.
+     * Clamps each component of `this` between [min] and [max].
      */
     fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -84,10 +66,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     /**
-     * Adds another vector ('other') to this vector. (Result = this + other)
-     * @param other The vector to add.
-     * @param dst Vector to hold result. If null, a new one is created.
-     * @return The Vec2 instance (`dst` or a new one) holding the sum.
+     * Adds [other] to `this`.
      */
     fun add(other: Vec2, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()
@@ -97,11 +76,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     /**
-     * Adds a scaled vector to this vector. (Result = this + other * scale)
-     * @param other The vector to scale and add.
-     * @param scale Amount to scale 'other'.
-     * @param dst Vector to hold result. If null, a new one is created.
-     * @return The Vec2 instance (`dst` or a new one) holding the result.
+     * Adds [other] scaled by [scale] to `this`.
      */
     fun addScaled(other: Vec2, scale: Float, dst: Vec2? = null): Vec2 {
         val target = dst ?: Vec2()

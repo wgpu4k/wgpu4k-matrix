@@ -4,11 +4,6 @@ import kotlin.math.*
 
 /**
  * Represents a 4-dimensional vector.
- *
- * @property x The x component.
- * @property y The y component.
- * @property z The z component.
- * @property w The w component.
  */
 data class Vec4(
     var x: Double = 0.0,
@@ -21,24 +16,14 @@ data class Vec4(
         const val EPSILON = 0.00001
 
         /**
-         * Creates a vec4; may be called with x, y, z, w to set initial values.
-         * @param x - Initial x value.
-         * @param y - Initial y value.
-         * @param z - Initial z value.
-         * @param w - Initial w value.
-         * @return the created vector
+         * Creates a vec4 with initial values [x], [y], [z], and [w].
          */
         fun create(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0): Vec4 {
             return Vec4(x, y, z, w)
         }
 
         /**
-         * Creates a vec4; may be called with x, y, z, w to set initial values. (same as create)
-         * @param x - Initial x value.
-         * @param y - Initial y value.
-         * @param z - Initial z value.
-         * @param w - Initial w value.
-         * @return the created vector
+         * Creates a vec4 with initial values [x], [y], [z], and [w]. (same as create)
          */
         fun fromValues(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0, w: Double = 0.0): Vec4 {
             return Vec4(x, y, z, w)
@@ -46,13 +31,7 @@ data class Vec4(
     }
 
     /**
-     * Sets the values of this Vec4.
-     *
-     * @param x first value
-     * @param y second value
-     * @param z third value
-     * @param w fourth value
-     * @return This vector with its elements set.
+     * Sets the components of `this` to [x], [y], [z], and [w].
      */
     fun set(x: Double, y: Double, z: Double, w: Double): Vec4 {
         this.x = x
@@ -63,9 +42,7 @@ data class Vec4(
     }
 
     /**
-     * Applies Math.ceil to each element of vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the ceil of each element of this vector.
+     * Applies Math.ceil to each component of `this`.
      */
     fun ceil(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -77,9 +54,7 @@ data class Vec4(
     }
 
     /**
-     * Applies Math.floor to each element of vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the floor of each element of this vector.
+     * Applies Math.floor to each component of `this`.
      */
     fun floor(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -91,9 +66,7 @@ data class Vec4(
     }
 
     /**
-     * Applies Math.round to each element of vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the round of each element of this vector.
+     * Applies Math.round to each component of `this`.
      */
     fun round(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -105,11 +78,7 @@ data class Vec4(
     }
 
     /**
-     * Clamp each element of vector between min and max.
-     * @param min - Min value, default 0.0
-     * @param max - Max value, default 1.0
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that the clamped value of each element of this vector.
+     * Clamp each element of `this` between [min] and [max].
      */
     fun clamp(min: Double = 0.0, max: Double = 1.0, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()

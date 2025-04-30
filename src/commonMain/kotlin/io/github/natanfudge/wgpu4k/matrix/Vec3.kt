@@ -10,13 +10,6 @@ import kotlin.random.Random // Needed for Vec3.random
 
 /**
  * Represents a 3-component vector using individual x, y, z fields.
- * 'this' corresponds to the first vector argument (v or a) in the original JavaScript functions.
- * Operations generally return a new Vec3 or modify the 'dst' Vec3 if provided,
- * keeping the API identical to the JavaScript version.
- *
- * @property x The x component of the vector.
- * @property y The y component of the vector.
- * @property z The z component of the vector.
  */
 class Vec3(
     var x: Float = 0f,
@@ -50,12 +43,10 @@ class Vec3(
         }
     }
 
-    // --- Instance Methods (where 'this' is the first parameter 'v' or 'a') ---
+    // --- Instance Methods (where `this` is the first parameter 'v' or 'a') ---
 
     /**
-     * Applies Math.ceil to each element of vector 'this'.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the ceil of each element of 'this'.
+     * Returns a vector that is the ceil of each element of `this`.
      */
     fun ceil(dst: Vec3 = Vec3()): Vec3 {
         dst.x = ceil(this.x)
@@ -65,9 +56,7 @@ class Vec3(
     }
 
     /**
-     * Applies Math.floor to each element of vector 'this'.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the floor of each element of 'this'.
+     * Returns a vector that is the floor of each element of `this`.
      */
     fun floor(dst: Vec3 = Vec3()): Vec3 {
         dst.x = floor(this.x)
@@ -77,9 +66,7 @@ class Vec3(
     }
 
     /**
-     * Applies Math.round to each element of vector 'this'.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the round of each element of 'this'.
+     * Returns a vector that is the round of each element of `this`.
      */
     fun round(dst: Vec3 = Vec3()): Vec3 {
         dst.x = round(this.x)
@@ -89,11 +76,7 @@ class Vec3(
     }
 
     /**
-     * Clamp each element of vector 'this' between min and max.
-     * @param min Min value, default 0
-     * @param max Max value, default 1
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that the clamped value of each element of 'this'.
+     * Clamp each element of `this` between [min] and [max].
      */
     fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec3 = Vec3()): Vec3 {
         dst.x = min(max, max(min, this.x))
@@ -103,10 +86,7 @@ class Vec3(
     }
 
     /**
-     * Adds vector 'b' to vector 'this'.
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the sum of 'this' and b.
+     * Adds [b] to `this`.
      */
     fun add(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x + b.x
@@ -116,11 +96,7 @@ class Vec3(
     }
 
     /**
-     * Adds vector 'b' scaled by 'scale' to vector 'this'.
-     * @param b Operand vector.
-     * @param scale Amount to scale b
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the sum of 'this' + b * scale.
+     * Adds [b] scaled by [scale] to `this`.
      */
     fun addScaled(b: Vec3, scale: Float, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x + b.x * scale
@@ -130,9 +106,7 @@ class Vec3(
     }
 
     /**
-     * Returns the angle in radians between vector 'this' and vector 'b'.
-     * @param b Operand vector.
-     * @return The angle in radians between the 2 vectors.
+     * Returns the angle in radians between `this` and [b].
      */
     fun angle(b: Vec3): Float {
         val mag1 = this.length() // Use instance length method
@@ -145,10 +119,7 @@ class Vec3(
     }
 
     /**
-     * Subtracts vector 'b' from vector 'this'.
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the difference of 'this' and b.
+     * Subtracts [b] from `this`.
      */
     fun subtract(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x - b.x
@@ -158,19 +129,14 @@ class Vec3(
     }
 
     /**
-     * Subtracts vector 'b' from vector 'this'. (Alias for subtract)
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A vector that is the difference of 'this' and b.
+     * Subtracts [b] from `this`. (Alias for subtract)
      */
     fun sub(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         return subtract(b, dst)
     }
 
     /**
-     * Check if vector 'this' and vector 'b' are approximately equal.
-     * @param b Operand vector.
-     * @return true if vectors are approximately equal.
+     * Check if `this` and [b] are approximately equal.
      */
     fun equalsApproximately(b: Vec3): Boolean {
         return abs(this.x - b.x) < EPSILON &&
@@ -178,26 +144,11 @@ class Vec3(
                 abs(this.z - b.z) < EPSILON
     }
 
-    /**
-     * Check if vector 'this' and vector 'b' are exactly equal.
-     * Note: In Kotlin, this shadows the default `equals` from `Any`.
-     * Consider renaming to `exactEquals` if standard equality is needed elsewhere.
-     * Keeping it as `equals` to match the JS API name precisely.
-     * @param b Operand vector.
-     * @return true if vectors are exactly equal.
-     */
-    fun equals(b: Vec3): Boolean {
-        return this.x == b.x && this.y == b.y && this.z == b.z
-    }
+
 
     /**
-     * Performs linear interpolation between vector 'this' and vector 'b'.
-     * Given vectors 'this' (a) and 'b' and interpolation coefficient t, returns
-     * a + t * (b - a).
-     * @param b Operand vector.
-     * @param t Interpolation coefficient.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The linear interpolated result.
+     * Performs linear interpolation between `this` and [b] using interpolation coefficient [t].
+     * Given `this` (a) and [b], returns a + [t] * (b - a).
      */
     fun lerp(b: Vec3, t: Float, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x + t * (b.x - this.x)
@@ -207,13 +158,8 @@ class Vec3(
     }
 
     /**
-     * Performs linear interpolation between vector 'this' and vector 'b' using coefficient vector 't'.
-     * Given vectors 'this' (a) and 'b' and interpolation coefficient vector t, returns
-     * a + t * (b - a).
-     * @param b Operand vector.
-     * @param t Interpolation coefficients vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return the linear interpolated result.
+     * Performs linear interpolation between `this` and [b] using coefficient vector [t].
+     * Given `this` (a) and [b], returns a + [t] * (b - a).
      */
     fun lerpV(b: Vec3, t: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x + t.x * (b.x - this.x)
@@ -223,12 +169,8 @@ class Vec3(
     }
 
     /**
-     * Return max values of vector 'this' and vector 'b'.
-     * Given vectors 'this' (a) and 'b' returns
-     * [max(a[0], b[0]), max(a[1], b[1]), max(a[2], b[2])].
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The max components vector.
+     * Return max values of `this` and [b].
+     * Returns [max(a[0], b[0]), max(a[1], b[1]), max(a[2], b[2])].
      */
     fun max(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = max(this.x, b.x)
@@ -238,12 +180,8 @@ class Vec3(
     }
 
     /**
-     * Return min values of vector 'this' and vector 'b'.
-     * Given vectors 'this' (a) and 'b' returns
-     * [min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2])].
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The min components vector.
+     * Return min values of `this` and [b].
+     * Returns [min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2])].
      */
     fun min(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = min(this.x, b.x)
@@ -253,10 +191,7 @@ class Vec3(
     }
 
     /**
-     * Multiplies vector 'this' by a scalar.
-     * @param k The scalar.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The scaled vector.
+     * Multiplies `this` by scalar [k].
      */
     fun mulScalar(k: Float, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x * k
@@ -266,20 +201,14 @@ class Vec3(
     }
 
     /**
-     * Multiplies vector 'this' by a scalar. (Alias for mulScalar)
-     * @param k The scalar.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The scaled vector.
+     * Multiplies `this` by scalar [k]. (Alias for mulScalar)
      */
     fun scale(k: Float, dst: Vec3 = Vec3()): Vec3 {
         return mulScalar(k, dst)
     }
 
     /**
-     * Divides vector 'this' by a scalar.
-     * @param k The scalar.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The scaled vector.
+     * Divides `this` by scalar [k].
      */
     fun divScalar(k: Float, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x / k
@@ -410,9 +339,7 @@ class Vec3(
     }
 
     /**
-     * Divides vector 'this' by its Euclidean length and returns the quotient.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The normalized vector.
+     * Normalizes `this`.
      */
     fun normalize(dst: Vec3 = Vec3()): Vec3 {
         val l = this.length()
@@ -429,9 +356,7 @@ class Vec3(
     }
 
     /**
-     * Negates vector 'this'.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return -this.
+     * Negates `this`.
      */
     fun negate(dst: Vec3 = Vec3()): Vec3 {
         dst.x = -this.x
@@ -441,10 +366,8 @@ class Vec3(
     }
 
     /**
-     * Copies vector 'this'. (Alias for clone)
+     * Copies `this`. (Alias for clone)
      * Also see [Vec3.Companion.create] and [Vec3.Companion.set]
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A copy of 'this'.
      */
     fun copy(dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x
@@ -454,20 +377,15 @@ class Vec3(
     }
 
     /**
-     * Clones vector 'this'. (Alias for copy)
+     * Clones `this`. (Alias for copy)
      * Also see [Vec3.Companion.create] and [Vec3.Companion.set]
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return A copy of 'this'.
      */
     fun clone(dst: Vec3 = Vec3()): Vec3 {
         return copy(dst)
     }
 
     /**
-     * Multiplies vector 'this' by vector 'b' (component-wise).
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The vector of products of entries of 'this' and b.
+     * Multiplies `this` by [b] component-wise.
      */
     fun multiply(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x * b.x
@@ -477,20 +395,14 @@ class Vec3(
     }
 
     /**
-     * Multiplies vector 'this' by vector 'b' (component-wise). (Alias for multiply)
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The vector of products of entries of 'this' and b.
+     * Multiplies `this` by [b] component-wise. (Alias for multiply)
      */
     fun mul(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         return multiply(b, dst)
     }
 
     /**
-     * Divides vector 'this' by vector 'b' (component-wise).
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The vector of quotients of entries of 'this' and b.
+     * Divides `this` by [b] component-wise.
      */
     fun divide(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         dst.x = this.x / b.x
@@ -500,20 +412,14 @@ class Vec3(
     }
 
     /**
-     * Divides vector 'this' by vector 'b' (component-wise). (Alias for divide)
-     * @param b Operand vector.
-     * @param dst vector to hold result. If not passed in a new one is created.
-     * @return The vector of quotients of entries of 'this' and b.
+     * Divides `this` by [b] component-wise. (Alias for divide)
      */
     fun div(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         return divide(b, dst)
     }
 
     /**
-     * transform vec3 'this' by 4x4 matrix 'm'.
-     * @param m The matrix (Mat4Arg assumed).
-     * @param dst optional vec3 to store result. If not passed a new one is created.
-     * @return the transformed vector.
+     * Transform `this` by 4x4 matrix [m].
      */
     fun transformMat4(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
         val x = this.x; val y = this.y; val z = this.z
@@ -530,11 +436,8 @@ class Vec3(
     }
 
     /**
-     * Transform vec3 'this' by upper 3x3 matrix inside 4x4 matrix 'm'.
-     * Treats 'this' as a direction.
-     * @param m The matrix (Mat4Arg assumed).
-     * @param dst optional vec3 to store result. If not passed a new one is created.
-     * @return The transformed vector.
+     * Transform `this` by upper 3x3 matrix inside 4x4 matrix [m].
+     * Treats `this` as a direction.
      */
     fun transformMat4Upper3x3(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
         val vx = this.x; val vy = this.y; val vz = this.z
@@ -547,11 +450,8 @@ class Vec3(
     }
 
     /**
-     * Transforms vec3 'this' by 3x3 matrix 'm'.
+     * Transforms `this` by 3x3 matrix [m].
      * Assumes standard column-major Mat3 * Vec3 multiplication based on likely intent.
-     * @param m The matrix (Mat3Arg assumed, length 9, column-major).
-     * @param dst optional vec3 to store result. If not passed a new one is created.
-     * @return the transformed vector.
      */
     fun transformMat3(m: Mat3, dst: Vec3 = Vec3()): Vec3 {
         // Using standard math (Mat3 * Vec3, Col Major Mat3) as the JS source had inconsistent indices.
@@ -563,10 +463,7 @@ class Vec3(
     }
 
     /**
-     * Transforms vec3 'this' by Quaternion 'q'.
-     * @param q the quaternion (QuatArg assumed) to transform by.
-     * @param dst optional vec3 to store result. If not passed a new one is created.
-     * @return the transformed vector.
+     * Transforms `this` by Quaternion [q].
      */
     fun transformQuat(q: Quat, dst: Vec3 = Vec3()): Vec3 {
         // Access quaternion components using properties and ensure they are Float
@@ -589,12 +486,7 @@ class Vec3(
     }
 
     /**
-     * Rotate a 3D vector 'this' around the x-axis, relative to origin 'b'.
-     *
-     * @param b The origin of the rotation.
-     * @param rad The angle of rotation in radians.
-     * @param dst The vector to set. If not passed a new one is created.
-     * @return the rotated vector.
+     * Rotate `this` around the x-axis, relative to origin [b] by angle [rad] in radians.
      */
     fun rotateX(b: Vec3, rad: Float, dst: Vec3 = Vec3()): Vec3 {
         val px = this.x - b.x
@@ -617,12 +509,7 @@ class Vec3(
     }
 
     /**
-     * Rotate a 3D vector 'this' around the y-axis, relative to origin 'b'.
-     *
-     * @param b The origin of the rotation.
-     * @param rad The angle of rotation in radians.
-     * @param dst The vector to set. If not passed a new one is created.
-     * @return the rotated vector.
+     * Rotate `this` around the y-axis, relative to origin [b] by angle [rad] in radians.
      */
     fun rotateY(b: Vec3, rad: Float, dst: Vec3 = Vec3()): Vec3 {
         val px = this.x - b.x
@@ -645,12 +532,7 @@ class Vec3(
     }
 
     /**
-     * Rotate a 3D vector 'this' around the z-axis, relative to origin 'b'.
-     *
-     * @param b The origin of the rotation.
-     * @param rad The angle of rotation in radians.
-     * @param dst The vector to set. If not passed a new one is created.
-     * @return the rotated vector.
+     * Rotate `this` around the z-axis, relative to origin [b] by angle [rad] in radians.
      */
     fun rotateZ(b: Vec3, rad: Float, dst: Vec3 = Vec3()): Vec3 {
         val px = this.x - b.x
@@ -673,11 +555,7 @@ class Vec3(
     }
 
     /**
-     * Treat vector 'this' as a direction and set its length.
-     *
-     * @param len The length of the resulting vector.
-     * @param dst The vector to set. If not passed a new one is created.
-     * @return The lengthened vector.
+     * Treat `this` as a direction and set its length to [len].
      */
     fun setLength(len: Float, dst: Vec3 = Vec3()): Vec3 {
         this.normalize(dst) // Normalizes into dst
@@ -685,11 +563,8 @@ class Vec3(
     }
 
     /**
-     * Ensure vector 'this' is not longer than a max length.
-     *
-     * @param maxLen The longest length of the resulting vector.
-     * @param dst The vector to set. If not passed a new one is created.
-     * @return The vector, shortened to maxLen if it's too long, otherwise a copy of 'this'.
+     * Ensure `this` is not longer than [maxLen].
+     * Returns a shortened vector if it's too long, otherwise a copy of `this`.
      */
     fun truncate(maxLen: Float, dst: Vec3 = Vec3()): Vec3 {
         val currentLength = this.length()
@@ -700,23 +575,15 @@ class Vec3(
     }
 
     /**
-     * Return the vector exactly between 'this' endpoint vector and endpoint 'b'.
-     *
-     * @param b Endpoint 2.
-     * @param dst The vector to set. If not passed a new one is created.
-     * @return The vector exactly residing between 'this' and b.
+     * Return the vector exactly between `this` endpoint and endpoint [b].
      */
     fun midpoint(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
         return this.lerp(b, 0.5f, dst)
     }
 
     /**
-     * Sets the components of this Vec3.
+     * Sets the components of this Vec3 to [x], [y], and [z].
      * Different from the static `set` function, this modifies the current instance.
-     * @param x first value
-     * @param y second value
-     * @param z third value
-     * @return This Vec3 with its elements set.
      */
     fun set(x: Float, y: Float, z: Float): Vec3 {
         this.x = x
@@ -727,7 +594,6 @@ class Vec3(
 
     /**
      * Zero's this vector (sets components to 0).
-     * @return This Vec3 zeroed.
      */
     fun zero(): Vec3 {
         this.x = 0f
@@ -739,36 +605,22 @@ class Vec3(
     // --- Companion Object for static-like methods ---
     companion object {
         /**
-         * Creates a vec3; may be called with x, y, z to set initial values.
-         * @param x Initial x value. Defaults to 0.
-         * @param y Initial y value. Defaults to 0.
-         * @param z Initial z value. Defaults to 0.
-         * @return the created vector
+         * Creates a vec3 with initial values [x], [y], and [z].
          */
         fun create(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3 {
             return Vec3(x, y, z)
         }
 
         /**
-         * Creates a vec3; may be called with x, y, z to set initial values. (same as create)
-         * @param x Initial x value. Defaults to 0.
-         * @param y Initial y value. Defaults to 0.
-         * @param z Initial z value. Defaults to 0.
-         * @return the created vector
+         * Creates a vec3 with initial values [x], [y], and [z]. (same as create)
          */
         fun fromValues(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3 {
             return create(x, y, z)
         }
 
         /**
-         * Sets the values of a Vec3.
+         * Sets the values of a Vec3 to [x], [y], and [z].
          * Also see [Vec3.Companion.create] and [Vec3.copy] (instance method)
-         *
-         * @param x first value
-         * @param y second value
-         * @param z third value
-         * @param dst - vector to hold result. If not passed in a new one is created.
-         * @return A vector with its elements set.
          */
         fun set(x: Float, y: Float, z: Float, dst: Vec3 = Vec3()): Vec3 {
             dst.x = x
@@ -778,10 +630,8 @@ class Vec3(
         }
 
         /**
-         * Creates a random vector with components within a sphere of radius 'scale'.
-         * @param scale - Radius of the sphere (default 1). The length of the vector will be <= scale.
-         * @param dst - vector to hold result. If not passed in a new one is created.
-         * @return The random vector.
+         * Creates a random vector with components within a sphere of radius [scale].
+         * The length of the vector will be <= [scale].
          */
         fun random(scale: Float = 1f, dst: Vec3 = Vec3()): Vec3 {
             val angle = Random.nextFloat() * 2f * PI.toFloat()
@@ -795,8 +645,6 @@ class Vec3(
 
         /**
          * Zero's a vector.
-         * @param dst - vector to hold result. If not passed in a new one is created.
-         * @return The zeroed vector.
          */
         fun zero(dst: Vec3 = Vec3()): Vec3 {
             dst.x = 0f
@@ -806,11 +654,7 @@ class Vec3(
         }
 
         /**
-         * Returns the translation component of a 4-by-4 matrix as a vector with 3
-         * entries.
-         * @param m The matrix (Mat4Arg assumed).
-         * @param dst vector to hold result. If not passed a new one is created.
-         * @return The translation component of m.
+         * Returns the translation component of a 4-by-4 matrix [m] as a vector with 3 entries.
          */
         fun getTranslation(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
             dst.x = m[12]
@@ -820,12 +664,9 @@ class Vec3(
         }
 
         /**
-         * Returns an axis of a 4x4 matrix as a vector with 3 entries.
+         * Returns an axis of a 4x4 matrix [m] as a vector with 3 entries.
+         * [axis] index: 0 = x-axis (col 0), 1 = y-axis (col 1), 2 = z-axis (col 2).
          * Assumes matrix is column-major.
-         * @param m The matrix (Mat4Arg assumed).
-         * @param axis The axis index: 0 = x-axis (col 0), 1 = y-axis (col 1), 2 = z-axis (col 2).
-         * @param dst vector to hold result. If not passed a new one is created.
-         * @return The axis component of m.
          */
         fun getAxis(m: Mat4, axis: Int, dst: Vec3 = Vec3()): Vec3 {
             val off = axis * 4
@@ -836,11 +677,8 @@ class Vec3(
         }
 
         /**
-         * Returns the scaling component of the matrix (scale factors along axes).
+         * Returns the scaling component of the matrix [m] (scale factors along axes).
          * Assumes matrix is column-major and has no shear.
-         * @param m The Matrix (Mat4Arg assumed).
-         * @param dst The vector to set. If not passed a new one is created.
-         * @return Vector containing the scaling factors.
          */
         fun getScaling(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
             val xColX = m[0]; val xColY = m[1]; val xColZ = m[2]
