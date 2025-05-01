@@ -90,10 +90,7 @@ data class Vec4(
     }
 
     /**
-     * Adds another vector to this vector.
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the sum of this vector and the other vector.
+     * Adds [other] to `this`.
      */
     fun add(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -105,11 +102,7 @@ data class Vec4(
     }
 
     /**
-     * Adds another vector scaled by a scalar to this vector.
-     * @param other - Operand vector.
-     * @param scale - Amount to scale other vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the sum of this vector + other * scale.
+     * Adds [other] scaled by [scale] to `this`.
      */
     fun addScaled(other: Vec4, scale: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -121,10 +114,7 @@ data class Vec4(
     }
 
     /**
-     * Subtracts another vector from this vector.
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the difference of this vector and the other vector.
+     * Subtracts [other] from `this`.
      */
     fun subtract(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -136,18 +126,12 @@ data class Vec4(
     }
 
     /**
-     * Subtracts another vector from this vector. (Alias for subtract)
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A vector that is the difference of this vector and the other vector.
+     * Subtracts [other] from `this`. (Alias for subtract)
      */
     fun sub(other: Vec4, dst: Vec4? = null): Vec4 = subtract(other, dst)
 
     /**
-     * Check if this vector is approximately equal to another vector.
-     * @param other - Operand vector.
-     * @param epsilon - Threshold for equality check.
-     * @return true if vectors are approximately equal.
+     * Checks if `this` is approximately equal to [other] within [epsilon].
      */
     fun equalsApproximately(other: Vec4, epsilon: Double = EPSILON): Boolean {
         return abs(this.x - other.x) < epsilon &&
@@ -157,10 +141,8 @@ data class Vec4(
     }
 
     /**
-     * Check if this vector is exactly equal to another vector.
+     * Checks if `this` is exactly equal to [other].
      * Note: Prefer equalsApproximately for floating-point comparisons.
-     * @param other - Operand vector.
-     * @return true if vectors are exactly equal.
      */
     fun equals(other: Vec4): Boolean {
         return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
@@ -169,13 +151,8 @@ data class Vec4(
     // The data class equals will be used for standard equality checks (e.g., in collections).
 
     /**
-     * Performs linear interpolation between this vector and another vector.
-     * Given vectors this (a) and other (b) and interpolation coefficient t, returns
-     * a + t * (b - a).
-     * @param other - Operand vector (b).
-     * @param t - Interpolation coefficient.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The linear interpolated result.
+     * Performs linear interpolation between `this` and [other] using coefficient [t].
+     * Calculates `this` + [t] * ([other] - `this`).
      */
     fun lerp(other: Vec4, t: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -187,13 +164,8 @@ data class Vec4(
     }
 
     /**
-     * Performs linear interpolation between this vector and another vector using a vector coefficient.
-     * Given vectors this (a) and other (b) and interpolation coefficient vector t, returns
-     * a + t * (b - a).
-     * @param other - Operand vector (b).
-     * @param t - Interpolation coefficients vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return the linear interpolated result.
+     * Performs linear interpolation between `this` and [other] using coefficient vector [t].
+     * Calculates `this` + [t] * ([other] - `this`) component-wise.
      */
     fun lerpV(other: Vec4, t: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -205,10 +177,7 @@ data class Vec4(
     }
 
     /**
-     * Return max values of this vector and another vector.
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The max components vector.
+     * Computes the component-wise maximum of `this` and [other].
      */
     fun max(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -220,10 +189,7 @@ data class Vec4(
     }
 
     /**
-     * Return min values of this vector and another vector.
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The min components vector.
+     * Computes the component-wise minimum of `this` and [other].
      */
     fun min(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -235,10 +201,7 @@ data class Vec4(
     }
 
     /**
-     * Multiplies this vector by a scalar.
-     * @param k - The scalar.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The scaled vector.
+     * Multiplies `this` by scalar [k].
      */
     fun mulScalar(k: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -250,18 +213,12 @@ data class Vec4(
     }
 
     /**
-     * Multiplies this vector by a scalar. (Alias for mulScalar)
-     * @param k - The scalar.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The scaled vector.
+     * Multiplies `this` by scalar [k]. (Alias for mulScalar)
      */
     fun scale(k: Double, dst: Vec4? = null): Vec4 = mulScalar(k, dst)
 
     /**
-     * Divides this vector by a scalar.
-     * @param k - The scalar.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The scaled vector.
+     * Divides `this` by scalar [k].
      */
     fun divScalar(k: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -273,9 +230,7 @@ data class Vec4(
     }
 
     /**
-     * Computes the component-wise inverse (1/x) of this vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The inverted vector.
+     * Computes the component-wise inverse (1/x) of `this`.
      */
     fun inverse(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -287,49 +242,43 @@ data class Vec4(
     }
 
     /**
-     * Computes the component-wise inverse (1/x) of this vector. (Alias for inverse)
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The inverted vector.
+     * Computes the component-wise inverse (1/x) of `this`. (Alias for inverse)
      */
     fun invert(dst: Vec4? = null): Vec4 = inverse(dst)
 
     /**
-     * Computes the dot product of this vector and another vector.
-     * @param other - Operand vector.
-     * @return dot product.
+     * Computes the dot product of `this` and [other].
      */
     fun dot(other: Vec4): Double {
         return (this.x * other.x) + (this.y * other.y) + (this.z * other.z) + (this.w * other.w)
     }
 
     /**
-     * Computes the length of this vector.
+     * Computes the length of `this`.
      */
     val length: Double
         get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
 
     /**
-     * Computes the length of this vector. (Alias for length)
+     * Computes the length of `this`. (Alias for length)
      */
     val len: Double
         get() = length
 
     /**
-     * Computes the square of the length of this vector.
+     * Computes the square of the length of `this`.
      */
     val lengthSq: Double
         get() = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
 
     /**
-     * Computes the square of the length of this vector. (Alias for lengthSq)
+     * Computes the square of the length of `this`. (Alias for lengthSq)
      */
     val lenSq: Double
         get() = lengthSq
 
     /**
-     * Computes the distance between this vector and another vector.
-     * @param other - Operand vector.
-     * @return distance between this vector and the other vector.
+     * Computes the distance between `this` and [other].
      */
     fun distance(other: Vec4): Double {
         val dx = this.x - other.x
@@ -340,16 +289,12 @@ data class Vec4(
     }
 
     /**
-     * Computes the distance between this vector and another vector. (Alias for distance)
-     * @param other - Operand vector.
-     * @return distance between this vector and the other vector.
+     * Computes the distance between `this` and [other]. (Alias for distance)
      */
     fun dist(other: Vec4): Double = distance(other)
 
     /**
-     * Computes the square of the distance between this vector and another vector.
-     * @param other - Operand vector.
-     * @return square of the distance between this vector and the other vector.
+     * Computes the square of the distance between `this` and [other].
      */
     fun distanceSq(other: Vec4): Double {
         val dx = this.x - other.x
@@ -360,16 +305,13 @@ data class Vec4(
     }
 
     /**
-     * Computes the square of the distance between this vector and another vector. (Alias for distanceSq)
-     * @param other - Operand vector.
-     * @return square of the distance between this vector and the other vector.
+     * Computes the square of the distance between `this` and [other]. (Alias for distanceSq)
      */
     fun distSq(other: Vec4): Double = distanceSq(other)
 
     /**
-     * Divides this vector by its Euclidean length.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The normalized vector. Returns a zero vector if the length is too small.
+     * Normalizes `this` (divides by its length).
+     * Returns a zero vector if the length is close to zero.
      */
     fun normalize(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -389,9 +331,7 @@ data class Vec4(
     }
 
     /**
-     * Negates this vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The negated vector.
+     * Negates `this`.
      */
     fun negate(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -403,9 +343,7 @@ data class Vec4(
     }
 
     /**
-     * Copies the values from this vector to another vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A copy of this vector.
+     * Creates a copy of `this`.
      */
     fun copy(dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -419,17 +357,12 @@ data class Vec4(
     // This method is provided for API compatibility and the optional dst parameter.
 
     /**
-     * Clones this vector. (Alias for copy)
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return A copy of this vector.
+     * Creates a copy of `this`. (Alias for copy)
      */
     fun clone(dst: Vec4? = null): Vec4 = copy(dst)
 
     /**
-     * Multiplies this vector by another vector (component-wise).
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The vector of products of entries of this vector and the other vector.
+     * Multiplies `this` by [other] component-wise.
      */
     fun multiply(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -441,18 +374,12 @@ data class Vec4(
     }
 
     /**
-     * Multiplies this vector by another vector (component-wise). (Alias for multiply)
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The vector of products of entries of this vector and the other vector.
+     * Multiplies `this` by [other] component-wise. (Alias for multiply)
      */
     fun mul(other: Vec4, dst: Vec4? = null): Vec4 = multiply(other, dst)
 
     /**
-     * Divides this vector by another vector (component-wise).
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The vector of quotients of entries of this vector and the other vector.
+     * Divides `this` by [other] component-wise.
      */
     fun divide(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -464,17 +391,12 @@ data class Vec4(
     }
 
     /**
-     * Divides this vector by another vector (component-wise). (Alias for divide)
-     * @param other - Operand vector.
-     * @param dst - vector to hold result. If null, a new one is created.
-     * @return The vector of quotients of entries of this vector and the other vector.
+     * Divides `this` by [other] component-wise. (Alias for divide)
      */
     fun div(other: Vec4, dst: Vec4? = null): Vec4 = divide(other, dst)
 
     /**
-     * Sets the components of this vector to zero.
-     * @param dst - vector to hold result. If null, modifies this vector.
-     * @return The zeroed vector.
+     * Sets the components of `this` to zero.
      */
     fun zero(dst: Vec4? = null): Vec4 {
         val target = dst ?: this
@@ -486,12 +408,9 @@ data class Vec4(
     }
 
     /**
-     * Transforms this vec4 by a 4x4 matrix.
+     * Transforms `this` by the 4x4 matrix [m].
      * Note: Assumes Mat4 provides an indexer `get(index: Int)` that maps to column-major order like the TS version.
      * (m[0]=m00, m[1]=m10, m[2]=m20, m[3]=m30, m[4]=m01, m[5]=m11, ...)
-     * @param m - The matrix.
-     * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @return the transformed vector.
      */
     fun transformMat4(m: Mat4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -509,11 +428,7 @@ data class Vec4(
     }
 
     /**
-     * Sets the length of this vector.
-     *
-     * @param length The length of the resulting vector.
-     * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @return The lengthened vector.
+     * Sets the length of `this` to [length].
      */
     fun setLength(length: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -522,11 +437,8 @@ data class Vec4(
     }
 
     /**
-     * Ensures this vector is not longer than a max length.
-     *
-     * @param maxLen The longest length of the resulting vector.
-     * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @return The vector, shortened to maxLen if it's too long, otherwise a copy of the original.
+     * Ensures `this` is not longer than [maxLen].
+     * @return The vector, shortened to [maxLen] if its original length was greater, otherwise a copy of `this`.
      */
     fun truncate(maxLen: Double, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()
@@ -537,11 +449,7 @@ data class Vec4(
     }
 
     /**
-     * Returns the vector exactly between this vector and another endpoint vector.
-     *
-     * @param other Endpoint vector.
-     * @param dst - optional vec4 to store result. If null, a new one is created.
-     * @return The vector exactly residing between this vector and the other endpoint.
+     * Computes the midpoint between `this` and [other].
      */
     fun midpoint(other: Vec4, dst: Vec4? = null): Vec4 {
         val target = dst ?: Vec4()

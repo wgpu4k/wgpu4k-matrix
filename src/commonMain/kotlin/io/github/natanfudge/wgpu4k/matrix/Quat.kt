@@ -228,7 +228,7 @@ data class Quat(
          * Computes a quaternion representing the shortest rotation from unit vector [aUnit] to unit vector [bUnit].
          * This method is NOT thread safe as it uses static temporary variables.
          */
-        fun rotationTo(aUnit: Vec3, bUnit: Vec3, dst: Quat? = null): Quat {
+        fun rotationToUnsafe(aUnit: Vec3, bUnit: Vec3, dst: Quat? = null): Quat {
             val target = dst ?: Quat()
             val dot = aUnit.dot(bUnit).toDouble() // Use instance method, ensure Double
 
@@ -269,7 +269,7 @@ data class Quat(
          * q(t) = Slerp(Slerp(a, d, t), Slerp(b, c, t), 2t(1-t))
          * This method is NOT thread safe as it uses static temporary variables.
          */
-        fun sqlerp(
+        fun sqlerpUnsafe(
             a: Quat,
             b: Quat,
             c: Quat,
@@ -284,7 +284,7 @@ data class Quat(
             tempQuat1.slerp(tempQuat2, 2.0 * t * (1.0 - t), target)
             return target
         }
-    } // End Companion Object
+    }
 
     /**
      * Sets the components of `this` to [x], [y], [z], [w].

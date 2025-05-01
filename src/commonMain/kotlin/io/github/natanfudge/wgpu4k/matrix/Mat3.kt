@@ -30,7 +30,6 @@ import kotlin.math.sqrt
  * first 3 rows and first 3 columns of a 4x4 matrix.
  */
 /*@JvmInline value*/ class Mat3 private constructor( val arrays: FloatArray) {
-
     inline val m00 get() = this[0]
     inline val m01 get() = this[4]
     inline val m02 get() = this[8]

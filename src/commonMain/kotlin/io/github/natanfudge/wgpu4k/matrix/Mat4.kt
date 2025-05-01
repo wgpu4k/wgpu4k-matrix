@@ -435,7 +435,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Negates `this` matrix.
+     * Negates `this`.
      */
     fun negate(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -449,7 +449,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Multiplies `this` matrix by the scalar [s].
+     * Multiplies `this` by the scalar [s].
      */
     fun multiplyScalar(s: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -463,7 +463,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Adds [other] to `this` matrix.
+     * Adds [other] to `this`.
      */
     fun add(other: Mat4, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -481,7 +481,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Copies `this` matrix.
+     * Copies `this`.
      */
     fun copy(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -490,12 +490,12 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Copies `this` matrix (alias for [copy]).
+     * Copies `this` (alias for [copy]).
      */
     fun clone(dst: Mat4? = null): Mat4 = copy(dst)
 
     /**
-     * Multiplies `this` matrix by [other] (`this` * [other]).
+     * Multiplies `this` by [other] (`this` * [other]).
      */
     fun multiply(other: Mat4, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -555,12 +555,12 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Multiplies `this` matrix by [other] (`this` * [other]) (alias for [multiply]).
+     * Multiplies `this` by [other] (`this` * [other]) (alias for [multiply]).
      */
     fun mul(other: Mat4, dst: Mat4? = null): Mat4 = multiply(other, dst)
 
     /**
-     * Computes the transpose of `this` matrix.
+     * Computes the transpose of `this`.
      */
     fun transpose(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -605,7 +605,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Computes the inverse of `this` matrix.
+     * Computes the inverse of `this`.
      */
     fun inverse(dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -696,12 +696,12 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Computes the inverse of `this` matrix (alias for [inverse]).
+     * Computes the inverse of `this` (alias for [inverse]).
      */
     fun invert(dst: Mat4? = null): Mat4 = inverse(dst)
 
     /**
-     * Computes the determinant of `this` matrix.
+     * Computes the determinant of `this`.
      */
     fun determinant(): Float {
         val m00 = array[0]
@@ -760,7 +760,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Gets the translation component of `this` matrix.
+     * Gets the translation component of `this`.
      */
     fun getTranslation(dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -771,7 +771,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Gets the specified [axis] (0=x, 1=y, 2=z) of `this` matrix as a Vec3.
+     * Gets the specified [axis] (0=x, 1=y, 2=z) of `this` as a Vec3.
      */
     fun getAxis(axis: Int, dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -797,7 +797,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Gets the scaling component of `this` matrix.
+     * Gets the scaling component of `this`.
      */
     fun getScaling(dst: Vec3? = null): Vec3 {
         val newDst = dst ?: Vec3.create()
@@ -820,7 +820,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Translates `this` matrix by [v].
+     * Translates `this` by [v].
      */
     fun translate(v: Vec3, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -866,7 +866,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the X axis.
+     * Rotates `this` by [angleInRadians] around the X axis.
      */
     fun rotateX(angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -907,7 +907,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the Y axis.
+     * Rotates `this` by [angleInRadians] around the Y axis.
      */
     fun rotateY(angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -948,7 +948,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the Z axis.
+     * Rotates `this` by [angleInRadians] around the Z axis.
      */
     fun rotateZ(angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -989,7 +989,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` matrix around the given [axis] by [angleInRadians].
+     * Rotates `this` around the given [axis] by [angleInRadians].
      */
     fun axisRotate(axis: Vec3, angleInRadians: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1015,7 +1015,7 @@ class Mat4 private constructor(val array: FloatArray) {
     fun rotate(axis: Vec3, angleInRadians: Float, dst: Mat4? = null) = axisRotate(axis, angleInRadians, dst)
 
     /**
-     * Scales `this` matrix by the components of [v].
+     * Scales `this` by the components of [v].
      */
     fun scale(v: Vec3, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1048,7 +1048,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Scales `this` matrix uniformly by [s].
+     * Scales `this` uniformly by [s].
      */
     fun uniformScale(s: Float, dst: Mat4? = null): Mat4 {
         val newDst = dst ?: Mat4()
@@ -1077,7 +1077,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Checks if `this` matrix is approximately equal to [other].
+     * Checks if `this` is approximately equal to [other].
      */
     fun equalsApproximately(other: Mat4): Boolean {
         return abs(array[0] - other.array[0]) < EPSILON &&
@@ -1099,7 +1099,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Checks if `this` matrix is exactly equal to [other].
+     * Checks if `this` is exactly equal to [other].
      */
     override fun equals(other: Any?): Boolean {
         return other is Mat4 &&
@@ -1122,7 +1122,7 @@ class Mat4 private constructor(val array: FloatArray) {
     }
 
     /**
-     * Computes the hash code for `this` matrix.
+     * Computes the hash code for `this`.
      */
     override fun hashCode(): Int {
         return array.contentHashCode()
