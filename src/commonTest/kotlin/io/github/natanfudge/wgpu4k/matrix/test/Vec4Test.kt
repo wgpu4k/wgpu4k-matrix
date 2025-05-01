@@ -577,7 +577,7 @@ class Vec4Tests {
     @Test
     fun `should zero`() { // Tests Vec4 instance zero method
         val vInstance = Vec4(1.0, 2.0, 3.0, 4.0)
-        val resultInstance = vInstance.zero() // Modifies vInstance and returns it
+        val resultInstance = vInstance.zero(vInstance) // Modifies vInstance and returns it
         assertSame(vInstance, resultInstance)
         assertVec4Equals(Vec4(0.0, 0.0, 0.0, 0.0), vInstance)
 

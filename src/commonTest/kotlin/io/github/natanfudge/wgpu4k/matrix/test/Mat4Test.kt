@@ -42,15 +42,11 @@ class Mat4Test {
     ))
 
     // Helper function to test Mat4 functions that return a Mat4
-    private fun testMat4WithAndWithoutDest(
-        func: (dst: Mat4?) -> Mat4,
+    private fun testMat4(
+        func: (dst: Mat4) -> Mat4,
         expected: Mat4,
         message: String? = null
     ) {
-        // Test without destination
-        val resultWithoutDest = func(null)
-        assertMat4EqualApproximately(resultWithoutDest, expected, "${formatTestMessage(message)} - without dest")
-
         // Test with destination
         val dest = Mat4() // Create a new destination matrix
         val resultWithDest = func(dest)
@@ -58,22 +54,7 @@ class Mat4Test {
         assertMat4EqualApproximately(resultWithDest, expected, "$message - with dest")
     }
 
-    // Helper function to test Mat4 functions that return a Vec3
-    private fun testVec3WithAndWithoutDest(
-        func: (dst: Vec3?) -> Vec3,
-        expected: Vec3,
-        message: String? = null
-    ) {
-        // Test without destination
-        val resultWithoutDest = func(null)
-        assertVec3EqualsApproximately(resultWithoutDest, expected, message = "$message - without dest")
 
-        // Test with destination
-        val dest = Vec3.create() // Create a new destination vector
-        val resultWithDest = func(dest)
-        assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
-        assertVec3EqualsApproximately(resultWithDest, expected, message = "$message - with dest")
-    }
 
     @Test
     fun testCreate() {
@@ -99,7 +80,7 @@ class Mat4Test {
             -8f,  -9f, -10f, -11f,
             -12f, -13f, -14f, -15f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.negate(dst) }, expected)
+        testMat4({ dst -> m.negate(dst) }, expected)
     }
 
     @Test
@@ -110,7 +91,7 @@ class Mat4Test {
             16f, 18f, 20f, 22f,
             24f, 26f, 28f, 30f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.add(m, dst) }, expected)
+        testMat4({ dst -> m.add(m, dst) }, expected)
     }
 
     @Test
@@ -121,13 +102,13 @@ class Mat4Test {
             16f, 18f, 20f, 22f,
             24f, 26f, 28f, 30f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.multiplyScalar(2f, dst) }, expected)
+        testMat4({ dst -> m.multiplyScalar(2f, dst) }, expected)
     }
 
     @Test
     fun testCopy() {
         val expected = m.clone() // Expected is a copy of m
-        testMat4WithAndWithoutDest({ dst ->
+        testMat4({ dst ->
             val result = m.copy(dst)
             assertNotSame(result, m, "Result should not be the same object as the source")
             result
@@ -186,7 +167,7 @@ class Mat4Test {
     @Test
     fun testClone() {
         val expected = m.clone() // Expected is a clone of m
-        testMat4WithAndWithoutDest({ dst ->
+        testMat4({ dst ->
             val result = m.clone(dst)
             assertNotSame(result, m, "Result should not be the same object as the source")
             result
@@ -201,7 +182,7 @@ class Mat4Test {
             222f, 333f, 444f, 555f, 
             2222f, 3333f, 4444f, 5555f
         ))
-        testMat4WithAndWithoutDest({ dst ->
+        testMat4({ dst ->
             val targetMat = dst ?: Mat4()
             targetMat.set(
                 2f, 3f, 4f, 5f,
@@ -220,7 +201,7 @@ class Mat4Test {
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.identity(dst) }, expected)
+        testMat4({ dst -> Mat4.identity(dst) }, expected)
     }
 
     @Test
@@ -231,10 +212,10 @@ class Mat4Test {
             2f, 6f, 10f, 14f,
             3f, 7f, 11f, 15f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.transpose(dst) }, expected)
+        testMat4({ dst -> m.transpose(dst) }, expected)
     }
 
-    private fun testMultiply(fn: (a: Mat4, b: Mat4, dst: Mat4?) -> Mat4) {
+    private fun testMultiply(fn: (a: Mat4, b: Mat4, dst: Mat4) -> Mat4) {
         val m2 = Mat4.fromFloatArray(floatArrayOf(
             4f, 5f, 6f, 7f,
             1f, 2f, 3f, 4f,
@@ -265,7 +246,7 @@ class Mat4Test {
             m2[12] * m[3] + m2[13] * m[7] + m2[14] * m[11] + m2[15] * m[15]
         ))
 
-        testMat4WithAndWithoutDest({ dst -> fn(m, m2, dst) }, expected)
+        testMat4({ dst -> fn(m, m2, dst) }, expected)
     }
 
     @Test
@@ -278,7 +259,7 @@ class Mat4Test {
         testMultiply { a, b, dst -> a.mul(b, dst) }
     }
 
-    private fun testInverse(fn: (m: Mat4, dst: Mat4?) -> Mat4) {
+    private fun testInverse(fn: (m: Mat4, dst: Mat4) -> Mat4) {
         val testMatrix = Mat4.fromFloatArray(floatArrayOf(
             2f, 1f, 3f, 0f,
             1f, 2f, 1f, 0f,
@@ -293,7 +274,7 @@ class Mat4Test {
             -1.625f, -1.875f, 0.375f, 1f
         ))
 
-        testMat4WithAndWithoutDest({ dst -> fn(testMatrix, dst) }, expected)
+        testMat4({ dst -> fn(testMatrix, dst) }, expected)
     }
 
     @Test
@@ -335,13 +316,13 @@ class Mat4Test {
             8f,  9f, 10f, 11f,
             11f, 22f, 33f, 15f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.setTranslation(Vec3(11f, 22f, 33f), dst) }, expected)
+        testMat4({ dst -> m.setTranslation(Vec3(11f, 22f, 33f), dst) }, expected)
     }
 
     @Test
     fun testGetTranslation() {
         val expected = Vec3(12f, 13f, 14f)
-        testVec3WithAndWithoutDest({ dst -> m.getTranslation(dst) }, expected)
+        testVec3({ dst -> m.getTranslation(dst) }, expected)
     }
 
     @Test
@@ -352,7 +333,7 @@ class Mat4Test {
             2 to Vec3(8f, 9f, 10f)
         )
         for ((axis, expected) in tests) {
-            testVec3WithAndWithoutDest({ dst -> m.getAxis(axis, dst) }, expected, "getAxis($axis)")
+            testVec3({ dst -> m.getAxis(axis, dst) }, expected, "getAxis($axis)")
         }
     }
 
@@ -379,7 +360,7 @@ class Mat4Test {
             ))
         )
         for ((axis, expected) in tests) {
-            testMat4WithAndWithoutDest({ dst -> m.setAxis(Vec3(11f, 22f, 33f), axis, dst) }, expected, "setAxis($axis)")
+            testMat4({ dst -> m.setAxis(Vec3(11f, 22f, 33f), axis, dst) }, expected, "setAxis($axis)")
         }
     }
 
@@ -396,7 +377,7 @@ class Mat4Test {
             sqrt(5f * 5f + 6f * 6f + 7f * 7f),
             sqrt(9f * 9f + 10f * 10f + 11f * 11f)
         )
-        testVec3WithAndWithoutDest({ dst -> testM.getScaling(dst) }, expected)
+        testVec3({ dst -> testM.getScaling(dst) }, expected)
     }
 
     @Test
@@ -413,7 +394,7 @@ class Mat4Test {
             0f, 0f, (zNear + zFar) * rangeInv, -1f,
             0f, 0f, zNear * zFar * rangeInv * 2, 0f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.perspective(fov, aspect, zNear, zFar, dst) }, expected)
+        testMat4({ dst -> Mat4.perspective(fov, aspect, zNear, zFar, dst) }, expected)
     }
 
     @Test
@@ -433,7 +414,7 @@ class Mat4Test {
             0f, 0f, -2 / depth, 0f,
             -(left + right) / width, -(top + bottom) / height, -(far + near) / depth, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.ortho(left, right, bottom, top, near, far, dst) }, expected)
+        testMat4({ dst -> Mat4.ortho(left, right, bottom, top, near, far, dst) }, expected)
     }
 
     @Test
@@ -510,7 +491,7 @@ class Mat4Test {
             0f, 0f, 1f, 0f,
             2f, 3f, 4f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.translation(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> Mat4.translation(Vec3(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -524,7 +505,7 @@ class Mat4Test {
             14f + 2f * 2f + 6f * 3f + 10f * 4f,
             15f + 3f * 2f + 7f * 3f + 11f * 4f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.translate(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> m.translate(Vec3(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -538,7 +519,7 @@ class Mat4Test {
             0f, -s, c, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.rotationX(angle, dst) }, expected)
+        testMat4({ dst -> Mat4.rotationX(angle, dst) }, expected)
     }
 
     @Test
@@ -548,7 +529,7 @@ class Mat4Test {
         val rotationMat = Mat4.rotationX(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat4WithAndWithoutDest({ dst -> m.rotateX(angle, dst) }, expected)
+        testMat4({ dst -> m.rotateX(angle, dst) }, expected)
     }
 
     @Test
@@ -562,7 +543,7 @@ class Mat4Test {
             s, 0f, c, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.rotationY(angle, dst) }, expected)
+        testMat4({ dst -> Mat4.rotationY(angle, dst) }, expected)
     }
 
     @Test
@@ -572,7 +553,7 @@ class Mat4Test {
         val rotationMat = Mat4.rotationY(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat4WithAndWithoutDest({ dst -> m.rotateY(angle, dst) }, expected)
+        testMat4({ dst -> m.rotateY(angle, dst) }, expected)
     }
 
     @Test
@@ -586,7 +567,7 @@ class Mat4Test {
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.rotationZ(angle, dst) }, expected)
+        testMat4({ dst -> Mat4.rotationZ(angle, dst) }, expected)
     }
 
     @Test
@@ -596,7 +577,7 @@ class Mat4Test {
         val rotationMat = Mat4.rotationZ(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat4WithAndWithoutDest({ dst -> m.rotateZ(angle, dst) }, expected)
+        testMat4({ dst -> m.rotateZ(angle, dst) }, expected)
     }
 
     @Test
@@ -634,7 +615,7 @@ class Mat4Test {
 
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.axisRotation(axis, angle, dst) }, expected)
+        testMat4({ dst -> Mat4.axisRotation(axis, angle, dst) }, expected)
     }
 
     @Test
@@ -645,7 +626,7 @@ class Mat4Test {
         val rotationMat = Mat4.axisRotation(axis, angle)
         val expected = m.multiply(rotationMat)
 
-        testMat4WithAndWithoutDest({ dst -> m.axisRotate(axis, angle, dst) }, expected)
+        testMat4({ dst -> m.axisRotate(axis, angle, dst) }, expected)
     }
 
     @Test
@@ -656,7 +637,7 @@ class Mat4Test {
             0f, 0f, 4f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.scaling(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> Mat4.scaling(Vec3(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -667,7 +648,7 @@ class Mat4Test {
             8f * 4f, 9f * 4f, 10f * 4f, 11f * 4f,
             12f, 13f, 14f, 15f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.scale(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> m.scale(Vec3(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -678,7 +659,7 @@ class Mat4Test {
             0f, 0f, 2f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.uniformScaling(2f, dst) }, expected)
+        testMat4({ dst -> Mat4.uniformScaling(2f, dst) }, expected)
     }
 
     @Test
@@ -689,7 +670,7 @@ class Mat4Test {
             8f * 2f, 9f * 2f, 10f * 2f, 11f * 2f,
             12f, 13f, 14f, 15f
         ))
-        testMat4WithAndWithoutDest({ dst -> m.uniformScale(2f, dst) }, expected)
+        testMat4({ dst -> m.uniformScale(2f, dst) }, expected)
     }
 
     @Test
@@ -705,7 +686,7 @@ class Mat4Test {
             7f, 8f, 9f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4WithAndWithoutDest({ dst -> Mat4.fromMat3(m3, dst) }, expected)
+        testMat4({ dst -> Mat4.fromMat3(m3, dst) }, expected)
     }
 
     @Test
@@ -714,6 +695,6 @@ class Mat4Test {
         val q = Quat(sin(PI / 4), 0.0, 0.0, cos(PI / 4))
         val expected = Mat4.rotationX(PI.toFloat() / 2)
 
-        testMat4WithAndWithoutDest({ dst -> Mat4.fromQuat(q, dst) }, expected)
+        testMat4({ dst -> Mat4.fromQuat(q, dst) }, expected)
     }
 }

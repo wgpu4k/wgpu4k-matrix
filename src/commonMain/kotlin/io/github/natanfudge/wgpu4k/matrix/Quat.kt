@@ -46,35 +46,32 @@ data class Quat(
         /**
          * Creates an identity quaternion (0, 0, 0, 1).
          */
-        fun identity(dst: Quat? = null): Quat {
-            val target = dst ?: Quat()
-            target.x = 0.0
-            target.y = 0.0
-            target.z = 0.0
-            target.w = 1.0
-            return target
+        fun identity(dst: Quat = Quat()): Quat {
+            dst.x = 0.0
+            dst.y = 0.0
+            dst.z = 0.0
+            dst.w = 1.0
+            return dst
         }
 
         /**
          * Creates a quaternion representing a rotation of [angleInRadians] around the normalized [axis].
          **/
-        fun fromAxisAngle(axis: Vec3, angleInRadians: Double, dst: Quat? = null): Quat {
-            val target = dst ?: Quat()
+        fun fromAxisAngle(axis: Vec3, angleInRadians: Double, dst: Quat = Quat()): Quat {
             val halfAngle = angleInRadians * 0.5
             val s = sin(halfAngle)
-            target.x = s * axis.x // Use property access
-            target.y = s * axis.y // Use property access
-            target.z = s * axis.z // Use property access
-            target.w = cos(halfAngle)
-            return target
+            dst.x = s * axis.x // Use property access
+            dst.y = s * axis.y // Use property access
+            dst.z = s * axis.z // Use property access
+            dst.w = cos(halfAngle)
+            return dst
         }
 
         /**
          * Creates a quaternion from the given rotation matrix [m] (Mat3 or Mat4).
          * The created quaternion is not normalized.
          */
-        fun fromMat(m: Any, dst: Quat? = null): Quat {
-            val target = dst ?: Quat()
+        fun fromMat(m: Any, dst: Quat = Quat()): Quat {
 
             // Check if it's Mat3 or Mat4 based on expected property/method or size if it's an array-like structure
             // This requires knowing the Mat3/Mat4 implementation. Assuming indexer `[]` access for now.
@@ -104,11 +101,11 @@ data class Quat(
 
             if (trace > 0.0) {
                 val root = sqrt(trace + 1.0) // 2w
-                target.w = 0.5 * root
+                dst.w = 0.5 * root
                 val invRoot = 0.5 / root // 1/(4w)
-                target.x = (m21 - m12) * invRoot
-                target.y = (m02 - m20) * invRoot
-                target.z = (m10 - m01) * invRoot
+                dst.x = (m21 - m12) * invRoot
+                dst.y = (m02 - m20) * invRoot
+                dst.z = (m10 - m01) * invRoot
             } else {
                 // Find the major diagonal element with the largest value
                 var i = 0
@@ -134,16 +131,16 @@ data class Quat(
                 val quatComp = doubleArrayOf(0.0, 0.0, 0.0) // Temporary array for x, y, z
                 quatComp[i] = 0.5 * root
                 val invRoot = 0.5 / root
-                target.w = (getElement(jk) - getElement(kj)) * invRoot
+                dst.w = (getElement(jk) - getElement(kj)) * invRoot
                 quatComp[j] = (getElement(ji) + getElement(ij)) * invRoot
                 quatComp[k] = (getElement(ki) + getElement(ik)) * invRoot
 
-                target.x = quatComp[0]
-                target.y = quatComp[1]
-                target.z = quatComp[2]
+                dst.x = quatComp[0]
+                dst.y = quatComp[1]
+                dst.z = quatComp[2]
             }
 
-            return target
+            return dst
         }
 
         /**
@@ -155,9 +152,8 @@ data class Quat(
             yAngleInRadians: Double,
             zAngleInRadians: Double,
             order: RotationOrder,
-            dst: Quat? = null,
+            dst: Quat = Quat(),
         ): Quat {
-            val target = dst ?: Quat()
 
             val xHalfAngle = xAngleInRadians * 0.5
             val yHalfAngle = yAngleInRadians * 0.5
@@ -172,50 +168,50 @@ data class Quat(
 
             when (order.lowercase()) {
                 "xyz" -> {
-                    target.x = sx * cy * cz + cx * sy * sz
-                    target.y = cx * sy * cz - sx * cy * sz
-                    target.z = cx * cy * sz + sx * sy * cz
-                    target.w = cx * cy * cz - sx * sy * sz
+                    dst.x = sx * cy * cz + cx * sy * sz
+                    dst.y = cx * sy * cz - sx * cy * sz
+                    dst.z = cx * cy * sz + sx * sy * cz
+                    dst.w = cx * cy * cz - sx * sy * sz
                 }
 
                 "xzy" -> {
-                    target.x = sx * cy * cz - cx * sy * sz
-                    target.y = cx * sy * cz - sx * cy * sz // Error in TS? Should be cx * sy * cz + sx * cy * sz? Sticking to TS impl.
-                    target.z = cx * cy * sz + sx * sy * cz
-                    target.w = cx * cy * cz + sx * sy * sz
+                    dst.x = sx * cy * cz - cx * sy * sz
+                    dst.y = cx * sy * cz - sx * cy * sz // Error in TS? Should be cx * sy * cz + sx * cy * sz? Sticking to TS impl.
+                    dst.z = cx * cy * sz + sx * sy * cz
+                    dst.w = cx * cy * cz + sx * sy * sz
                 }
 
                 "yxz" -> {
-                    target.x = sx * cy * cz + cx * sy * sz
-                    target.y = cx * sy * cz - sx * cy * sz
-                    target.z = cx * cy * sz - sx * sy * cz
-                    target.w = cx * cy * cz + sx * sy * sz
+                    dst.x = sx * cy * cz + cx * sy * sz
+                    dst.y = cx * sy * cz - sx * cy * sz
+                    dst.z = cx * cy * sz - sx * sy * cz
+                    dst.w = cx * cy * cz + sx * sy * sz
                 }
 
                 "yzx" -> {
-                    target.x = sx * cy * cz + cx * sy * sz
-                    target.y = cx * sy * cz + sx * cy * sz
-                    target.z = cx * cy * sz - sx * sy * cz
-                    target.w = cx * cy * cz - sx * sy * sz
+                    dst.x = sx * cy * cz + cx * sy * sz
+                    dst.y = cx * sy * cz + sx * cy * sz
+                    dst.z = cx * cy * sz - sx * sy * cz
+                    dst.w = cx * cy * cz - sx * sy * sz
                 }
 
                 "zxy" -> {
-                    target.x = sx * cy * cz - cx * sy * sz
-                    target.y = cx * sy * cz + sx * cy * sz
-                    target.z = cx * cy * sz + sx * sy * cz
-                    target.w = cx * cy * cz - sx * sy * sz
+                    dst.x = sx * cy * cz - cx * sy * sz
+                    dst.y = cx * sy * cz + sx * cy * sz
+                    dst.z = cx * cy * sz + sx * sy * cz
+                    dst.w = cx * cy * cz - sx * sy * sz
                 }
 
                 "zyx" -> {
-                    target.x = sx * cy * cz - cx * sy * sz
-                    target.y = cx * sy * cz + sx * cy * sz
-                    target.z = cx * cy * sz - sx * sy * cz
-                    target.w = cx * cy * cz + sx * sy * sz
+                    dst.x = sx * cy * cz - cx * sy * sz
+                    dst.y = cx * sy * cz + sx * cy * sz
+                    dst.z = cx * cy * sz - sx * sy * cz
+                    dst.w = cx * cy * cz + sx * sy * sz
                 }
 
                 else -> throw Error("Unknown rotation order: $order")
             }
-            return target
+            return dst
         }
 
         // Static temporary variables to avoid allocation in methods like rotationTo
@@ -228,8 +224,7 @@ data class Quat(
          * Computes a quaternion representing the shortest rotation from unit vector [aUnit] to unit vector [bUnit].
          * This method is NOT thread safe as it uses static temporary variables.
          */
-        fun rotationToUnsafe(aUnit: Vec3, bUnit: Vec3, dst: Quat? = null): Quat {
-            val target = dst ?: Quat()
+        fun rotationToUnsafe(aUnit: Vec3, bUnit: Vec3, dst: Quat = Quat()): Quat {
             val dot = aUnit.dot(bUnit).toDouble() // Use instance method, ensure Double
 
             if (dot < -0.999999) {
@@ -240,23 +235,23 @@ data class Quat(
                     yUnitVec3.cross(aUnit, tempVec3) // tempVec3 = yUnitVec3 x aUnit
                 }
                 tempVec3.normalize(tempVec3) // Use instance method
-                fromAxisAngle(tempVec3, PI, target) // PI is Double
-                return target
+                fromAxisAngle(tempVec3, PI, dst) // PI is Double
+                return dst
             } else if (dot > 0.999999) {
                 // Vectors are same direction
-                target.x = 0.0
-                target.y = 0.0
-                target.z = 0.0
-                target.w = 1.0
-                return target
+                dst.x = 0.0
+                dst.y = 0.0
+                dst.z = 0.0
+                dst.w = 1.0
+                return dst
             } else {
                 // General case
                 aUnit.cross(bUnit, tempVec3) // Use instance method tempVec3 = aUnit x bUnit
-                target.x = tempVec3.x.toDouble() // Cast result to Double
-                target.y = tempVec3.y.toDouble() // Cast result to Double
-                target.z = tempVec3.z.toDouble() // Cast result to Double
-                target.w = 1.0 + dot
-                return target.normalize(target) // Normalize the result
+                dst.x = tempVec3.x.toDouble() // Cast result to Double
+                dst.y = tempVec3.y.toDouble() // Cast result to Double
+                dst.z = tempVec3.z.toDouble() // Cast result to Double
+                dst.w = 1.0 + dot
+                return dst.normalize(dst) // Normalize the result
             }
         }
 
@@ -275,14 +270,13 @@ data class Quat(
             c: Quat,
             d: Quat,
             t: Double,
-            dst: Quat? = null,
+            dst: Quat = Quat(),
         ): Quat {
-            val target = dst ?: Quat()
             // Use instance slerp method
             a.slerp(d, t, tempQuat1)
             b.slerp(c, t, tempQuat2)
-            tempQuat1.slerp(tempQuat2, 2.0 * t * (1.0 - t), target)
-            return target
+            tempQuat1.slerp(tempQuat2, 2.0 * t * (1.0 - t), dst)
+            return dst
         }
     }
 
@@ -337,8 +331,7 @@ data class Quat(
     /**
      * Multiplies `this` quaternion by [other] (`this` * [other]).
      */
-    fun multiply(other: Quat, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
+    fun multiply(other: Quat, dst: Quat = Quat()): Quat {
         val ax = this.x
         val ay = this.y
         val az = this.z
@@ -348,24 +341,23 @@ data class Quat(
         val bz = other.z
         val bw = other.w
 
-        target.x = ax * bw + aw * bx + ay * bz - az * by
-        target.y = ay * bw + aw * by + az * bx - ax * bz
-        target.z = az * bw + aw * bz + ax * by - ay * bx
-        target.w = aw * bw - ax * bx - ay * by - az * bz
+        dst.x = ax * bw + aw * bx + ay * bz - az * by
+        dst.y = ay * bw + aw * by + az * bx - ax * bz
+        dst.z = az * bw + aw * bz + ax * by - ay * bx
+        dst.w = aw * bw - ax * bx - ay * by - az * bz
 
-        return target
+        return dst
     }
 
     /**
      * Multiplies `this` quaternion by [other] (`this` * [other]) (alias for [multiply]).
      */
-    fun mul(other: Quat, dst: Quat? = null): Quat = multiply(other, dst)
+    fun mul(other: Quat, dst: Quat = Quat()): Quat = multiply(other, dst)
 
     /**
      * Rotates `this` quaternion around the X axis by [angleInRadians].
      */
-    fun rotateX(angleInRadians: Double, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
+    fun rotateX(angleInRadians: Double, dst: Quat = Quat()): Quat {
         val halfAngle = angleInRadians * 0.5
         val qx = this.x
         val qy = this.y
@@ -374,19 +366,18 @@ data class Quat(
         val bx = sin(halfAngle)
         val bw = cos(halfAngle)
 
-        target.x = qx * bw + qw * bx
-        target.y = qy * bw + qz * bx
-        target.z = qz * bw - qy * bx
-        target.w = qw * bw - qx * bx
+        dst.x = qx * bw + qw * bx
+        dst.y = qy * bw + qz * bx
+        dst.z = qz * bw - qy * bx
+        dst.w = qw * bw - qx * bx
 
-        return target
+        return dst
     }
 
     /**
      * Rotates `this` quaternion around the Y axis by [angleInRadians].
      */
-    fun rotateY(angleInRadians: Double, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
+    fun rotateY(angleInRadians: Double, dst: Quat = Quat()): Quat {
         val halfAngle = angleInRadians * 0.5
         val qx = this.x
         val qy = this.y
@@ -395,19 +386,18 @@ data class Quat(
         val by = sin(halfAngle)
         val bw = cos(halfAngle)
 
-        target.x = qx * bw - qz * by
-        target.y = qy * bw + qw * by
-        target.z = qz * bw + qx * by
-        target.w = qw * bw - qy * by
+        dst.x = qx * bw - qz * by
+        dst.y = qy * bw + qw * by
+        dst.z = qz * bw + qx * by
+        dst.w = qw * bw - qy * by
 
-        return target
+        return dst
     }
 
     /**
      * Rotates `this` quaternion around the Z axis by [angleInRadians].
      */
-    fun rotateZ(angleInRadians: Double, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
+    fun rotateZ(angleInRadians: Double, dst: Quat = Quat()): Quat {
         val halfAngle = angleInRadians * 0.5
         val qx = this.x
         val qy = this.y
@@ -416,95 +406,92 @@ data class Quat(
         val bz = sin(halfAngle)
         val bw = cos(halfAngle)
 
-        target.x = qx * bw + qy * bz
-        target.y = qy * bw - qx * bz
-        target.z = qz * bw + qw * bz
-        target.w = qw * bw - qz * bz
+        dst.x = qx * bw + qy * bz
+        dst.y = qy * bw - qx * bz
+        dst.z = qz * bw + qw * bz
+        dst.w = qw * bw - qz * bz
 
-        return target
+        return dst
     }
 
     /**
      * Spherically linearly interpolates between `this` quaternion and [other] by [t].
      * Handles shortest path interpolation.
      */
-    fun slerp(other: Quat, t: Double, dst: Quat? = null): Quat {
-        val newDst = dst ?: Quat()
-        val ax = this.x
-        val ay = this.y
-        val az = this.z
-        val aw = this.w
-        var bx = other.x
-        var by = other.y
-        var bz = other.z
-        var bw = other.w
+     fun slerp(other: Quat, t: Double, dst: Quat = Quat()): Quat {
+         val ax = this.x
+         val ay = this.y
+         val az = this.z
+         val aw = this.w
+         var bx = other.x
+         var by = other.y
+         var bz = other.z
+         var bw = other.w
 
-        var cosOmega = ax * bx + ay * by + az * bz + aw * bw
+         var cosOmega = ax * bx + ay * by + az * bz + aw * bw
 
-        // Adjust signs if necessary to take the shortest path
-        if (cosOmega < 0.0) {
-            cosOmega = -cosOmega
-            bx = -bx
-            by = -by
-            bz = -bz
-            bw = -bw
-        }
+         // Adjust signs if necessary to take the shortest path
+         if (cosOmega < 0.0) {
+             cosOmega = -cosOmega
+             bx = -bx
+             by = -by
+             bz = -bz
+             bw = -bw
+         }
 
-        var scale0: Double
-        var scale1: Double
+         var scale0: Double
+         var scale1: Double
 
-        if (1.0 - cosOmega > EPSILON) {
-            // Standard case (slerp)
-            val omega = acos(cosOmega)
-            val sinOmega = sin(omega)
-            scale0 = sin((1.0 - t) * omega) / sinOmega
-            scale1 = sin(t * omega) / sinOmega
-        } else {
-            // Quaternions are very close - use linear interpolation (lerp)
-            scale0 = 1.0 - t
-            scale1 = t
-        }
+         if (1.0 - cosOmega > EPSILON) {
+             // Standard case (slerp)
+             val omega = acos(cosOmega)
+             val sinOmega = sin(omega)
+             scale0 = sin((1.0 - t) * omega) / sinOmega
+             scale1 = sin(t * omega) / sinOmega
+         } else {
+             // Quaternions are very close - use linear interpolation (lerp)
+             scale0 = 1.0 - t
+             scale1 = t
+         }
 
-        newDst.x = scale0 * ax + scale1 * bx
-        newDst.y = scale0 * ay + scale1 * by
-        newDst.z = scale0 * az + scale1 * bz
-        newDst.w = scale0 * aw + scale1 * bw
+         dst.x = scale0 * ax + scale1 * bx
+         dst.y = scale0 * ay + scale1 * by
+         dst.z = scale0 * az + scale1 * bz
+         dst.w = scale0 * aw + scale1 * bw
 
-        return newDst
+         return dst
     }
 
     /**
      * Computes the inverse of `this` quaternion.
      * For unit quaternions, [conjugate] is equivalent and faster.
      */
-    fun inverse(dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
-        val x = this.x
-        val y = this.y
-        val z = this.z
-        val w = this.w
-        val dot = x * x + y * y + z * z + w * w
-        val invDot = if (dot != 0.0) 1.0 / dot else 0.0 // Avoid division by zero
+     fun inverse(dst: Quat = Quat()): Quat {
+         val x = this.x
+         val y = this.y
+         val z = this.z
+         val w = this.w
+         val dot = x * x + y * y + z * z + w * w
+         val invDot = if (dot != 0.0) 1.0 / dot else 0.0 // Avoid division by zero
 
-        target.x = -x * invDot
-        target.y = -y * invDot
-        target.z = -z * invDot
-        target.w = w * invDot
+         dst.x = -x * invDot
+         dst.y = -y * invDot
+         dst.z = -z * invDot
+         dst.w = w * invDot
 
-        return target
+         return dst
     }
 
     /**
      * Computes the conjugate of `this` quaternion.
      * If the quaternion is normalized, conjugate is the same as [inverse].
      */
-    fun conjugate(dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
-        target.x = -this.x
-        target.y = -this.y
-        target.z = -this.z
-        target.w = this.w
-        return target
+     fun conjugate(dst: Quat = Quat()): Quat {
+         dst.x = -this.x
+         dst.y = -this.y
+         dst.z = -this.z
+         dst.w = this.w
+         return dst
     }
 
     /**
@@ -526,60 +513,56 @@ data class Quat(
     /**
      * Adds [other] to `this` quaternion.
      */
-    fun add(other: Quat, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
-        target.x = this.x + other.x
-        target.y = this.y + other.y
-        target.z = this.z + other.z
-        target.w = this.w + other.w
-        return target
+    fun add(other: Quat, dst: Quat = Quat()): Quat {
+        dst.x = this.x + other.x
+        dst.y = this.y + other.y
+        dst.z = this.z + other.z
+        dst.w = this.w + other.w
+        return dst
     }
 
     /**
      * Subtracts [other] from `this` quaternion (`this` - [other]).
      */
-    fun subtract(other: Quat, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
-        target.x = this.x - other.x
-        target.y = this.y - other.y
-        target.z = this.z - other.z
-        target.w = this.w - other.w
-        return target
+    fun subtract(other: Quat, dst: Quat = Quat()): Quat {
+        dst.x = this.x - other.x
+        dst.y = this.y - other.y
+        dst.z = this.z - other.z
+        dst.w = this.w - other.w
+        return dst
     }
 
     /**
      * Subtracts [other] from `this` quaternion (`this` - [other]) (alias for [subtract]).
      */
-    fun sub(other: Quat, dst: Quat? = null): Quat = subtract(other, dst)
+    fun sub(other: Quat, dst: Quat = Quat()): Quat = subtract(other, dst)
 
     /**
      * Multiplies `this` quaternion by the scalar [k].
      */
-    fun mulScalar(k: Double, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
-        target.x = this.x * k
-        target.y = this.y * k
-        target.z = this.z * k
-        target.w = this.w * k
-        return target
+    fun mulScalar(k: Double, dst: Quat = Quat()): Quat {
+        dst.x = this.x * k
+        dst.y = this.y * k
+        dst.z = this.z * k
+        dst.w = this.w * k
+        return dst
     }
 
     /**
      * Multiplies `this` quaternion by the scalar [k] (alias for [mulScalar]).
      */
-    fun scale(k: Double, dst: Quat? = null): Quat = mulScalar(k, dst)
+    fun scale(k: Double, dst: Quat = Quat()): Quat = mulScalar(k, dst)
 
     /**
      * Divides `this` quaternion by the scalar [k].
      */
-    fun divScalar(k: Double, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
+    fun divScalar(k: Double, dst: Quat = Quat()): Quat {
         val invK = 1.0 / k // Calculate inverse once
-        target.x = this.x * invK
-        target.y = this.y * invK
-        target.z = this.z * invK
-        target.w = this.w * invK
-        return target
+        dst.x = this.x * invK
+        dst.y = this.y * invK
+        dst.z = this.z * invK
+        dst.w = this.w * invK
+        return dst
     }
 
     /**
@@ -593,13 +576,12 @@ data class Quat(
      * Performs linear interpolation between `this` quaternion and [other] by [t].
      * Note: For rotations, [slerp] is usually preferred.
      */
-    fun lerp(other: Quat, t: Double, dst: Quat? = null): Quat {
-        val target = dst ?: Quat()
-        target.x = this.x + t * (other.x - this.x)
-        target.y = this.y + t * (other.y - this.y)
-        target.z = this.z + t * (other.z - this.z)
-        target.w = this.w + t * (other.w - this.w)
-        return target
+    fun lerp(other: Quat, t: Double, dst: Quat = Quat()): Quat {
+        dst.x = this.x + t * (other.x - this.x)
+        dst.y = this.y + t * (other.y - this.y)
+        dst.z = this.z + t * (other.z - this.z)
+        dst.w = this.w + t * (other.w - this.w)
+        return dst
     }
 
     /**
@@ -631,9 +613,7 @@ data class Quat(
      * Normalizes `this` quaternion (divides its components by its length).
      * Returns identity if length is near zero.
      */
-    fun normalize(dst: Quat? = null): Quat {
-        // Determine the destination array: use 'dst' if provided, otherwise create a new DoubleArray(4)
-        val newDst = dst ?: Quat()
+    fun normalize(dst: Quat = Quat()): Quat {
 
 // Extract components from the input array 'v'
         val v0 = this.x
@@ -652,20 +632,20 @@ data class Quat(
         if (len > epsilon) {
             // Normalize the quaternion components
             val invLen = 1.0 / len // Calculate inverse length once for efficiency
-            newDst.x = v0 * invLen
-            newDst.y = v1 * invLen
-            newDst.z = v2 * invLen
-            newDst.w = v3 * invLen
+            dst.x = v0 * invLen
+            dst.y = v1 * invLen
+            dst.z = v2 * invLen
+            dst.w = v3 * invLen
         } else {
             // If the length is too small, return the identity quaternion
-            newDst.x = 0.0
-            newDst.y = 0.0
-            newDst.z = 0.0
-            newDst.w = 1.0 // Identity quaternion has w = 1
+            dst.x = 0.0
+            dst.y = 0.0
+            dst.z = 0.0
+            dst.w = 1.0 // Identity quaternion has w = 1
         }
 
 // Return the resulting normalized or identity quaternion
-        return newDst
+        return dst
 
     }
 

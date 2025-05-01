@@ -1,6 +1,7 @@
 package io.github.natanfudge.wgpu4k.matrix.test
 
 import io.github.natanfudge.wgpu4k.matrix.Quat
+import io.github.natanfudge.wgpu4k.matrix.Vec2
 import io.github.natanfudge.wgpu4k.matrix.Vec3
 import io.github.natanfudge.wgpu4k.matrix.Vec4
 import kotlin.math.abs
@@ -118,4 +119,30 @@ fun assertVec4EqualsApproximately(expected: DoubleArray, actual: Vec4, tolerance
     assertTrue(abs(expected[1] - actual.y) < tolerance, "$msgPrefix y diff: ${abs(expected[1] - actual.y)}")
     assertTrue(abs(expected[2] - actual.z) < tolerance, "$msgPrefix z diff: ${abs(expected[2] - actual.z)}")
     assertTrue(abs(expected[3] - actual.w) < tolerance, "$msgPrefix w diff: ${abs(expected[3] - actual.w)}")
-} 
+}
+
+// Helper function to test Mat3 functions that return a Vec2Arg (FloatArray)
+ fun testVec2(
+    func: (dst: Vec2) -> Vec2,
+    expected: Vec2,
+    message: String? = null
+) {
+    // Test with destination
+    val dest = Vec2.create() // Create a new destination vector
+    val resultWithDest = func(dest)
+    assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
+    assertVec2EqualApproximately(resultWithDest, expected, "$message - with dest")
+}
+
+// Helper function to test Mat3 functions that return a Vec3Arg (FloatArray)
+ fun testVec3(
+    func: (dst: Vec3) -> Vec3,
+    expected: Vec3,
+    message: String? = null
+) {
+    // Test with destination
+    val dest = Vec3.create() // Create a new destination vector
+    val resultWithDest = func(dest)
+    assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
+    assertVec3EqualsApproximately(resultWithDest, expected, message ="$message - with dest")
+}

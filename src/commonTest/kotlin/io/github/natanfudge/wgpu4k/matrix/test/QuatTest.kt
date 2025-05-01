@@ -31,58 +31,11 @@ class QuatTest {
         }
     }
 
-    // Helper testing function result without explicit destination
-    private fun testQuatWithoutDest(
-        operation: (args: Array<out Any?>, dst: Quat?) -> Any?, // Lambda representing the Quat operation
-        expected: Any?,
-        vararg args: Any?, // Original arguments for the operation
-    ) {
-        val clonedArgs = args.map { clone(it) }.toTypedArray()
-        val d = operation(clonedArgs, null) // Operation should create a new Quat/Vec3/Double internally
 
-        when (expected) {
-            is Quat -> assertQuatEqualsApproximately(expected, d as Quat)
-            is DoubleArray -> { // Expect DoubleArray for Quat results
-                if (d is Quat) {
-                    assertQuatEqualsApproximately(expected, d)
-                } else {
-                    fail("Expected Quat result when expected is DoubleArray")
-                }
-            }
-
-            is Double -> assertEqualsApproximately(expected, d as Double)
-            is Boolean -> assertEquals(expected, d as Boolean)
-            is Vec3 -> assertVec3EqualsApproximately(expected, d as Vec3) // For transformVector
-            else -> assertEquals(expected, d) // Fallback
-        }
-
-        // Check original args were not modified
-        args.zip(clonedArgs).forEachIndexed { index, pair ->
-            if (pair.first is Quat) {
-                assertQuatEquals(pair.first as Quat, pair.second as Quat, "Source quat (arg $index) modified unexpectedly in testQuatWithoutDest")
-            }
-            if (pair.first is Vec3) {
-                assertVec3Equals(pair.first as Vec3, pair.second as Vec3, "Source vector (arg $index) modified unexpectedly in testQuatWithoutDest")
-            }
-            if (pair.first is Mat3) {
-                // Corrected: Compare Mat3 elements using indexer
-                val mat1 = pair.first as Mat3
-                val mat2 = pair.second as Mat3
-                var equal = true
-                for (i in 0 until 12) { // Compare all 12 elements
-                    if (mat1[i] != mat2[i]) {
-                        equal = false
-                        break
-                    }
-                }
-                assertTrue(equal, "Source matrix (arg $index) modified unexpectedly in testQuatWithoutDest")
-            }
-        }
-    }
 
     // Helper testing function result with explicit destination (for Quat returning functions)
     private fun testQuatWithDest(
-        operation: (args: Array<out Any?>, dst: Quat?) -> Quat?, // Lambda returns Quat?
+        operation: (args: Array<out Any?>, dst: Quat) -> Quat?, // Lambda returns Quat?
         expected: Any?, // Can be Quat or DoubleArray
         vararg args: Any?, // Original arguments for the operation
     ) {
@@ -232,12 +185,11 @@ class QuatTest {
     // Combined test helper for operations returning Quat
     private fun testQuatWithAndWithoutDest(
         // Operation must take Array<Any?> and Quat? dst, return Quat
-        operation: (args: Array<out Any?>, dst: Quat?) -> Quat,
+        operation: (args: Array<out Any?>, dst: Quat) -> Quat,
         expected: Any?, // Expected result (Quat or DoubleArray)
         vararg args: Any?, // Arguments for the operation
     ) {
-        // Test without explicit destination
-        testQuatWithoutDest({ a, d -> operation(a, d) as Any? }, expected, *args)
+
         // Test with explicit destination
         testQuatWithDest(operation, expected, *args)
     }
@@ -346,8 +298,8 @@ class QuatTest {
     @Test
     fun `should add`() {
         val expected = q(3.0, 5.0, 7.0, 9.0)
-        val addOp = { args: Array<out Any?>, dst: Quat? ->
-            // Instance method add(other: Quat, dst: Quat?): Quat
+        val addOp = { args: Array<out Any?>, dst: Quat ->
+            // Instance method add(other: Quat, dst: Quat): Quat
             (args[0] as Quat).add(args[1] as Quat, dst)
         }
         testQuatWithAndWithoutDest(addOp, expected, q(1.0, 2.0, 3.0, 4.0), q(2.0, 3.0, 4.0, 5.0))
@@ -382,7 +334,7 @@ class QuatTest {
     @Test
     fun `should subtract`() {
         val expected = q(-1.0, -2.0, -3.0, -4.0)
-        val subOp = { args: Array<out Any?>, dst: Quat? ->
+        val subOp = { args: Array<out Any?>, dst: Quat ->
             (args[0] as Quat).subtract(args[1] as Quat, dst)
         }
         testQuatWithAndWithoutDest(subOp, expected, q(1.0, 2.0, 3.0, 4.0), q(2.0, 4.0, 6.0, 8.0))
@@ -391,7 +343,7 @@ class QuatTest {
     @Test
     fun `should sub`() { // Alias for subtract
         val expected = q(-1.0, -2.0, -3.0, -4.0)
-        val subOp = { args: Array<out Any?>, dst: Quat? ->
+        val subOp = { args: Array<out Any?>, dst: Quat ->
             (args[0] as Quat).sub(args[1] as Quat, dst)
         }
         testQuatWithAndWithoutDest(subOp, expected, q(1.0, 2.0, 3.0, 4.0), q(2.0, 4.0, 6.0, 8.0))
@@ -400,8 +352,8 @@ class QuatTest {
     @Test
     fun `should lerp`() {
         val expected = q(1.5, 3.0, 4.5, 6.0)
-        val lerpOp = { args: Array<out Any?>, dst: Quat? ->
-            // lerp(other: Quat, t: Double, dst: Quat?): Quat
+        val lerpOp = { args: Array<out Any?>, dst: Quat ->
+            // lerp(other: Quat, t: Double, dst: Quat): Quat
             (args[0] as Quat).lerp(args[1] as Quat, args[2] as Double, dst)
         }
         testQuatWithAndWithoutDest(lerpOp, expected, q(1.0, 2.0, 3.0, 4.0), q(2.0, 4.0, 6.0, 8.0), 0.5)
@@ -410,7 +362,7 @@ class QuatTest {
     @Test
     fun `should lerp under 0`() {
         val expected = q(0.5, 1.0, 1.5, 2.0)
-        val lerpOp = { args: Array<out Any?>, dst: Quat? ->
+        val lerpOp = { args: Array<out Any?>, dst: Quat ->
             (args[0] as Quat).lerp(args[1] as Quat, args[2] as Double, dst)
         }
         testQuatWithAndWithoutDest(lerpOp, expected, q(1.0, 2.0, 3.0, 4.0), q(2.0, 4.0, 6.0, 8.0), -0.5)
@@ -419,7 +371,7 @@ class QuatTest {
     @Test
     fun `should lerp over 1`() {
         val expected = q(2.5, 5.0, 7.5, 10.0)
-        val lerpOp = { args: Array<out Any?>, dst: Quat? ->
+        val lerpOp = { args: Array<out Any?>, dst: Quat ->
             (args[0] as Quat).lerp(args[1] as Quat, args[2] as Double, dst)
         }
         testQuatWithAndWithoutDest(lerpOp, expected, q(1.0, 2.0, 3.0, 4.0), q(2.0, 4.0, 6.0, 8.0), 1.5)
@@ -429,8 +381,8 @@ class QuatTest {
     @Test
     fun `should multiply by scalar`() {
         val expected = q(2.0, 4.0, 6.0, 8.0)
-        val mulScalarOp = { args: Array<out Any?>, dst: Quat? ->
-            // mulScalar(scalar: Double, dst: Quat?): Quat
+        val mulScalarOp = { args: Array<out Any?>, dst: Quat ->
+            // mulScalar(scalar: Double, dst: Quat): Quat
             (args[0] as Quat).mulScalar(args[1] as Double, dst)
         }
         testQuatWithAndWithoutDest(mulScalarOp, expected, q(1.0, 2.0, 3.0, 4.0), 2.0)
@@ -439,8 +391,8 @@ class QuatTest {
     @Test
     fun `should scale`() { // Alias for multiply by scalar
         val expected = q(2.0, 4.0, 6.0, 8.0)
-        val scaleOp = { args: Array<out Any?>, dst: Quat? ->
-            // scale(scalar: Double, dst: Quat?): Quat
+        val scaleOp = { args: Array<out Any?>, dst: Quat ->
+            // scale(scalar: Double, dst: Quat): Quat
             (args[0] as Quat).scale(args[1] as Double, dst)
         }
         testQuatWithAndWithoutDest(scaleOp, expected, q(1.0, 2.0, 3.0, 4.0), 2.0)
@@ -454,8 +406,8 @@ class QuatTest {
         val lenSq = 4.0 + 9.0 + 16.0 + 64.0 // 93.0
         val expected = q(-2.0 / lenSq, -3.0 / lenSq, 4.0 / lenSq, -8.0 / lenSq)
 
-        val inverseOp = { args: Array<out Any?>, dst: Quat? ->
-            // inverse(dst: Quat?): Quat
+        val inverseOp = { args: Array<out Any?>, dst: Quat ->
+            // inverse(dst: Quat): Quat
             (args[0] as Quat).inverse(dst)
         }
         testQuatWithAndWithoutDest(inverseOp, expected, q(2.0, 3.0, -4.0, -8.0))
@@ -576,8 +528,8 @@ class QuatTest {
         // z = 4*7 + 3*8 + 1*6 - 2*5 = 28 + 24 + 6 - 10  = 48
         // w = 4*8 - 1*5 - 2*6 - 3*7 = 32 - 5 - 12 - 21 = -6
         val expected = q(24.0, 48.0, 48.0, -6.0)
-        val multOp = { args: Array<out Any?>, dst: Quat? ->
-            // multiply(other: Quat, dst: Quat?): Quat
+        val multOp = { args: Array<out Any?>, dst: Quat ->
+            // multiply(other: Quat, dst: Quat): Quat
             (args[0] as Quat).multiply(args[1] as Quat, dst)
         }
         testQuatWithAndWithoutDest(multOp, expected, q(1.0, 2.0, 3.0, 4.0), q(5.0, 6.0, 7.0, 8.0))
@@ -586,8 +538,8 @@ class QuatTest {
     @Test
     fun `should mul`() { // Alias for multiply
         val expected = q(24.0, 48.0, 48.0, -6.0)
-        val multOp = { args: Array<out Any?>, dst: Quat? ->
-            // mul(other: Quat, dst: Quat?): Quat
+        val multOp = { args: Array<out Any?>, dst: Quat ->
+            // mul(other: Quat, dst: Quat): Quat
             (args[0] as Quat).mul(args[1] as Quat, dst)
         }
         testQuatWithAndWithoutDest(multOp, expected, q(1.0, 2.0, 3.0, 4.0), q(5.0, 6.0, 7.0, 8.0))
@@ -600,8 +552,8 @@ class QuatTest {
         val c = cos(halfPi * 0.5)
         val expected = q(s, 0.0, 0.0, c) // [sqrt(0.5), 0, 0, sqrt(0.5)]
 
-        val rotateXOp = { args: Array<out Any?>, dst: Quat? ->
-            // rotateX(angleInRadians: Double, dst: Quat?): Quat
+        val rotateXOp = { args: Array<out Any?>, dst: Quat ->
+            // rotateX(angleInRadians: Double, dst: Quat): Quat
             (args[0] as Quat).rotateX(args[1] as Double, dst)
         }
         testQuatWithAndWithoutDest(rotateXOp, expected, Quat.identity(), halfPi) // Start from identity
@@ -614,8 +566,8 @@ class QuatTest {
         val c = cos(halfPi * 0.5)
         val expected = q(0.0, s, 0.0, c) // [0, sqrt(0.5), 0, sqrt(0.5)]
 
-        val rotateYOp = { args: Array<out Any?>, dst: Quat? ->
-            // rotateY(angleInRadians: Double, dst: Quat?): Quat
+        val rotateYOp = { args: Array<out Any?>, dst: Quat ->
+            // rotateY(angleInRadians: Double, dst: Quat): Quat
             (args[0] as Quat).rotateY(args[1] as Double, dst)
         }
         testQuatWithAndWithoutDest(rotateYOp, expected, Quat.identity(), halfPi)
@@ -628,8 +580,8 @@ class QuatTest {
         val c = cos(halfPi * 0.5)
         val expected = q(0.0, 0.0, s, c) // [0, 0, sqrt(0.5), sqrt(0.5)]
 
-        val rotateZOp = { args: Array<out Any?>, dst: Quat? ->
-            // rotateZ(angleInRadians: Double, dst: Quat?): Quat
+        val rotateZOp = { args: Array<out Any?>, dst: Quat ->
+            // rotateZ(angleInRadians: Double, dst: Quat): Quat
             (args[0] as Quat).rotateZ(args[1] as Double, dst)
         }
         testQuatWithAndWithoutDest(rotateZOp, expected, Quat.identity(), halfPi)
@@ -639,8 +591,8 @@ class QuatTest {
     @Test
     fun `should conjugate`() {
         val expected = q(-1.0, -2.0, -3.0, 4.0)
-        val conjugateOp = { args: Array<out Any?>, dst: Quat? ->
-            // conjugate(dst: Quat?): Quat
+        val conjugateOp = { args: Array<out Any?>, dst: Quat ->
+            // conjugate(dst: Quat): Quat
             (args[0] as Quat).conjugate(dst)
         }
         testQuatWithAndWithoutDest(conjugateOp, expected, q(1.0, 2.0, 3.0, 4.0))
@@ -649,7 +601,7 @@ class QuatTest {
     @Test
     fun `should create identity using companion object`() { // Renamed test
         val expected = q(0.0, 0.0, 0.0, 1.0)
-        // static identity(dst: Quat?): Quat
+        // static identity(dst: Quat): Quat
         val ident = Quat.identity()
         assertQuatEqualsApproximately(expected, ident)
         // Test with destination
@@ -664,7 +616,7 @@ class QuatTest {
         val expected = q(0.0, 0.0, 0.0, 1.0)
         // Test setting an existing quaternion to identity using the static method with a destination
         val dest = q(1.0, 2.0, 3.0, 4.0)
-        val result = Quat.identity(dest) // static identity(dst: Quat?): Quat
+        val result = Quat.identity(dest) // static identity(dst: Quat): Quat
 
         assertSame(dest, result, "Static identity(dst) should return dst")
         assertQuatEqualsApproximately(expected, result)
@@ -679,8 +631,8 @@ class QuatTest {
         // Convert Vec3 axis components to Double for Quat creation
         val expected = q(axis.x.toDouble() * s, axis.y.toDouble() * s, axis.z.toDouble() * s, c)
 
-        val setAxisAngleOp = { args: Array<out Any?>, dst: Quat? ->
-            // static fromAxisAngle(axis: Vec3, angleInRadians: Double, dst: Quat?): Quat
+        val setAxisAngleOp = { args: Array<out Any?>, dst: Quat ->
+            // static fromAxisAngle(axis: Vec3, angleInRadians: Double, dst: Quat): Quat
             Quat.fromAxisAngle(args[0] as Vec3, args[1] as Double, dst)
         }
 
@@ -722,8 +674,8 @@ class QuatTest {
         // q(0, 0, sqrt(0.5), sqrt(0.5))
         assertQuatEqualsApproximately(q(0.0, 0.0, sqrt(0.5), sqrt(0.5)), expected0_5, tolerance = 1e-7)
 
-        val slerpOp = { args: Array<out Any?>, dst: Quat? ->
-            // slerp(other: Quat, t: Double, dst: Quat?): Quat
+        val slerpOp = { args: Array<out Any?>, dst: Quat ->
+            // slerp(other: Quat, t: Double, dst: Quat): Quat
             (args[0] as Quat).slerp(args[1] as Quat, args[2] as Double, dst)
         }
 
@@ -775,12 +727,12 @@ class QuatTest {
         // Expected result: slerp interpolates shortest path. Halfway between 45 and 315 (-45) is 0 degrees.
         val expected = Quat.identity()
 
-        val slerpOp = { args: Array<out Any?>, dst: Quat? ->
+        val slerpOp = { args: Array<out Any?>, dst: Quat ->
             (args[0] as Quat).slerp(args[1] as Quat, args[2] as Double, dst)
         }
 
         // Verify calculation - slerp should handle the shortest path internally.
-        val resultNoDest = slerpOp(arrayOf(q1, q2, t), null)
+        val resultNoDest = slerpOp(arrayOf(q1, q2, t), Quat())
         assertQuatEqualsApproximately(expected, resultNoDest, tolerance = 1e-7)
 
         testQuatWithAndWithoutDest(slerpOp, expected, q1, q2, t)

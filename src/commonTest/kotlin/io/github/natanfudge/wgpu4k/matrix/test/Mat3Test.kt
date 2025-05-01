@@ -64,15 +64,11 @@ class Mat3Test {
     ))
 
     // Helper function to test Mat3 functions that return a Mat3
-    private fun testMat3WithAndWithoutDest(
-        func: (dst: Mat3?) -> Mat3,
+    private fun testMat3(
+        func: (dst: Mat3) -> Mat3,
         expected: Mat3,
         message: String? = null
     ) {
-        // Test without destination
-        val resultWithoutDest = func(null)
-        assertMat3EqualApproximately(resultWithoutDest, expected,  "${formatMsg(message)} - without dest")
-
         // Test with destination
         val dest = Mat3() // Create a new destination matrix
         val resultWithDest = func(dest)
@@ -80,39 +76,7 @@ class Mat3Test {
         assertMat3EqualApproximately(resultWithDest, expected, "$message - with dest")
     }
 
-    // Helper function to test Mat3 functions that return a Vec2Arg (FloatArray)
-    private fun testVec2WithAndWithoutDest(
-        func: (dst: Vec2?) -> Vec2,
-        expected: Vec2,
-        message: String? = null
-    ) {
-        // Test without destination
-        val resultWithoutDest = func(null)
-        assertVec2EqualApproximately(resultWithoutDest, expected, "$message - without dest")
 
-        // Test with destination
-        val dest = Vec2.create() // Create a new destination vector
-        val resultWithDest = func(dest)
-        assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
-        assertVec2EqualApproximately(resultWithDest, expected, "$message - with dest")
-    }
-
-    // Helper function to test Mat3 functions that return a Vec3Arg (FloatArray)
-    private fun testVec3WithAndWithoutDest(
-        func: (dst: Vec3?) -> Vec3,
-        expected: Vec3,
-        message: String? = null
-    ) {
-        // Test without destination
-        val resultWithoutDest = func(null)
-        assertVec3EqualsApproximately(resultWithoutDest, expected,message = "$message - without dest")
-
-        // Test with destination
-        val dest = Vec3.create() // Create a new destination vector
-        val resultWithDest = func(dest)
-        assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
-        assertVec3EqualsApproximately(resultWithDest, expected, message ="$message - with dest")
-    }
 
 
     @Test
@@ -154,7 +118,7 @@ class Mat3Test {
             -4f,  -5f,  -6f,  0f,
             -8f,  -9f, -10f,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.negate(dst) }, expected)
+        testMat3({ dst -> m.negate(dst) }, expected)
     }
 
     @Test
@@ -164,7 +128,7 @@ class Mat3Test {
             8f, 10f, 12f,  0f,
             16f, 18f, 20f,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.add(m, dst) }, expected)
+        testMat3({ dst -> m.add(m, dst) }, expected)
     }
 
     @Test
@@ -174,13 +138,13 @@ class Mat3Test {
             8f, 10f, 12f,  0f,
             16f, 18f, 20f,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.multiplyScalar(2f, dst) }, expected)
+        testMat3({ dst -> m.multiplyScalar(2f, dst) }, expected)
     }
 
     @Test
     fun testCopy() {
         val expected = m.clone() // Expected is a copy of m
-        testMat3WithAndWithoutDest({ dst ->
+        testMat3({ dst ->
             val result = m.copy(dst)
             assertNotSame(result, m, "Result should not be the same object as the source")
             result
@@ -247,7 +211,7 @@ class Mat3Test {
     @Test
     fun testClone() {
         val expected = m.clone() // Expected is a clone of m
-        testMat3WithAndWithoutDest({ dst ->
+        testMat3({ dst ->
             val result = m.clone(dst)
             assertNotSame(result, m, "Result should not be the same object as the source")
             result
@@ -257,7 +221,7 @@ class Mat3Test {
     @Test
     fun testSet() {
         val expected = Mat3.fromFloatArray(floatArrayOf(2f, 3f, 4f, 0f, 22f, 33f, 44f, 0f, 222f, 333f, 444f, 0f))
-        testMat3WithAndWithoutDest({ dst ->
+        testMat3({ dst ->
             val targetMat = dst ?: Mat3()
             targetMat.set(2f, 3f, 4f, 22f, 33f, 44f, 222f, 333f, 444f)
         }, expected)
@@ -270,7 +234,7 @@ class Mat3Test {
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.identity(dst) }, expected)
+        testMat3({ dst -> Mat3.identity(dst) }, expected)
     }
 
     @Test
@@ -280,10 +244,10 @@ class Mat3Test {
             1f, 5f, 9f, 0f,
             2f, 6f, 10f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.transpose(dst) }, expected)
+        testMat3({ dst -> m.transpose(dst) }, expected)
     }
 
-    private fun testMultiply(fn: (a: Mat3, b: Mat3, dst: Mat3?) -> Mat3) {
+    private fun testMultiply(fn: (a: Mat3, b: Mat3, dst: Mat3) -> Mat3) {
         val m2 = Mat3.fromFloatArray(floatArrayOf(
             4f,  5f,  6f, 0f,
             1f,  2f,  3f, 0f,
@@ -303,7 +267,7 @@ class Mat3Test {
             m2.toFloatArray()[2 * 4 + 0] * m.toFloatArray()[0 * 4 + 2] + m2.toFloatArray()[2 * 4 + 1] * m.toFloatArray()[1 * 4 + 2] + m2.toFloatArray()[2 * 4 + 2] * m.toFloatArray()[2 * 4 + 2],
             0f // col 3
         ))
-        testMat3WithAndWithoutDest({ dst -> fn(m, m2, dst) }, expected)
+        testMat3({ dst -> fn(m, m2, dst) }, expected)
     }
 
     @Test
@@ -316,7 +280,7 @@ class Mat3Test {
         testMultiply({ a, b, dst -> a.mul(b, dst) })
     }
 
-    private fun testInverse(fn: (m: Mat3, dst: Mat3?) -> Mat3) {
+    private fun testInverse(fn: (m: Mat3, dst: Mat3) -> Mat3) {
         val tests = listOf(
             Mat3.fromFloatArray(floatArrayOf(
                 2f, 1f, 3f, 0f,
@@ -347,7 +311,7 @@ class Mat3Test {
             ))
         )
         for ((inputM, expected) in tests) {
-            testMat3WithAndWithoutDest({ dst -> fn(inputM, dst) }, expected)
+            testMat3({ dst -> fn(inputM, dst) }, expected)
         }
     }
 
@@ -389,13 +353,13 @@ class Mat3Test {
             4f,  5f,  6f, 0f,
             11f, 22f,  1f, 0f // Note: the TS test has 1 here, which seems incorrect for a pure translation setting on Mat3 layout
         ))
-        testMat3WithAndWithoutDest({ dst -> m.setTranslation(Vec2(11f, 22f), dst) }, expected)
+        testMat3({ dst -> m.setTranslation(Vec2(11f, 22f), dst) }, expected)
     }
 
     @Test
     fun testGetTranslation() {
         val expected = Vec2(8f, 9f)
-        testVec2WithAndWithoutDest({ dst -> m.getTranslation(dst) }, expected)
+        testVec2({ dst -> m.getTranslation(dst) }, expected)
     }
 
     @Test
@@ -405,7 +369,7 @@ class Mat3Test {
             1 to Vec2(4f, 5f)  // Y axis
         )
         for ((axis, expected) in tests) {
-            testVec2WithAndWithoutDest({ dst -> m.getAxis(axis, dst) }, expected, "getAxis($axis)")
+            testVec2({ dst -> m.getAxis(axis, dst) }, expected, "getAxis($axis)")
         }
     }
 
@@ -425,7 +389,7 @@ class Mat3Test {
         )
         val v = Vec2(11f, 22f)
         for ((axis, expected) in tests) {
-            testMat3WithAndWithoutDest({ dst -> m.setAxis(v, axis, dst) }, expected, "setAxis($axis)")
+            testMat3({ dst -> m.setAxis(v, axis, dst) }, expected, "setAxis($axis)")
         }
     }
 
@@ -440,7 +404,7 @@ class Mat3Test {
             sqrt(2f * 2f + 8f * 8f),
             sqrt(5f * 5f + 6f * 6f)
         )
-        testVec2WithAndWithoutDest({ dst -> testM.getScaling(dst) }, expected)
+        testVec2({ dst -> testM.getScaling(dst) }, expected)
     }
 
     @Test
@@ -455,7 +419,7 @@ class Mat3Test {
             sqrt(5f * 5f + 6f * 6f + 7f * 7f),
             sqrt(9f * 9f + 10f * 10f + 11f * 11f)
         )
-        testVec3WithAndWithoutDest({ dst -> testM.get3DScaling(dst) }, expected)
+        testVec3({ dst -> testM.get3DScaling(dst) }, expected)
     }
 
     @Test
@@ -465,7 +429,7 @@ class Mat3Test {
             0f, 1f, 0f, 0f,
             2f, 3f, 1f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.translation(Vec2(2f, 3f), dst) }, expected)
+        testMat3({ dst -> Mat3.translation(Vec2(2f, 3f), dst) }, expected)
     }
 
     @Test
@@ -477,7 +441,7 @@ class Mat3Test {
             9f + 1f * 2f + 5f * 3f,
             10f + 2f * 2f + 6f * 3f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.translate(Vec2(2f, 3f), dst) }, expected)
+        testMat3({ dst -> m.translate(Vec2(2f, 3f), dst) }, expected)
     }
 
     @Test
@@ -490,7 +454,7 @@ class Mat3Test {
             -s, c, 0f, 0f,
             0f, 0f, 1f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.rotation(angle, dst) }, expected)
+        testMat3({ dst -> Mat3.rotation(angle, dst) }, expected)
     }
 
     @Test
@@ -500,7 +464,7 @@ class Mat3Test {
         val rotationMat = Mat3.rotation(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat3WithAndWithoutDest({ dst -> m.rotate(angle, dst) }, expected)
+        testMat3({ dst -> m.rotate(angle, dst) }, expected)
     }
 
     @Test
@@ -513,7 +477,7 @@ class Mat3Test {
             0f,  c, s, 0f,
             0f, -s, c, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.rotationX(angle, dst) }, expected)
+        testMat3({ dst -> Mat3.rotationX(angle, dst) }, expected)
     }
 
     @Test
@@ -522,7 +486,7 @@ class Mat3Test {
         val rotationMat = Mat3.rotationX(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat3WithAndWithoutDest({ dst -> m.rotateX(angle, dst) }, expected)
+        testMat3({ dst -> m.rotateX(angle, dst) }, expected)
     }
 
     @Test
@@ -535,7 +499,7 @@ class Mat3Test {
             0f, 1f,  0f, 0f,
             s, 0f,  c, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.rotationY(angle, dst) }, expected)
+        testMat3({ dst -> Mat3.rotationY(angle, dst) }, expected)
     }
 
     @Test
@@ -544,7 +508,7 @@ class Mat3Test {
         val rotationMat = Mat3.rotationY(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat3WithAndWithoutDest({ dst -> m.rotateY(angle, dst) }, expected)
+        testMat3({ dst -> m.rotateY(angle, dst) }, expected)
     }
 
     @Test
@@ -557,7 +521,7 @@ class Mat3Test {
             -s, c, 0f, 0f,
             0f, 0f, 1f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.rotationZ(angle, dst) }, expected)
+        testMat3({ dst -> Mat3.rotationZ(angle, dst) }, expected)
     }
 
     @Test
@@ -566,7 +530,7 @@ class Mat3Test {
         val rotationMat = Mat3.rotationZ(angle)
         val expected = m.multiply(rotationMat)
 
-        testMat3WithAndWithoutDest({ dst -> m.rotateZ(angle, dst) }, expected)
+        testMat3({ dst -> m.rotateZ(angle, dst) }, expected)
     }
 
     @Test
@@ -576,7 +540,7 @@ class Mat3Test {
             0f, 3f, 0f, 0f,
             0f, 0f, 1f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.scaling(Vec2(2f, 3f), dst) }, expected)
+        testMat3({ dst -> Mat3.scaling(Vec2(2f, 3f), dst) }, expected)
     }
 
     @Test
@@ -586,7 +550,7 @@ class Mat3Test {
             4f * 3f,  5f * 3f,  6f * 3f,  0f,
             8f,  9f, 10f,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.scale(Vec2(2f, 3f), dst) }, expected)
+        testMat3({ dst -> m.scale(Vec2(2f, 3f), dst) }, expected)
     }
 
     @Test
@@ -596,7 +560,7 @@ class Mat3Test {
             0f, 3f, 0f, 0f,
             0f, 0f, 4f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.scaling3D(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat3({ dst -> Mat3.scaling3D(Vec3(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -606,7 +570,7 @@ class Mat3Test {
             4f * 3f,  5f * 3f,  6f * 3f,  0f,
             8f * 4f,  9f * 4f, 10f * 4f,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.scale3D(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat3({ dst -> m.scale3D(Vec3(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -616,7 +580,7 @@ class Mat3Test {
             0f, 2f, 0f, 0f,
             0f, 0f, 1f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.uniformScaling(2f, dst) }, expected)
+        testMat3({ dst -> Mat3.uniformScaling(2f, dst) }, expected)
     }
 
     @Test
@@ -627,7 +591,7 @@ class Mat3Test {
             4f * s,  5f * s,  6f * s,  0f,
             8f,  9f, 10f,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.uniformScale(s, dst) }, expected)
+        testMat3({ dst -> m.uniformScale(s, dst) }, expected)
     }
 
     @Test
@@ -637,7 +601,7 @@ class Mat3Test {
             0f, 2f, 0f, 0f,
             0f, 0f, 2f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.uniformScaling3D(2f, dst) }, expected)
+        testMat3({ dst -> Mat3.uniformScaling3D(2f, dst) }, expected)
     }
 
     @Test
@@ -648,7 +612,7 @@ class Mat3Test {
             4f * s,  5f * s,  6f * s,  0f,
             8f * s,  9f * s, 10f * s,  0f
         ))
-        testMat3WithAndWithoutDest({ dst -> m.uniformScale3D(s, dst) }, expected)
+        testMat3({ dst -> m.uniformScale3D(s, dst) }, expected)
     }
 
     @Test
@@ -664,7 +628,7 @@ class Mat3Test {
             5f, 6f, 7f, 0f,
             9f, 10f, 11f, 0f
         ))
-        testMat3WithAndWithoutDest({ dst -> Mat3.fromMat4(m4, dst) }, expected)
+        testMat3({ dst -> Mat3.fromMat4(m4, dst) }, expected)
     }
 
     @Test
@@ -678,7 +642,7 @@ class Mat3Test {
             Quat.fromEuler(0.0, 0.0, PI / 2f, "xyz") to Mat3.fromMat4(Mat4.rotationZ(PI.toFloat() / 2f))
         )
         for ((q, expected) in tests) {
-            testMat3WithAndWithoutDest({ dst -> Mat3.fromQuat(q, dst) }, expected)
+            testMat3({ dst -> Mat3.fromQuat(q, dst) }, expected)
         }
     }
 }

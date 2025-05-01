@@ -42,25 +42,12 @@ class Vec2Tests {
 
     // Helper to test methods that take (other: Vec2, dst: Vec2?)
     private fun testBinaryVecOp(
-        operation: Vec2.(Vec2, Vec2?) -> Vec2, // The method reference (e.g., Vec2::add)
+        operation: Vec2.(Vec2, Vec2) -> Vec2, // The method reference (e.g., Vec2::add)
         v1Initial: Vec2,
         v2Initial: Vec2,
         expected: Vec2,
         tolerance: Float = Vec2.EPSILON
     ) {
-        // --- Test Case 1: No dst (returns new instance) ---
-        run {
-            val v1 = v1Initial.copy() // Ensure original is not modified
-            val v2 = v2Initial.copy()
-            val result = v1.operation(v2, null)
-
-            assertNotSame(v1, result, "Result should be a new instance when dst is null")
-            assertNotSame(v2, result, "Result should be a new instance when dst is null")
-            assertVec2EqualsApproximately(expected, result, tolerance, "Result mismatch (no dst)")
-            // Verify originals unchanged
-            assertEquals(v1Initial, v1, "Original v1 modified (no dst)")
-            assertEquals(v2Initial, v2, "Original v2 modified (no dst)")
-        }
 
         // --- Test Case 2: With dst = new Vec2() ---
         run {
@@ -103,20 +90,12 @@ class Vec2Tests {
 
     // Helper to test methods that take (scalar, dst: Vec2?)
     private fun testScalarOp(
-        operation: Vec2.(Float, Vec2?) -> Vec2,
+        operation: Vec2.(Float, Vec2) -> Vec2,
         vInitial: Vec2,
         scalar: Float,
         expected: Vec2,
         tolerance: Float = Vec2.EPSILON
     ) {
-        // --- Test Case 1: No dst ---
-        run {
-            val v = vInitial.copy()
-            val result = v.operation(scalar, null)
-            assertNotSame(v, result)
-            assertVec2EqualsApproximately(expected, result, tolerance)
-            assertEquals(vInitial, v) // Ensure original unchanged
-        }
         // --- Test Case 2: dst = new ---
         run {
             val v = vInitial.copy()
@@ -137,19 +116,12 @@ class Vec2Tests {
 
     // Helper to test methods that take only (dst: Vec2?)
     private fun testUnaryVecOp(
-        operation: Vec2.(Vec2?) -> Vec2,
+        operation: Vec2.(Vec2) -> Vec2,
         vInitial: Vec2,
         expected: Vec2,
         tolerance: Float = Vec2.EPSILON
     ) {
-        // --- Test Case 1: No dst ---
-        run {
-            val v = vInitial.copy()
-            val result = v.operation(null)
-            assertNotSame(v, result)
-            assertVec2EqualsApproximately(expected, result, tolerance)
-            assertEquals(vInitial, v) // Ensure original unchanged
-        }
+
         // --- Test Case 2: dst = new ---
         run {
             val v = vInitial.copy()
@@ -488,7 +460,7 @@ class Vec2Tests {
 
         // Explicitly check non-identity for null dst
         val v = Vec2(2f, 3f)
-        val result = v.copyTo(null)
+        val result = v.copyTo(Vec2())
         assertNotSame(v, result)
         assertEquals(expected, result)
     }
@@ -499,7 +471,7 @@ class Vec2Tests {
         testUnaryVecOp(Vec2::clone, Vec2(2f, 3f), expected)
         // Explicitly check non-identity for null dst
         val v = Vec2(2f, 3f)
-        val result = v.clone(null)
+        val result = v.clone(Vec2())
         assertNotSame(v, result)
         assertEquals(expected, result)
     }
