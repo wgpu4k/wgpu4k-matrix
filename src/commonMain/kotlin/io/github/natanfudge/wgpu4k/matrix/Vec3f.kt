@@ -11,7 +11,7 @@ import kotlin.random.Random // Needed for Vec3.random
 /**
  * Represents a 3-component vector using individual x, y, z fields.
  */
-class Vec3(
+class Vec3f(
     var x: Float = 0f,
     var y: Float = 0f,
     var z: Float = 0f
@@ -48,7 +48,7 @@ class Vec3(
     /**
      * Computes the ceiling of each component of `this`.
      */
-    fun ceil(dst: Vec3 = Vec3()): Vec3 {
+    fun ceil(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = ceil(this.x)
         dst.y = ceil(this.y)
         dst.z = ceil(this.z)
@@ -58,7 +58,7 @@ class Vec3(
     /**
      * Computes the floor of each component of `this`.
      */
-    fun floor(dst: Vec3 = Vec3()): Vec3 {
+    fun floor(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = floor(this.x)
         dst.y = floor(this.y)
         dst.z = floor(this.z)
@@ -68,7 +68,7 @@ class Vec3(
     /**
      * Computes the rounded value of each component of `this`.
      */
-    fun round(dst: Vec3 = Vec3()): Vec3 {
+    fun round(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = round(this.x)
         dst.y = round(this.y)
         dst.z = round(this.z)
@@ -78,7 +78,7 @@ class Vec3(
     /**
      * Clamps each component of `this` between [min] and [max].
      */
-    fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec3 = Vec3()): Vec3 {
+    fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = min(max, max(min, this.x))
         dst.y = min(max, max(min, this.y))
         dst.z = min(max, max(min, this.z))
@@ -88,7 +88,7 @@ class Vec3(
     /**
      * Adds [b] to `this`.
      */
-    fun add(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun add(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x + b.x
         dst.y = this.y + b.y
         dst.z = this.z + b.z
@@ -98,7 +98,7 @@ class Vec3(
     /**
      * Adds [b] scaled by [scale] to `this`.
      */
-    fun addScaled(b: Vec3, scale: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun addScaled(b: Vec3f, scale: Float, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x + b.x * scale
         dst.y = this.y + b.y * scale
         dst.z = this.z + b.z * scale
@@ -108,7 +108,7 @@ class Vec3(
     /**
      * Computes the angle in radians between `this` and [b].
      */
-    fun angle(b: Vec3): Float {
+    fun angle(b: Vec3f): Float {
         val mag1 = this.length() // Use instance length method
         val mag2 = b.length()
         val mag = mag1 * mag2
@@ -121,7 +121,7 @@ class Vec3(
     /**
      * Subtracts [b] from `this`.
      */
-    fun subtract(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun subtract(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x - b.x
         dst.y = this.y - b.y
         dst.z = this.z - b.z
@@ -131,14 +131,14 @@ class Vec3(
     /**
      * Subtracts [b] from `this` (alias for [subtract]).
      */
-    fun sub(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun sub(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         return subtract(b, dst)
     }
 
     /**
      * Checks if `this` and [b] are approximately equal.
      */
-    fun equalsApproximately(b: Vec3): Boolean {
+    fun equalsApproximately(b: Vec3f): Boolean {
         return abs(this.x - b.x) < EPSILON &&
                 abs(this.y - b.y) < EPSILON &&
                 abs(this.z - b.z) < EPSILON
@@ -149,7 +149,7 @@ class Vec3(
     /**
      * Linearly interpolates between `this` and [b] using coefficient [t].
      */
-    fun lerp(b: Vec3, t: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun lerp(b: Vec3f, t: Float, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x + t * (b.x - this.x)
         dst.y = this.y + t * (b.y - this.y)
         dst.z = this.z + t * (b.z - this.z)
@@ -159,7 +159,7 @@ class Vec3(
     /**
      * Performs component-wise linear interpolation between `this` and [b] using coefficient vector [t].
      */
-    fun lerpV(b: Vec3, t: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun lerpV(b: Vec3f, t: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x + t.x * (b.x - this.x)
         dst.y = this.y + t.y * (b.y - this.y)
         dst.z = this.z + t.z * (b.z - this.z)
@@ -169,7 +169,7 @@ class Vec3(
     /**
      * Computes the component-wise maximum of `this` and [b].
      */
-    fun max(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun max(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = max(this.x, b.x)
         dst.y = max(this.y, b.y)
         dst.z = max(this.z, b.z)
@@ -179,7 +179,7 @@ class Vec3(
     /**
      * Computes the component-wise minimum of `this` and [b].
      */
-    fun min(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun min(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = min(this.x, b.x)
         dst.y = min(this.y, b.y)
         dst.z = min(this.z, b.z)
@@ -189,7 +189,7 @@ class Vec3(
     /**
      * Multiplies `this` by scalar [k].
      */
-    fun mulScalar(k: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun mulScalar(k: Float, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x * k
         dst.y = this.y * k
         dst.z = this.z * k
@@ -199,14 +199,14 @@ class Vec3(
     /**
      * Multiplies `this` by scalar [k] (alias for [mulScalar]).
      */
-    fun scale(k: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun scale(k: Float, dst: Vec3f = Vec3f()): Vec3f {
         return mulScalar(k, dst)
     }
 
     /**
      * Divides `this` by scalar [k].
      */
-    fun divScalar(k: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun divScalar(k: Float, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x / k
         dst.y = this.y / k
         dst.z = this.z / k
@@ -216,7 +216,7 @@ class Vec3(
     /**
      * Computes the component-wise inverse (1/x) of `this` vector.
      */
-    fun inverse(dst: Vec3 = Vec3()): Vec3 {
+    fun inverse(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = 1f / this.x
         dst.y = 1f / this.y
         dst.z = 1f / this.z
@@ -226,14 +226,14 @@ class Vec3(
     /**
      * Computes the component-wise inverse (1/x) of `this` vector (alias for [inverse]).
      */
-    fun invert(dst: Vec3 = Vec3()): Vec3 {
+    fun invert(dst: Vec3f = Vec3f()): Vec3f {
         return inverse(dst)
     }
 
     /**
      * Computes the cross product of `this` and [b].
      */
-    fun cross(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun cross(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         val ax = this.x; val ay = this.y; val az = this.z
         val bx = b.x; val by = b.y; val bz = b.z
 
@@ -247,7 +247,7 @@ class Vec3(
     /**
      * Computes the dot product of `this` and [b].
      */
-    fun dot(b: Vec3): Float {
+    fun dot(b: Vec3f): Float {
         return (this.x * b.x) + (this.y * b.y) + (this.z * b.z)
     }
 
@@ -282,7 +282,7 @@ class Vec3(
     /**
      * Computes the distance between `this` point and [b].
      */
-    fun distance(b: Vec3): Float {
+    fun distance(b: Vec3f): Float {
         val dx = this.x - b.x
         val dy = this.y - b.y
         val dz = this.z - b.z
@@ -292,14 +292,14 @@ class Vec3(
     /**
      * Computes the distance between `this` point and [b] (alias for [distance]).
      */
-    fun dist(b: Vec3): Float {
+    fun dist(b: Vec3f): Float {
         return distance(b)
     }
 
     /**
      * Computes the square of the distance between `this` point and [b].
      */
-    fun distanceSq(b: Vec3): Float {
+    fun distanceSq(b: Vec3f): Float {
         val dx = this.x - b.x
         val dy = this.y - b.y
         val dz = this.z - b.z
@@ -309,14 +309,14 @@ class Vec3(
     /**
      * Computes the square of the distance between `this` point and [b] (alias for [distanceSq]).
      */
-    fun distSq(b: Vec3): Float {
+    fun distSq(b: Vec3f): Float {
         return distanceSq(b)
     }
 
     /**
      * Normalizes `this` vector (scales it to unit length).
      */
-    fun normalize(dst: Vec3 = Vec3()): Vec3 {
+    fun normalize(dst: Vec3f = Vec3f()): Vec3f {
         val l = this.length()
         if (l > EPSILON) {
             dst.x = this.x / l
@@ -333,7 +333,7 @@ class Vec3(
     /**
      * Negates `this` vector (multiplies components by -1).
      */
-    fun negate(dst: Vec3 = Vec3()): Vec3 {
+    fun negate(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = -this.x
         dst.y = -this.y
         dst.z = -this.z
@@ -343,7 +343,7 @@ class Vec3(
     /**
      * Copies the components of `this`.
      */
-    fun copy(dst: Vec3 = Vec3()): Vec3 {
+    fun copy(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x
         dst.y = this.y
         dst.z = this.z
@@ -353,14 +353,14 @@ class Vec3(
     /**
      * Copies the components of `this` (alias for [copy]).
      */
-    fun clone(dst: Vec3 = Vec3()): Vec3 {
+    fun clone(dst: Vec3f = Vec3f()): Vec3f {
         return copy(dst)
     }
 
     /**
      * Multiplies `this` by [b] component-wise.
      */
-    fun multiply(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun multiply(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x * b.x
         dst.y = this.y * b.y
         dst.z = this.z * b.z
@@ -370,14 +370,14 @@ class Vec3(
     /**
      * Multiplies `this` by [b] component-wise (alias for [multiply]).
      */
-    fun mul(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun mul(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         return multiply(b, dst)
     }
 
     /**
      * Divides `this` by [b] component-wise.
      */
-    fun divide(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun divide(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         dst.x = this.x / b.x
         dst.y = this.y / b.y
         dst.z = this.z / b.z
@@ -387,14 +387,14 @@ class Vec3(
     /**
      * Divides `this` by [b] component-wise (alias for [divide]).
      */
-    fun div(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun div(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         return divide(b, dst)
     }
 
     /**
      * Transforms `this` vector (point, w=1) by the 4x4 matrix [m].
      */
-    fun transformMat4(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
+    fun transformMat4(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
         val x = this.x; val y = this.y; val z = this.z
         var w = (m[3] * x + m[7] * y + m[11] * z + m[15])
         if (w == 0f) {
@@ -411,7 +411,7 @@ class Vec3(
     /**
      * Transforms `this` vector (direction, w=0) by the upper 3x3 part of the 4x4 matrix [m].
      */
-    fun transformMat4Upper3x3(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
+    fun transformMat4Upper3x3(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
         val vx = this.x; val vy = this.y; val vz = this.z
 
         dst.x = vx * m[0 * 4 + 0] + vy * m[1 * 4 + 0] + vz * m[2 * 4 + 0]
@@ -424,7 +424,7 @@ class Vec3(
     /**
      * Transforms `this` vector (point, w=1) by the 3x3 matrix [m].
      */
-    fun transformMat3(m: Mat3, dst: Vec3 = Vec3()): Vec3 {
+    fun transformMat3(m: Mat3f, dst: Vec3f = Vec3f()): Vec3f {
         // Using standard math (Mat3 * Vec3, Col Major Mat3) as the JS source had inconsistent indices.
         val x = this.x; val y = this.y; val z = this.z
         dst.x = (m[0] * x) + (m[4] * y) + (m[8] * z)
@@ -436,9 +436,9 @@ class Vec3(
     /**
      * Transforms `this` vector by the quaternion [q].
      */
-    fun transformQuat(q: Quat, dst: Vec3 = Vec3()): Vec3 {
+    fun transformQuat(q: Quatf, dst: Vec3f = Vec3f()): Vec3f {
         // Access quaternion components using properties and ensure they are Float
-        val qx = q.x.toFloat(); val qy = q.y.toFloat(); val qz = q.z.toFloat(); val qw = q.w.toFloat()
+        val qx = q.x; val qy = q.y; val qz = q.z; val qw = q.w
         // Calculation based on transforming a vector by a quaternion: v' = q * v * conjugate(q)
         // Simplified calculation:
         val x = this.x; val y = this.y; val z = this.z
@@ -459,7 +459,7 @@ class Vec3(
     /**
      * Rotates `this` vector around the X axis relative to the point [b] by [rad] radians.
      */
-    fun rotateX(b: Vec3, rad: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun rotateX(b: Vec3f, rad: Float, dst: Vec3f = Vec3f()): Vec3f {
         val px = this.x - b.x
         val py = this.y - b.y
         val pz = this.z - b.z
@@ -482,7 +482,7 @@ class Vec3(
     /**
      * Rotates `this` vector around the Y axis relative to the point [b] by [rad] radians.
      */
-    fun rotateY(b: Vec3, rad: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun rotateY(b: Vec3f, rad: Float, dst: Vec3f = Vec3f()): Vec3f {
         val px = this.x - b.x
         val py = this.y - b.y
         val pz = this.z - b.z
@@ -505,7 +505,7 @@ class Vec3(
     /**
      * Rotates `this` vector around the Z axis relative to the point [b] by [rad] radians.
      */
-    fun rotateZ(b: Vec3, rad: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun rotateZ(b: Vec3f, rad: Float, dst: Vec3f = Vec3f()): Vec3f {
         val px = this.x - b.x
         val py = this.y - b.y
         val pz = this.z - b.z
@@ -528,7 +528,7 @@ class Vec3(
     /**
      * Sets the length of `this` vector to [len].
      */
-    fun setLength(len: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun setLength(len: Float, dst: Vec3f = Vec3f()): Vec3f {
         this.normalize(dst) // Normalizes into dst
         return dst.mulScalar(len, dst) // Scales dst in place
     }
@@ -536,7 +536,7 @@ class Vec3(
     /**
      * Truncates `this` vector if its length exceeds [maxLen].
      */
-    fun truncate(maxLen: Float, dst: Vec3 = Vec3()): Vec3 {
+    fun truncate(maxLen: Float, dst: Vec3f = Vec3f()): Vec3f {
         val currentLength = this.length()
         if (currentLength > maxLen) {
             return this.setLength(maxLen, dst)
@@ -547,7 +547,7 @@ class Vec3(
     /**
      * Calculates the midpoint between `this` vector and [b].
      */
-    fun midpoint(b: Vec3, dst: Vec3 = Vec3()): Vec3 {
+    fun midpoint(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         return this.lerp(b, 0.5f, dst)
     }
 
@@ -555,7 +555,7 @@ class Vec3(
      * Sets the components of `this` to [x], [y], and [z].
      * @return `this`
      */
-    fun set(x: Float, y: Float, z: Float): Vec3 {
+    fun set(x: Float, y: Float, z: Float): Vec3f {
         this.x = x
         this.y = y
         this.z = z
@@ -566,7 +566,7 @@ class Vec3(
      * Sets the components of `this` vector to 0.
      * @return `this`
      */
-    fun zero(): Vec3 {
+    fun zero(): Vec3f {
         this.x = 0f
         this.y = 0f
         this.z = 0f
@@ -578,21 +578,21 @@ class Vec3(
         /**
          * Creates a vec3 with initial values [x], [y], and [z].
          */
-        fun create(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3 {
-            return Vec3(x, y, z)
+        fun create(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3f {
+            return Vec3f(x, y, z)
         }
 
         /**
          * Creates a vec3 with initial values [x], [y], and [z] (alias for [create]).
          */
-        fun fromValues(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3 {
+        fun fromValues(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3f {
             return create(x, y, z)
         }
 
         /**
          * Sets the components of [dst] to [x], [y], and [z].
          */
-        fun set(x: Float, y: Float, z: Float, dst: Vec3 = Vec3()): Vec3 {
+        fun set(x: Float, y: Float, z: Float, dst: Vec3f = Vec3f()): Vec3f {
             dst.x = x
             dst.y = y
             dst.z = z
@@ -602,8 +602,8 @@ class Vec3(
         /**
          * Creates a random vector within a sphere of radius [scale].
          */
-        fun random(scale: Float = 1f, dst: Vec3 = Vec3()): Vec3 {
-            val angle = Random.nextFloat() * 2f * PI.toFloat()
+        fun random(scale: Float = 1f, dst: Vec3f = Vec3f()): Vec3f {
+            val angle = Random.nextFloat() * 2f * FloatPi
             val z = Random.nextFloat() * 2f - 1f
             val zScale = sqrt(1f - z * z) * scale
             dst.x = cos(angle) * zScale
@@ -615,7 +615,7 @@ class Vec3(
         /**
          * Creates a zero vector (components are 0).
          */
-        fun zero(dst: Vec3 = Vec3()): Vec3 {
+        fun zero(dst: Vec3f = Vec3f()): Vec3f {
             dst.x = 0f
             dst.y = 0f
             dst.z = 0f
@@ -625,7 +625,7 @@ class Vec3(
         /**
          * Gets the translation component of the 4x4 matrix [m].
          */
-        fun getTranslation(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
+        fun getTranslation(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
             dst.x = m[12]
             dst.y = m[13]
             dst.z = m[14]
@@ -635,7 +635,7 @@ class Vec3(
         /**
          * Gets the specified [axis] (0=x, 1=y, 2=z) of the 4x4 matrix [m].
          */
-        fun getAxis(m: Mat4, axis: Int, dst: Vec3 = Vec3()): Vec3 {
+        fun getAxis(m: Mat4f, axis: Int, dst: Vec3f = Vec3f()): Vec3f {
             val off = axis * 4
             dst.x = m[off + 0]
             dst.y = m[off + 1]
@@ -646,7 +646,7 @@ class Vec3(
         /**
          * Gets the scaling component of the 4x4 matrix [m].
          */
-        fun getScaling(m: Mat4, dst: Vec3 = Vec3()): Vec3 {
+        fun getScaling(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
             val xColX = m[0]; val xColY = m[1]; val xColZ = m[2]
             val yColX = m[4]; val yColY = m[5]; val yColZ = m[6]
             val zColX = m[8]; val zColY = m[9]; val zColZ = m[10]
@@ -668,7 +668,7 @@ class Vec3(
     // and 'equalsApproximately' which are preserved as explicit methods.
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Vec3) return false
+        if (other !is Vec3f) return false
         
         if (x != other.x) return false
         if (y != other.y) return false

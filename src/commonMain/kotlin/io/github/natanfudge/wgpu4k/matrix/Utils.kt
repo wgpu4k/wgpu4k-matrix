@@ -8,6 +8,8 @@ import kotlin.math.abs
  */
 internal const val EPSILON = 0.000001f
 
+internal const val FloatPi = PI.toFloat()
+
 ///**
 // * Set the value for EPSILON for various checks
 // * @param v Value to use for EPSILON.
@@ -23,14 +25,14 @@ internal const val EPSILON = 0.000001f
  * Converts angle [degrees] to radians.
  */
 fun degToRad(degrees: Float): Float {
-    return degrees * PI.toFloat() / 180f
+    return degrees * FloatPi / 180f
 }
 
 /**
  * Converts angle [radians] to degrees.
  */
 fun radToDeg(radians: Float): Float {
-    return radians * 180f / PI.toFloat()
+    return radians * 180f / FloatPi
 }
 
 /**

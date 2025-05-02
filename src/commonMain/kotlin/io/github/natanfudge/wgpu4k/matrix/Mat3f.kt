@@ -29,7 +29,7 @@ import kotlin.math.sqrt
  * The provided JS code uses indices 0-2, 4-6, 8-10, which corresponds to the
  * first 3 rows and first 3 columns of a 4x4 matrix.
  */
-/*@JvmInline value*/ class Mat3 private constructor( val arrays: FloatArray) {
+/*@JvmInline value*/ class Mat3f private constructor(val arrays: FloatArray) {
     inline val m00 get() = this[0]
     inline val m01 get() = this[4]
     inline val m02 get() = this[8]
@@ -89,23 +89,23 @@ import kotlin.math.sqrt
          * Creates a Mat3 from the given [values].
          * You should generally not use this constructor as it assumes indices 3, 7 and 11 are all 0s for padding reasons.
          */
-        operator fun invoke(vararg values: Float) = Mat3(floatArrayOf(*values))
+        operator fun invoke(vararg values: Float) = Mat3f(floatArrayOf(*values))
 
         /**
          * Creates a Mat3 from a 12-element FloatArray [values].
          * Assumes the array is already in the correct internal format.
          */
-        fun fromFloatArray(values: FloatArray): Mat3 {
+        fun fromFloatArray(values: FloatArray): Mat3f {
             if (values.size != 12) {
                 throw IllegalArgumentException("Mat3.fromFloatArray requires a 12-element FloatArray.")
             }
-            return Mat3(values.copyOf()) // Create a copy to ensure internal state is not modified externally
+            return Mat3f(values.copyOf()) // Create a copy to ensure internal state is not modified externally
         }
 
         /**
          * Creates a new identity Mat3.
          */
-        fun identity(dst: Mat3 = Mat3()): Mat3 {
+        fun identity(dst: Mat3f = Mat3f()): Mat3f {
             return dst.apply {
                 arrays[ 0] = 1f; arrays[ 1] = 0f; arrays[ 2] = 0f; arrays[ 3] = 0f
                 arrays[ 4] = 0f; arrays[ 5] = 1f; arrays[ 6] = 0f; arrays[ 7] = 0f
@@ -116,7 +116,7 @@ import kotlin.math.sqrt
         /**
          * Creates a Mat3 from the upper left 3x3 part of [m4].
          */
-        fun fromMat4(m4: Mat4, dst: Mat3 = Mat3()): Mat3 {
+        fun fromMat4(m4: Mat4f, dst: Mat3f = Mat3f()): Mat3f {
             return dst.apply {
                 arrays[0] = m4[0];  arrays[1] = m4[1];  arrays[ 2] = m4[ 2];  arrays[ 3] = 0f
                 arrays[4] = m4[4];  arrays[5] = m4[5];  arrays[ 6] = m4[ 6];  arrays[ 7] = 0f
@@ -127,9 +127,9 @@ import kotlin.math.sqrt
         /**
          * Creates a Mat3 rotation matrix from [q].
          */
-        fun fromQuat(q: Quat, dst: Mat3 = Mat3()): Mat3 { // Assuming QuatArg is FloatArray
+        fun fromQuat(q: Quatf, dst: Mat3f = Mat3f()): Mat3f { // Assuming QuatArg is FloatArray
 
-            val x = q.x.toFloat(); val y = q.y.toFloat(); val z = q.z.toFloat(); val w = q.w.toFloat();
+            val x = q.x; val y = q.y; val z = q.z; val w = q.w;
             val x2 = x + x; val y2 = y + y; val z2 = z + z;
 
             val xx = x * x2;
@@ -152,7 +152,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which translates by the given vector [v].
          */
-        fun translation(v: Vec2, dst: Mat3 = Mat3()): Mat3 {
+        fun translation(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
             return dst.apply {
                 arrays[ 0] = 1f;     arrays[ 1] = 0f;     arrays[ 2] = 0f; arrays[3] = 0f
@@ -164,7 +164,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which rotates by the given [angleInRadians].
          */
-        fun rotation(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 {
+        fun rotation(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
             val c = cos(angleInRadians);
             val s = sin(angleInRadians);
@@ -179,7 +179,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which rotates around the x-axis by the given [angleInRadians].
          */
-        fun rotationX(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 {
+        fun rotationX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
             val c = cos(angleInRadians);
             val s = sin(angleInRadians);
@@ -194,7 +194,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which rotates around the y-axis by the given [angleInRadians].
          */
-        fun rotationY(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 {
+        fun rotationY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
             val c = cos(angleInRadians);
             val s = sin(angleInRadians);
@@ -209,13 +209,13 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which rotates around the z-axis by the given [angleInRadians].
          */
-        fun rotationZ(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 = rotation(angleInRadians, dst)
+        fun rotationZ(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f = rotation(angleInRadians, dst)
 
 
         /**
          * Creates a 3-by-3 matrix which scales in the X and Y dimensions by the components of [v].
          */
-        fun scaling(v: Vec2, dst: Mat3 = Mat3()): Mat3 {
+        fun scaling(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
             return dst.apply {
                 arrays[ 0] = v.x;  arrays[ 1] = 0f;     arrays[ 2] = 0f; arrays[3] = 0f
@@ -227,7 +227,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which scales in each dimension by the components of [v].
          */
-        fun scaling3D(v: Vec3, dst: Mat3 = Mat3()): Mat3 {
+        fun scaling3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
 
             return dst.apply {
                 arrays[ 0] = v[0];  arrays[ 1] = 0f;     arrays[ 2] = 0f; arrays[3] = 0f
@@ -239,7 +239,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which scales uniformly in the X and Y dimensions by [s].
          */
-        fun uniformScaling(s: Float, dst: Mat3 = Mat3()): Mat3 {
+        fun uniformScaling(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
             return dst.apply {
                 arrays[ 0] = s;  arrays[ 1] = 0f;  arrays[ 2] = 0f; arrays[3] = 0f
@@ -251,7 +251,7 @@ import kotlin.math.sqrt
         /**
          * Creates a 3-by-3 matrix which scales uniformly in each dimension by [s].
          */
-        fun uniformScaling3D(s: Float, dst: Mat3 = Mat3()): Mat3 {
+        fun uniformScaling3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
             return dst.apply {
                 arrays[ 0] = s;  arrays[ 1] = 0f;  arrays[ 2] = 0f; arrays[3] = 0f
@@ -274,7 +274,7 @@ import kotlin.math.sqrt
         v0: Float, v1: Float, v2: Float,
         v3: Float, v4: Float, v5: Float,
         v6: Float, v7: Float, v8: Float
-    ): Mat3 = this.apply {
+    ): Mat3f = this.apply {
         arrays[0] = v0;  arrays[1] = v1;  arrays[ 2] = v2;  arrays[ 3] = 0f;
         arrays[4] = v3;  arrays[5] = v4;  arrays[ 6] = v5;  arrays[ 7] = 0f;
         arrays[8] = v6;  arrays[9] = v7;  arrays[10] = v8;  arrays[11] = 0f;
@@ -283,43 +283,43 @@ import kotlin.math.sqrt
     /**
      * Negates `this` matrix.
      */
-    fun negate(dst: Mat3 = Mat3()): Mat3 {
+    fun negate(dst: Mat3f = Mat3f()): Mat3f {
 
         return dst.apply {
-            arrays[ 0] = -this@Mat3.arrays[ 0];  arrays[ 1] = -this@Mat3.arrays[ 1];  arrays[ 2] = -this@Mat3.arrays[ 2]; arrays[3] = 0f
-            arrays[ 4] = -this@Mat3.arrays[ 4];  arrays[ 5] = -this@Mat3.arrays[ 5];  arrays[ 6] = -this@Mat3.arrays[ 6]; arrays[7] = 0f
-            arrays[ 8] = -this@Mat3.arrays[ 8];  arrays[ 9] = -this@Mat3.arrays[ 9];  arrays[10] = -this@Mat3.arrays[10]; arrays[11] = 0f
+            arrays[ 0] = -this@Mat3f.arrays[ 0];  arrays[ 1] = -this@Mat3f.arrays[ 1];  arrays[ 2] = -this@Mat3f.arrays[ 2]; arrays[3] = 0f
+            arrays[ 4] = -this@Mat3f.arrays[ 4];  arrays[ 5] = -this@Mat3f.arrays[ 5];  arrays[ 6] = -this@Mat3f.arrays[ 6]; arrays[7] = 0f
+            arrays[ 8] = -this@Mat3f.arrays[ 8];  arrays[ 9] = -this@Mat3f.arrays[ 9];  arrays[10] = -this@Mat3f.arrays[10]; arrays[11] = 0f
         }
     }
 
     /**
      * Multiplies `this` matrix by the scalar [s].
      */
-    fun multiplyScalar(s: Float, dst: Mat3 = Mat3()): Mat3 {
+    fun multiplyScalar(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
         return dst.apply {
-            arrays[ 0] = this@Mat3.arrays[ 0] * s;  arrays[ 1] = this@Mat3.arrays[ 1] * s;  arrays[ 2] = this@Mat3.arrays[ 2] * s; arrays[3] = 0f
-            arrays[ 4] = this@Mat3.arrays[ 4] * s;  arrays[ 5] = this@Mat3.arrays[ 5] * s;  arrays[ 6] = this@Mat3.arrays[ 6] * s; arrays[7] = 0f
-            arrays[ 8] = this@Mat3.arrays[ 8] * s;  arrays[ 9] = this@Mat3.arrays[ 9] * s;  arrays[10] = this@Mat3.arrays[10] * s; arrays[11] = 0f
+            arrays[ 0] = this@Mat3f.arrays[ 0] * s;  arrays[ 1] = this@Mat3f.arrays[ 1] * s;  arrays[ 2] = this@Mat3f.arrays[ 2] * s; arrays[3] = 0f
+            arrays[ 4] = this@Mat3f.arrays[ 4] * s;  arrays[ 5] = this@Mat3f.arrays[ 5] * s;  arrays[ 6] = this@Mat3f.arrays[ 6] * s; arrays[7] = 0f
+            arrays[ 8] = this@Mat3f.arrays[ 8] * s;  arrays[ 9] = this@Mat3f.arrays[ 9] * s;  arrays[10] = this@Mat3f.arrays[10] * s; arrays[11] = 0f
         }
     }
 
     /**
      * Adds [other] to `this` matrix.
      */
-    fun add(other: Mat3, dst: Mat3 = Mat3()): Mat3 {
+    fun add(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
 
         return dst.apply {
-            arrays[ 0] = this@Mat3.arrays[ 0] + other.arrays[ 0];  arrays[ 1] = this@Mat3.arrays[ 1] + other.arrays[ 1];  arrays[ 2] = this@Mat3.arrays[ 2] + other.arrays[ 2]; arrays[3] = 0f
-            arrays[ 4] = this@Mat3.arrays[ 4] + other.arrays[ 4];  arrays[ 5] = this@Mat3.arrays[ 5] + other.arrays[ 5];  arrays[ 6] = this@Mat3.arrays[ 6] + other.arrays[ 6]; arrays[7] = 0f
-            arrays[ 8] = this@Mat3.arrays[ 8] + other.arrays[ 8];  arrays[ 9] = this@Mat3.arrays[ 9] + other.arrays[ 9];  arrays[10] = this@Mat3.arrays[10] + other.arrays[10]; arrays[11] = 0f
+            arrays[ 0] = this@Mat3f.arrays[ 0] + other.arrays[ 0];  arrays[ 1] = this@Mat3f.arrays[ 1] + other.arrays[ 1];  arrays[ 2] = this@Mat3f.arrays[ 2] + other.arrays[ 2]; arrays[3] = 0f
+            arrays[ 4] = this@Mat3f.arrays[ 4] + other.arrays[ 4];  arrays[ 5] = this@Mat3f.arrays[ 5] + other.arrays[ 5];  arrays[ 6] = this@Mat3f.arrays[ 6] + other.arrays[ 6]; arrays[7] = 0f
+            arrays[ 8] = this@Mat3f.arrays[ 8] + other.arrays[ 8];  arrays[ 9] = this@Mat3f.arrays[ 9] + other.arrays[ 9];  arrays[10] = this@Mat3f.arrays[10] + other.arrays[10]; arrays[11] = 0f
         }
     }
 
     /**
      * Copies `this` matrix.
      */
-    fun copy(dst: Mat3 = Mat3()): Mat3 {
+    fun copy(dst: Mat3f = Mat3f()): Mat3f {
         this.arrays.copyInto(dst.arrays)
         return dst
     }
@@ -327,12 +327,12 @@ import kotlin.math.sqrt
     /**
      * Copies `this` matrix (alias for [copy]).
      */
-    fun clone(dst: Mat3 = Mat3()): Mat3 = copy(dst)
+    fun clone(dst: Mat3f = Mat3f()): Mat3f = copy(dst)
 
     /**
      * Checks if `this` matrix is approximately equal to [other].
      */
-    fun equalsApproximately(other: Mat3): Boolean {
+    fun equalsApproximately(other: Mat3f): Boolean {
         return abs(arrays[ 0] - other.arrays[ 0]) < EPSILON &&
                 abs(arrays[ 1] - other.arrays[ 1]) < EPSILON &&
                 abs(arrays[ 2] - other.arrays[ 2]) < EPSILON &&
@@ -348,7 +348,7 @@ import kotlin.math.sqrt
      * Checks if `this` matrix is exactly equal to [other].
      */
     override fun equals(other: Any?): Boolean {
-        return other is Mat3 &&
+        return other is Mat3f &&
                 arrays[ 0] == other.arrays[ 0] &&
                 arrays[ 1] == other.arrays[ 1] &&
                 arrays[ 2] == other.arrays[ 2] &&
@@ -382,7 +382,7 @@ import kotlin.math.sqrt
     /**
      * Creates a 3-by-3 identity matrix.
      */
-    fun identity(dst: Mat3 = Mat3()): Mat3  {
+    fun identity(dst: Mat3f = Mat3f()): Mat3f  {
 
         dst.arrays[ 0] = 1f;  dst.arrays[ 1] = 0f;  dst.arrays[ 2] = 0f;
         dst.arrays[ 4] = 0f;  dst.arrays[ 5] = 1f;  dst.arrays[ 6] = 0f;
@@ -394,7 +394,7 @@ import kotlin.math.sqrt
     /**
      * Computes the transpose of `this` matrix.
      */
-    fun transpose(dst: Mat3 = Mat3()): Mat3 {
+    fun transpose(dst: Mat3f = Mat3f()): Mat3f {
         if (dst === this) {
             // Perform in-place transpose
             var t: Float
@@ -431,7 +431,7 @@ import kotlin.math.sqrt
      * Computes the inverse of `this` matrix.
      * Returns identity if the matrix is not invertible.
      */
-    fun inverse(dst: Mat3 = Mat3()): Mat3 {
+    fun inverse(dst: Mat3f = Mat3f()): Mat3f {
 
         val m00 = arrays[0 * 4 + 0]
         val m01 = arrays[0 * 4 + 1]
@@ -490,12 +490,12 @@ import kotlin.math.sqrt
      * Computes the inverse of `this` matrix (alias for [inverse]).
      * Returns identity if the matrix is not invertible.
      */
-    fun invert(dst: Mat3 = Mat3()): Mat3 = inverse(dst)
+    fun invert(dst: Mat3f = Mat3f()): Mat3f = inverse(dst)
 
     /**
      * Multiplies `this` matrix by [other] (`this` * [other]).
      */
-    fun multiply(other: Mat3, dst: Mat3 = Mat3()): Mat3 {
+    fun multiply(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
 
         val a00 = arrays[0]
         val a01 = arrays[1]
@@ -532,12 +532,12 @@ import kotlin.math.sqrt
     /**
      * Multiplies `this` matrix by [other] (`this` * [other]) (alias for [multiply]).
      */
-    fun mul(other: Mat3, dst: Mat3 = Mat3()): Mat3 = multiply(other, dst)
+    fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
 
     /**
      * Creates a matrix copy of `this` with the translation component set to [v].
      */
-    fun setTranslation(v: Vec2, dst: Mat3 = identity()): Mat3 { // Use identity if dst is null
+    fun setTranslation(v: Vec2f, dst: Mat3f = identity()): Mat3f { // Use identity if dst is null
 
         if (this !== dst) {
             dst.arrays[ 0] = arrays[ 0];
@@ -556,7 +556,7 @@ import kotlin.math.sqrt
     /**
      * Gets the translation component of `this` matrix.
      */
-    fun getTranslation(dst: Vec2 = Vec2.create()): Vec2 {
+    fun getTranslation(dst: Vec2f = Vec2f.create()): Vec2f {
         dst.x = arrays[8]
         dst.y = arrays[9]
         return dst
@@ -565,7 +565,7 @@ import kotlin.math.sqrt
     /**
      * Gets the specified [axis] (0=x, 1=y) of `this` matrix as a Vec2.
      */
-    fun getAxis(axis: Int, dst: Vec2 = Vec2.create()): Vec2 {
+    fun getAxis(axis: Int, dst: Vec2f = Vec2f.create()): Vec2f {
         val off = axis * 4
         dst.x = arrays[off + 0]
         dst.y = arrays[off + 1]
@@ -575,7 +575,7 @@ import kotlin.math.sqrt
     /**
      * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y) set to [v].
      */
-    fun setAxis(v: Vec2, axis: Int, dst: Mat3 = Mat3()): Mat3 {
+    fun setAxis(v: Vec2f, axis: Int, dst: Mat3f = Mat3f()): Mat3f {
         val newDst = if (dst === this) this else copy(dst)
 
         val off = axis * 4
@@ -587,7 +587,7 @@ import kotlin.math.sqrt
     /**
      * Gets the 2D scaling component of `this` matrix.
      */
-    fun getScaling(dst: Vec2 = Vec2.create()): Vec2 {
+    fun getScaling(dst: Vec2f = Vec2f.create()): Vec2f {
 
         val xx = arrays[0]
         val xy = arrays[1]
@@ -604,7 +604,7 @@ import kotlin.math.sqrt
     /**
      * Gets the 3D scaling component of `this` matrix.
      */
-    fun get3DScaling(dst: Vec3 = Vec3.create()): Vec3 {
+    fun get3DScaling(dst: Vec3f = Vec3f.create()): Vec3f {
 
         val xx = this[0]
         val xy = this[1]
@@ -626,7 +626,7 @@ import kotlin.math.sqrt
     /**
      * Translates `this` matrix by [v].
      */
-    fun translate(v: Vec2, dst: Mat3 = Mat3()): Mat3 {
+    fun translate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
         val v0 = v.x
         val v1 = v.y
@@ -660,7 +660,7 @@ import kotlin.math.sqrt
     /**
      * Rotates `this` matrix by [angleInRadians] around the Z axis.
      */
-    fun rotate(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 {
+    fun rotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
         val m00 = arrays[0 * 4 + 0]
         val m01 = arrays[0 * 4 + 1]
@@ -692,7 +692,7 @@ import kotlin.math.sqrt
     /**
      * Rotates `this` matrix by [angleInRadians] around the X axis.
      */
-    fun rotateX(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 {
+    fun rotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
         val m10 = arrays[4]
         val m11 = arrays[5]
@@ -723,7 +723,7 @@ import kotlin.math.sqrt
     /**
      * Rotates `this` matrix by [angleInRadians] around the Y axis.
      */
-    fun rotateY(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 {
+    fun rotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
         val m00 = arrays[0 * 4 + 0]
         val m01 = arrays[0 * 4 + 1]
@@ -753,12 +753,12 @@ import kotlin.math.sqrt
     /**
      * Rotates `this` matrix by [angleInRadians] around the Z axis (alias for [rotate]).
      */
-    fun rotateZ(angleInRadians: Float, dst: Mat3 = Mat3()): Mat3 = rotate(angleInRadians, dst)
+    fun rotateZ(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f = rotate(angleInRadians, dst)
 
     /**
      * Scales the X and Y dimensions of `this` matrix by the components of [v].
      */
-    fun scale(v: Vec2, dst: Mat3 = Mat3()): Mat3 {
+    fun scale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
         val v0 = v.x
         val v1 = v.y
@@ -783,7 +783,7 @@ import kotlin.math.sqrt
     /**
      * Scales each dimension of `this` matrix by the components of [v].
      */
-    fun scale3D(v: Vec3, dst: Mat3 = Mat3()): Mat3 {
+    fun scale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
 
         val v0 = v[0]
         val v1 = v[1]
@@ -807,7 +807,7 @@ import kotlin.math.sqrt
     /**
      * Scales the X and Y dimensions of `this` matrix uniformly by [s].
      */
-    fun uniformScale(s: Float, dst: Mat3 = Mat3()): Mat3 {
+    fun uniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
         dst.arrays[ 0] = s * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
         dst.arrays[ 1] = s * arrays[0 * 4 + 1]
@@ -829,7 +829,7 @@ import kotlin.math.sqrt
     /**
      * Scales each dimension of `this` matrix uniformly by [s].
      */
-    fun uniformScale3D(s: Float, dst: Mat3 = Mat3()): Mat3 {
+    fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
         dst.arrays[ 0] = s * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
         dst.arrays[ 1] = s * arrays[0 * 4 + 1]

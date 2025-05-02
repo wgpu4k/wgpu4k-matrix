@@ -1,22 +1,23 @@
 package io.github.natanfudge.wgpu4k.matrix.test
 
 import io.github.natanfudge.wgpu4k.matrix.EPSILON
-import io.github.natanfudge.wgpu4k.matrix.Mat3
-import io.github.natanfudge.wgpu4k.matrix.Mat4
-import io.github.natanfudge.wgpu4k.matrix.Quat
-import io.github.natanfudge.wgpu4k.matrix.Vec3
+import io.github.natanfudge.wgpu4k.matrix.FloatPi
+import io.github.natanfudge.wgpu4k.matrix.Mat3f
+import io.github.natanfudge.wgpu4k.matrix.Mat4f
+import io.github.natanfudge.wgpu4k.matrix.Quatf
+import io.github.natanfudge.wgpu4k.matrix.Vec3f
 import kotlin.math.*
 import kotlin.test.*
 
 // Helper assertion functions
-fun assertMat4EqualApproximately(actual: Mat4, expected: Mat4, message: String? = null) {
+fun assertMat4EqualApproximately(actual: Mat4f, expected: Mat4f, message: String? = null) {
     if (!actual.equalsApproximately(expected)) {
         val errorMessage = "$message: Expected Mat4 <${expected.toFloatArray().joinToString()}> but was <${actual.toFloatArray().joinToString()}> (approximately)"
         fail(errorMessage)
     }
 }
 
-fun assertMat4Equal(actual: Mat4, expected: Mat4, message: String? = null) {
+fun assertMat4Equal(actual: Mat4f, expected: Mat4f, message: String? = null) {
     if (actual != expected) { // Uses the overridden equals operator
         val errorMessage = message ?: "Expected Mat4 <${expected.toFloatArray().joinToString()}> but was <${actual.toFloatArray().joinToString()}> (exactly)"
         fail(errorMessage)
@@ -34,7 +35,7 @@ fun assertStrictEquals(actual: Any?, expected: Any?, message: String? = null) {
 class Mat4Test {
 
     // The base matrix 'm' from the JavaScript test
-    private val m = Mat4.fromFloatArray(floatArrayOf(
+    private val m = Mat4f.fromFloatArray(floatArrayOf(
         0f,  1f,  2f,  3f,
         4f,  5f,  6f,  7f,
         8f,  9f, 10f, 11f,
@@ -43,12 +44,12 @@ class Mat4Test {
 
     // Helper function to test Mat4 functions that return a Mat4
     private fun testMat4(
-        func: (dst: Mat4) -> Mat4,
-        expected: Mat4,
+        func: (dst: Mat4f) -> Mat4f,
+        expected: Mat4f,
         message: String? = null
     ) {
         // Test with destination
-        val dest = Mat4() // Create a new destination matrix
+        val dest = Mat4f() // Create a new destination matrix
         val resultWithDest = func(dest)
         assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
         assertMat4EqualApproximately(resultWithDest, expected, "$message - with dest")
@@ -59,13 +60,13 @@ class Mat4Test {
     @Test
     fun testCreate() {
         val tests = listOf(
-            Mat4.fromFloatArray(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to emptyList<Float>(),
-            Mat4.fromFloatArray(floatArrayOf(1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f)
+            Mat4f.fromFloatArray(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to emptyList<Float>(),
+            Mat4f.fromFloatArray(floatArrayOf(1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f)
         )
         for ((expected, args) in tests) {
             val actual = when (args.size) {
-                0 -> Mat4()
-                1 -> Mat4(v0 = args[0])
+                0 -> Mat4f()
+                1 -> Mat4f(v0 = args[0])
                 else -> throw IllegalArgumentException("Too many arguments for Mat4 create test")
             }
             assertMat4EqualApproximately(actual, expected)
@@ -74,7 +75,7 @@ class Mat4Test {
 
     @Test
     fun testNegate() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             -0f,  -1f,  -2f,  -3f,
             -4f,  -5f,  -6f,  -7f,
             -8f,  -9f, -10f, -11f,
@@ -85,7 +86,7 @@ class Mat4Test {
 
     @Test
     fun testAdd() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f,  2f,  4f,  6f,
             8f, 10f, 12f, 14f,
             16f, 18f, 20f, 22f,
@@ -96,7 +97,7 @@ class Mat4Test {
 
     @Test
     fun testMultiplyScalar() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f,  2f,  4f,  6f,
             8f, 10f, 12f, 14f,
             16f, 18f, 20f, 22f,
@@ -129,14 +130,14 @@ class Mat4Test {
 
         for (i in 0..15) {
             assertTrue(
-                Mat4.fromFloatArray(genAlmostEqualMat(-1)).equalsApproximately(
-                    Mat4.fromFloatArray(genAlmostEqualMat(i))
+                Mat4f.fromFloatArray(genAlmostEqualMat(-1)).equalsApproximately(
+                    Mat4f.fromFloatArray(genAlmostEqualMat(i))
                 ),
                 "Should be approximately equal when differing by small amount at index $i"
             )
             assertTrue(
-                !Mat4.fromFloatArray(genNotAlmostEqualMat(-1)).equalsApproximately(
-                    Mat4.fromFloatArray(genNotAlmostEqualMat(i))
+                !Mat4f.fromFloatArray(genNotAlmostEqualMat(-1)).equalsApproximately(
+                    Mat4f.fromFloatArray(genNotAlmostEqualMat(i))
                 ),
                  "Should not be approximately equal when differing by large amount at index $i"
             )
@@ -152,13 +153,13 @@ class Mat4Test {
 
         for (i in 0..15) {
             assertTrue(
-                Mat4.fromFloatArray(genNotEqualMat(i)) == // Uses the overridden equals operator
-                        Mat4.fromFloatArray(genNotEqualMat(i)),
+                Mat4f.fromFloatArray(genNotEqualMat(i)) == // Uses the overridden equals operator
+                        Mat4f.fromFloatArray(genNotEqualMat(i)),
                  "Should be exactly equal when values are the same at index $i"
             )
             assertTrue(
-                Mat4.fromFloatArray(genNotEqualMat(-1)) != // Uses the overridden equals operator
-                        Mat4.fromFloatArray(genNotEqualMat(i)),
+                Mat4f.fromFloatArray(genNotEqualMat(-1)) != // Uses the overridden equals operator
+                        Mat4f.fromFloatArray(genNotEqualMat(i)),
                  "Should not be exactly equal when values are different at index $i"
             )
         }
@@ -176,14 +177,14 @@ class Mat4Test {
 
     @Test
     fun testSet() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             2f, 3f, 4f, 5f, 
             22f, 33f, 44f, 55f, 
             222f, 333f, 444f, 555f, 
             2222f, 3333f, 4444f, 5555f
         ))
         testMat4({ dst ->
-            val targetMat = dst ?: Mat4()
+            val targetMat = dst ?: Mat4f()
             targetMat.set(
                 2f, 3f, 4f, 5f,
                 22f, 33f, 44f, 55f,
@@ -195,18 +196,18 @@ class Mat4Test {
 
     @Test
     fun testIdentity() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.identity(dst) }, expected)
+        testMat4({ dst -> Mat4f.identity(dst) }, expected)
     }
 
     @Test
     fun testTranspose() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f, 4f, 8f, 12f,
             1f, 5f, 9f, 13f,
             2f, 6f, 10f, 14f,
@@ -215,8 +216,8 @@ class Mat4Test {
         testMat4({ dst -> m.transpose(dst) }, expected)
     }
 
-    private fun testMultiply(fn: (a: Mat4, b: Mat4, dst: Mat4) -> Mat4) {
-        val m2 = Mat4.fromFloatArray(floatArrayOf(
+    private fun testMultiply(fn: (a: Mat4f, b: Mat4f, dst: Mat4f) -> Mat4f) {
+        val m2 = Mat4f.fromFloatArray(floatArrayOf(
             4f, 5f, 6f, 7f,
             1f, 2f, 3f, 4f,
             9f, 10f, 11f, 12f,
@@ -224,7 +225,7 @@ class Mat4Test {
         ))
 
         // Calculate expected result using the formula from the JS test
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             m2[0] * m[0] + m2[1] * m[4] + m2[2] * m[8] + m2[3] * m[12],
             m2[0] * m[1] + m2[1] * m[5] + m2[2] * m[9] + m2[3] * m[13],
             m2[0] * m[2] + m2[1] * m[6] + m2[2] * m[10] + m2[3] * m[14],
@@ -259,15 +260,15 @@ class Mat4Test {
         testMultiply { a, b, dst -> a.mul(b, dst) }
     }
 
-    private fun testInverse(fn: (m: Mat4, dst: Mat4) -> Mat4) {
-        val testMatrix = Mat4.fromFloatArray(floatArrayOf(
+    private fun testInverse(fn: (m: Mat4f, dst: Mat4f) -> Mat4f) {
+        val testMatrix = Mat4f.fromFloatArray(floatArrayOf(
             2f, 1f, 3f, 0f,
             1f, 2f, 1f, 0f,
             3f, 1f, 2f, 0f,
             4f, 5f, 6f, 1f
         ))
 
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             -0.375f, -0.125f, 0.625f, 0f,
             -0.125f, 0.625f, -0.125f, 0f,
             0.625f, -0.125f, -0.375f, 0f,
@@ -290,13 +291,13 @@ class Mat4Test {
     @Test
     fun testDeterminant() {
         val tests = listOf(
-            Mat4.fromFloatArray(floatArrayOf(
+            Mat4f.fromFloatArray(floatArrayOf(
                 2f, 1f, 3f, 0f,
                 1f, 2f, 1f, 0f,
                 3f, 1f, 2f, 0f,
                 4f, 5f, 6f, 1f
             )) to -8f,
-            Mat4.fromFloatArray(floatArrayOf(
+            Mat4f.fromFloatArray(floatArrayOf(
                 2f, 0f, 0f, 0f,
                 0f, 3f, 0f, 0f,
                 0f, 0f, 4f, 0f,
@@ -310,27 +311,27 @@ class Mat4Test {
 
     @Test
     fun testSetTranslation() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f,  1f,  2f,  3f,
             4f,  5f,  6f,  7f,
             8f,  9f, 10f, 11f,
             11f, 22f, 33f, 15f
         ))
-        testMat4({ dst -> m.setTranslation(Vec3(11f, 22f, 33f), dst) }, expected)
+        testMat4({ dst -> m.setTranslation(Vec3f(11f, 22f, 33f), dst) }, expected)
     }
 
     @Test
     fun testGetTranslation() {
-        val expected = Vec3(12f, 13f, 14f)
+        val expected = Vec3f(12f, 13f, 14f)
         testVec3({ dst -> m.getTranslation(dst) }, expected)
     }
 
     @Test
     fun testGetAxis() {
         val tests = listOf(
-            0 to Vec3(0f, 1f, 2f),
-            1 to Vec3(4f, 5f, 6f),
-            2 to Vec3(8f, 9f, 10f)
+            0 to Vec3f(0f, 1f, 2f),
+            1 to Vec3f(4f, 5f, 6f),
+            2 to Vec3f(8f, 9f, 10f)
         )
         for ((axis, expected) in tests) {
             testVec3({ dst -> m.getAxis(axis, dst) }, expected, "getAxis($axis)")
@@ -340,19 +341,19 @@ class Mat4Test {
     @Test
     fun testSetAxis() {
         val tests = listOf(
-            0 to Mat4.fromFloatArray(floatArrayOf(
+            0 to Mat4f.fromFloatArray(floatArrayOf(
                 11f, 22f, 33f,  3f,
                 4f,  5f,  6f,  7f,
                 8f,  9f, 10f, 11f,
                 12f, 13f, 14f, 15f
             )),
-            1 to Mat4.fromFloatArray(floatArrayOf(
+            1 to Mat4f.fromFloatArray(floatArrayOf(
                 0f,  1f,  2f,  3f,
                 11f, 22f, 33f,  7f,
                 8f,  9f, 10f, 11f,
                 12f, 13f, 14f, 15f
             )),
-            2 to Mat4.fromFloatArray(floatArrayOf(
+            2 to Mat4f.fromFloatArray(floatArrayOf(
                 0f,  1f,  2f,  3f,
                 4f,  5f,  6f,  7f,
                 11f, 22f, 33f, 11f,
@@ -360,19 +361,19 @@ class Mat4Test {
             ))
         )
         for ((axis, expected) in tests) {
-            testMat4({ dst -> m.setAxis(Vec3(11f, 22f, 33f), axis, dst) }, expected, "setAxis($axis)")
+            testMat4({ dst -> m.setAxis(Vec3f(11f, 22f, 33f), axis, dst) }, expected, "setAxis($axis)")
         }
     }
 
     @Test
     fun testGetScaling() {
-        val testM = Mat4.fromFloatArray(floatArrayOf(
+        val testM = Mat4f.fromFloatArray(floatArrayOf(
             1f, 2f, 3f, 4f,
             5f, 6f, 7f, 8f,
             9f, 10f, 11f, 12f,
             13f, 14f, 15f, 16f
         ))
-        val expected = Vec3(
+        val expected = Vec3f(
             sqrt(1f * 1f + 2f * 2f + 3f * 3f),
             sqrt(5f * 5f + 6f * 6f + 7f * 7f),
             sqrt(9f * 9f + 10f * 10f + 11f * 11f)
@@ -388,13 +389,13 @@ class Mat4Test {
         val zFar = 30f
         val f = 1.0f / tan(fov / 2)
         val rangeInv = 1.0f / (zNear - zFar)
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             f / aspect, 0f, 0f, 0f,
             0f, f, 0f, 0f,
             0f, 0f, (zNear + zFar) * rangeInv, -1f,
             0f, 0f, zNear * zFar * rangeInv * 2, 0f
         ))
-        testMat4({ dst -> Mat4.perspective(fov, aspect, zNear, zFar, dst) }, expected)
+        testMat4({ dst -> Mat4f.perspective(fov, aspect, zNear, zFar, dst) }, expected)
     }
 
     @Test
@@ -408,13 +409,13 @@ class Mat4Test {
         val width = right - left
         val height = top - bottom
         val depth = far - near
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             2 / width, 0f, 0f, 0f,
             0f, 2 / height, 0f, 0f,
             0f, 0f, -2 / depth, 0f,
             -(left + right) / width, -(top + bottom) / height, -(far + near) / depth, 1f
         ))
-        testMat4({ dst -> Mat4.ortho(left, right, bottom, top, near, far, dst) }, expected)
+        testMat4({ dst -> Mat4f.ortho(left, right, bottom, top, near, far, dst) }, expected)
     }
 
     @Test
@@ -428,12 +429,12 @@ class Mat4Test {
 
         // Instead of calculating the expected result, let's create a matrix directly and test it
         // This ensures we're testing the actual implementation, not our calculation
-        val result = Mat4.frustum(left, right, bottom, top, near, far)
+        val result = Mat4f.frustum(left, right, bottom, top, near, far)
 
         // Verify some key properties of a frustum matrix
         // 1. Check that near plane maps to z=-1 and far plane maps to z=1
-        val nearPoint = Vec3(left, bottom, -near)
-        val farPoint = Vec3(right, top, -far)
+        val nearPoint = Vec3f(left, bottom, -near)
+        val farPoint = Vec3f(right, top, -far)
 
         // We'll use a simpler approach - just test that the matrix is not null and has reasonable values
         assertNotNull(result)
@@ -449,12 +450,12 @@ class Mat4Test {
     @Test
     fun testLookAt() {
         // Define input vectors
-        val eye = Vec3(1.0f, 2.0f, 3.0f)
-        val target = Vec3(11.0f, 22.0f, 33.0f)
-        val up = Vec3(-4.0f, -5.0f, -6.0f)
+        val eye = Vec3f(1.0f, 2.0f, 3.0f)
+        val target = Vec3f(11.0f, 22.0f, 33.0f)
+        val up = Vec3f(-4.0f, -5.0f, -6.0f)
 
         // Create the lookAt matrix
-        val result = Mat4.lookAt(eye, target, up)
+        val result = Mat4f.lookAt(eye, target, up)
 
         // Instead of comparing exact values, let's verify key properties of a lookAt matrix
 
@@ -462,8 +463,8 @@ class Mat4Test {
         assertNotNull(result)
 
         // 2. The z-axis of the camera should point toward the target
-        val zAxis = Vec3(result[2], result[6], result[10])
-        val eyeToTarget = Vec3(
+        val zAxis = Vec3f(result[2], result[6], result[10])
+        val eyeToTarget = Vec3f(
             target.x - eye.x,
             target.y - eye.y,
             target.z - eye.z
@@ -475,28 +476,28 @@ class Mat4Test {
         assertTrue(dotProduct > 0.9f, "Z-axis should approximately point toward or away from target")
 
         // 3. The translation part should position the camera at the eye point
-        val translationPart = Vec3(result[12], result[13], result[14])
+        val translationPart = Vec3f(result[12], result[13], result[14])
 
         // The translation should ensure that the eye point transforms to the origin
         // This is a bit complex to test directly, but we can verify the matrix is not identity
-        assertFalse(translationPart.equalsApproximately(Vec3(0f, 0f, 0f)),
+        assertFalse(translationPart.equalsApproximately(Vec3f(0f, 0f, 0f)),
                    "Translation part should not be zero for non-origin eye position")
     }
 
     @Test
     fun testTranslation() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
             2f, 3f, 4f, 1f
         ))
-        testMat4({ dst -> Mat4.translation(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> Mat4f.translation(Vec3f(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
     fun testTranslate() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f,  1f,  2f,  3f,
             4f,  5f,  6f,  7f,
             8f,  9f, 10f, 11f,
@@ -505,7 +506,7 @@ class Mat4Test {
             14f + 2f * 2f + 6f * 3f + 10f * 4f,
             15f + 3f * 2f + 7f * 3f + 11f * 4f
         ))
-        testMat4({ dst -> m.translate(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> m.translate(Vec3f(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
@@ -513,20 +514,20 @@ class Mat4Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, c, s, 0f,
             0f, -s, c, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.rotationX(angle, dst) }, expected)
+        testMat4({ dst -> Mat4f.rotationX(angle, dst) }, expected)
     }
 
     @Test
     fun testRotateX() {
         val angle = 1.23f
         // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4.rotationX(angle)
+        val rotationMat = Mat4f.rotationX(angle)
         val expected = m.multiply(rotationMat)
 
         testMat4({ dst -> m.rotateX(angle, dst) }, expected)
@@ -537,20 +538,20 @@ class Mat4Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             c, 0f, -s, 0f,
             0f, 1f, 0f, 0f,
             s, 0f, c, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.rotationY(angle, dst) }, expected)
+        testMat4({ dst -> Mat4f.rotationY(angle, dst) }, expected)
     }
 
     @Test
     fun testRotateY() {
         val angle = 1.23f
         // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4.rotationY(angle)
+        val rotationMat = Mat4f.rotationY(angle)
         val expected = m.multiply(rotationMat)
 
         testMat4({ dst -> m.rotateY(angle, dst) }, expected)
@@ -561,20 +562,20 @@ class Mat4Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             c, s, 0f, 0f,
             -s, c, 0f, 0f,
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.rotationZ(angle, dst) }, expected)
+        testMat4({ dst -> Mat4f.rotationZ(angle, dst) }, expected)
     }
 
     @Test
     fun testRotateZ() {
         val angle = 1.23f
         // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4.rotationZ(angle)
+        val rotationMat = Mat4f.rotationZ(angle)
         val expected = m.multiply(rotationMat)
 
         testMat4({ dst -> m.rotateZ(angle, dst) }, expected)
@@ -582,7 +583,7 @@ class Mat4Test {
 
     @Test
     fun testAxisRotation() {
-        val axis = Vec3(0.5f, 0.6f, -0.7f)
+        val axis = Vec3f(0.5f, 0.6f, -0.7f)
         val angle = 1.23f
         var x = axis.x
         var y = axis.y
@@ -597,7 +598,7 @@ class Mat4Test {
         val c = cos(angle)
         val s = sin(angle)
         val oneMinusCosine = 1 - c
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             xx + (1 - xx) * c,
             x * y * oneMinusCosine + z * s,
             x * z * oneMinusCosine - y * s,
@@ -615,15 +616,15 @@ class Mat4Test {
 
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.axisRotation(axis, angle, dst) }, expected)
+        testMat4({ dst -> Mat4f.axisRotation(axis, angle, dst) }, expected)
     }
 
     @Test
     fun testAxisRotate() {
-        val axis = Vec3(0.5f, 0.6f, -0.7f)
+        val axis = Vec3f(0.5f, 0.6f, -0.7f)
         val angle = 1.23f
         // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4.axisRotation(axis, angle)
+        val rotationMat = Mat4f.axisRotation(axis, angle)
         val expected = m.multiply(rotationMat)
 
         testMat4({ dst -> m.axisRotate(axis, angle, dst) }, expected)
@@ -631,40 +632,40 @@ class Mat4Test {
 
     @Test
     fun testScaling() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             2f, 0f, 0f, 0f,
             0f, 3f, 0f, 0f,
             0f, 0f, 4f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.scaling(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> Mat4f.scaling(Vec3f(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
     fun testScale() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f * 2f, 1f * 2f, 2f * 2f, 3f * 2f,
             4f * 3f, 5f * 3f, 6f * 3f, 7f * 3f,
             8f * 4f, 9f * 4f, 10f * 4f, 11f * 4f,
             12f, 13f, 14f, 15f
         ))
-        testMat4({ dst -> m.scale(Vec3(2f, 3f, 4f), dst) }, expected)
+        testMat4({ dst -> m.scale(Vec3f(2f, 3f, 4f), dst) }, expected)
     }
 
     @Test
     fun testUniformScaling() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             2f, 0f, 0f, 0f,
             0f, 2f, 0f, 0f,
             0f, 0f, 2f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.uniformScaling(2f, dst) }, expected)
+        testMat4({ dst -> Mat4f.uniformScaling(2f, dst) }, expected)
     }
 
     @Test
     fun testUniformScale() {
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             0f * 2f, 1f * 2f, 2f * 2f, 3f * 2f,
             4f * 2f, 5f * 2f, 6f * 2f, 7f * 2f,
             8f * 2f, 9f * 2f, 10f * 2f, 11f * 2f,
@@ -675,26 +676,27 @@ class Mat4Test {
 
     @Test
     fun testFromMat3() {
-        val m3 = Mat3.fromFloatArray(floatArrayOf(
+        val m3 = Mat3f.fromFloatArray(floatArrayOf(
             1f, 2f, 3f, 0f,
             4f, 5f, 6f, 0f,
             7f, 8f, 9f, 0f
         ))
-        val expected = Mat4.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
             1f, 2f, 3f, 0f,
             4f, 5f, 6f, 0f,
             7f, 8f, 9f, 0f,
             0f, 0f, 0f, 1f
         ))
-        testMat4({ dst -> Mat4.fromMat3(m3, dst) }, expected)
+        testMat4({ dst -> Mat4f.fromMat3(m3, dst) }, expected)
     }
 
     @Test
     fun testFromQuat() {
         // Test with a rotation around X axis (90 degrees)
-        val q = Quat(sin(PI / 4), 0.0, 0.0, cos(PI / 4))
-        val expected = Mat4.rotationX(PI.toFloat() / 2)
+        val angle = FloatPi / 4f
+        val q = Quatf(sin(angle), 0.0f, 0.0f, cos(angle))
+        val expected = Mat4f.rotationX(FloatPi / 2f)
 
-        testMat4({ dst -> Mat4.fromQuat(q, dst) }, expected)
+        testMat4({ dst -> Mat4f.fromQuat(q, dst) }, expected)
     }
 }

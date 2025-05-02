@@ -18,7 +18,7 @@ import kotlin.math.abs
  * 2  6  10  14
  * 3  7  11  15
  */
-class Mat4 private constructor(val array: FloatArray) {
+class Mat4f private constructor(val array: FloatArray) {
 
     inline val m00 get() = this[0]
     inline val m01 get() = this[4]
@@ -80,23 +80,23 @@ class Mat4 private constructor(val array: FloatArray) {
          * Creates a Mat4 from the given [values].
          * You should generally not use this constructor as it assumes the array is already in the correct format.
          */
-        operator fun invoke(vararg values: Float) = Mat4(floatArrayOf(*values))
+        operator fun invoke(vararg values: Float) = Mat4f(floatArrayOf(*values))
 
         /**
          * Creates a Mat4 from a 16-element FloatArray [values].
          * Assumes the array is already in the correct internal format.
          */
-        fun fromFloatArray(values: FloatArray): Mat4 {
+        fun fromFloatArray(values: FloatArray): Mat4f {
             if (values.size != 16) {
                 throw IllegalArgumentException("Mat4.fromFloatArray requires a 16-element FloatArray.")
             }
-            return Mat4(values.copyOf()) // Create a copy to ensure internal state is not modified externally
+            return Mat4f(values.copyOf()) // Create a copy to ensure internal state is not modified externally
         }
 
         /**
          * Creates a new identity Mat4.
          */
-        fun identity(dst: Mat4 = Mat4()): Mat4 {
+        fun identity(dst: Mat4f = Mat4f()): Mat4f {
             return dst.apply {
                 array[0] = 1f; array[1] = 0f; array[2] = 0f; array[3] = 0f
                 array[4] = 0f; array[5] = 1f; array[6] = 0f; array[7] = 0f
@@ -108,7 +108,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a Mat4 from [m3].
          */
-        fun fromMat3(m3: Mat3, dst: Mat4 = Mat4()): Mat4 {
+        fun fromMat3(m3: Mat3f, dst: Mat4f = Mat4f()): Mat4f {
             return dst.apply {
                 array[0] = m3[0]; array[1] = m3[1]; array[2] = m3[2]; array[3] = 0f
                 array[4] = m3[4]; array[5] = m3[5]; array[6] = m3[6]; array[7] = 0f
@@ -120,7 +120,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a Mat4 rotation matrix from [q].
          */
-        fun fromQuat(q: Quat, dst: Mat4 = Mat4()): Mat4 {
+        fun fromQuat(q: Quatf, dst: Mat4f = Mat4f()): Mat4f {
 
             val x = q.x; val y = q.y; val z = q.z; val w = q.w
             val x2 = x + x; val y2 = y + y; val z2 = z + z
@@ -136,9 +136,9 @@ class Mat4 private constructor(val array: FloatArray) {
             val wz = w * z2
 
             return dst.apply {
-                array[0] = 1f - yy.toFloat() - zz.toFloat(); array[1] = yx.toFloat() + wz.toFloat(); array[2] = zx.toFloat() - wy.toFloat(); array[3] = 0f
-                array[4] = yx.toFloat() - wz.toFloat(); array[5] = 1f - xx.toFloat() - zz.toFloat(); array[6] = zy.toFloat() + wx.toFloat(); array[7] = 0f
-                array[8] = zx.toFloat() + wy.toFloat(); array[9] = zy.toFloat() - wx.toFloat(); array[10] = 1f - xx.toFloat() - yy.toFloat(); array[11] = 0f
+                array[0] = 1f - yy - zz; array[1] = yx + wz; array[2] = zx - wy; array[3] = 0f
+                array[4] = yx - wz; array[5] = 1f - xx - zz; array[6] = zy + wx; array[7] = 0f
+                array[8] = zx + wy; array[9] = zy - wx; array[10] = 1f - xx - yy; array[11] = 0f
                 array[12] = 0f; array[13] = 0f; array[14] = 0f; array[15] = 1f
             }
         }
@@ -146,7 +146,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which translates by the given vector [v].
          */
-        fun translation(v: Vec3, dst: Mat4 = Mat4()): Mat4 {
+        fun translation(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
             return dst.apply {
                 array[0] = 1f; array[1] = 0f; array[2] = 0f; array[3] = 0f
@@ -159,7 +159,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which rotates around the x-axis by the given [angleInRadians].
          */
-        fun rotationX(angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun rotationX(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             val c = cos(angleInRadians)
             val s = sin(angleInRadians)
@@ -175,7 +175,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which rotates around the y-axis by the given [angleInRadians].
          */
-        fun rotationY(angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun rotationY(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             val c = cos(angleInRadians)
             val s = sin(angleInRadians)
@@ -191,7 +191,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which rotates around the z-axis by the given [angleInRadians].
          */
-        fun rotationZ(angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun rotationZ(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             val c = cos(angleInRadians)
             val s = sin(angleInRadians)
@@ -207,7 +207,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which rotates around the given [axis] by the given [angleInRadians].
          */
-        fun axisRotation(axis: Vec3, angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun axisRotation(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             let {
                 var x = axis.x
@@ -257,7 +257,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which scales in each dimension by the components of [v].
          */
-        fun scaling(v: Vec3, dst: Mat4 = Mat4()): Mat4 {
+        fun scaling(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
             return dst.apply {
                 array[0] = v.x; array[1] = 0f; array[2] = 0f; array[3] = 0f
@@ -270,7 +270,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which scales uniformly in each dimension by [s].
          */
-        fun uniformScaling(s: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun uniformScaling(s: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             return dst.apply {
                 array[0] = s; array[1] = 0f; array[2] = 0f; array[3] = 0f
@@ -287,7 +287,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param zNear The distance to the near clipping plane.
          * @param zFar The distance to the far clipping plane.
          */
-        fun perspective(fieldOfViewYInRadians: Float, aspect: Float, zNear: Float, zFar: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun perspective(fieldOfViewYInRadians: Float, aspect: Float, zNear: Float, zFar: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             val f = 1.0f / tan(fieldOfViewYInRadians / 2)
             val rangeInv = 1.0f / (zNear - zFar)
@@ -303,7 +303,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 orthographic projection matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
          */
-        fun ortho(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun ortho(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             val width = right - left
             val height = top - bottom
@@ -320,7 +320,7 @@ class Mat4 private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 frustum matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
          */
-        fun frustum(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4 = Mat4()): Mat4 {
+        fun frustum(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4f = Mat4f()): Mat4f {
 
             val dx = right - left
             val dy = top - bottom
@@ -340,7 +340,7 @@ class Mat4 private constructor(val array: FloatArray) {
          * @param target The position to look at.
          * @param up The up vector.
          */
-        fun lookAt(eye: Vec3, target: Vec3, up: Vec3, dst: Mat4 = Mat4()): Mat4 {
+        fun lookAt(eye: Vec3f, target: Vec3f, up: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
             val eyex = eye.x
             val eyey = eye.y
@@ -413,7 +413,7 @@ class Mat4 private constructor(val array: FloatArray) {
         v4: Float, v5: Float, v6: Float, v7: Float,
         v8: Float, v9: Float, v10: Float, v11: Float,
         v12: Float, v13: Float, v14: Float, v15: Float
-    ): Mat4 = this.apply {
+    ): Mat4f = this.apply {
         array[0] = v0; array[1] = v1; array[2] = v2; array[3] = v3
         array[4] = v4; array[5] = v5; array[6] = v6; array[7] = v7
         array[8] = v8; array[9] = v9; array[10] = v10; array[11] = v11
@@ -423,50 +423,50 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Negates `this`.
      */
-    fun negate(dst: Mat4 = Mat4()): Mat4 {
+    fun negate(dst: Mat4f = Mat4f()): Mat4f {
 
         return dst.apply {
-            array[0] = -this@Mat4.array[0]; array[1] = -this@Mat4.array[1]; array[2] = -this@Mat4.array[2]; array[3] = -this@Mat4.array[3]
-            array[4] = -this@Mat4.array[4]; array[5] = -this@Mat4.array[5]; array[6] = -this@Mat4.array[6]; array[7] = -this@Mat4.array[7]
-            array[8] = -this@Mat4.array[8]; array[9] = -this@Mat4.array[9]; array[10] = -this@Mat4.array[10]; array[11] = -this@Mat4.array[11]
-            array[12] = -this@Mat4.array[12]; array[13] = -this@Mat4.array[13]; array[14] = -this@Mat4.array[14]; array[15] = -this@Mat4.array[15]
+            array[0] = -this@Mat4f.array[0]; array[1] = -this@Mat4f.array[1]; array[2] = -this@Mat4f.array[2]; array[3] = -this@Mat4f.array[3]
+            array[4] = -this@Mat4f.array[4]; array[5] = -this@Mat4f.array[5]; array[6] = -this@Mat4f.array[6]; array[7] = -this@Mat4f.array[7]
+            array[8] = -this@Mat4f.array[8]; array[9] = -this@Mat4f.array[9]; array[10] = -this@Mat4f.array[10]; array[11] = -this@Mat4f.array[11]
+            array[12] = -this@Mat4f.array[12]; array[13] = -this@Mat4f.array[13]; array[14] = -this@Mat4f.array[14]; array[15] = -this@Mat4f.array[15]
         }
     }
 
     /**
      * Multiplies `this` by the scalar [s].
      */
-    fun multiplyScalar(s: Float, dst: Mat4 = Mat4()): Mat4 {
+    fun multiplyScalar(s: Float, dst: Mat4f = Mat4f()): Mat4f {
 
         return dst.apply {
-            array[0] = this@Mat4.array[0] * s; array[1] = this@Mat4.array[1] * s; array[2] = this@Mat4.array[2] * s; array[3] = this@Mat4.array[3] * s
-            array[4] = this@Mat4.array[4] * s; array[5] = this@Mat4.array[5] * s; array[6] = this@Mat4.array[6] * s; array[7] = this@Mat4.array[7] * s
-            array[8] = this@Mat4.array[8] * s; array[9] = this@Mat4.array[9] * s; array[10] = this@Mat4.array[10] * s; array[11] = this@Mat4.array[11] * s
-            array[12] = this@Mat4.array[12] * s; array[13] = this@Mat4.array[13] * s; array[14] = this@Mat4.array[14] * s; array[15] = this@Mat4.array[15] * s
+            array[0] = this@Mat4f.array[0] * s; array[1] = this@Mat4f.array[1] * s; array[2] = this@Mat4f.array[2] * s; array[3] = this@Mat4f.array[3] * s
+            array[4] = this@Mat4f.array[4] * s; array[5] = this@Mat4f.array[5] * s; array[6] = this@Mat4f.array[6] * s; array[7] = this@Mat4f.array[7] * s
+            array[8] = this@Mat4f.array[8] * s; array[9] = this@Mat4f.array[9] * s; array[10] = this@Mat4f.array[10] * s; array[11] = this@Mat4f.array[11] * s
+            array[12] = this@Mat4f.array[12] * s; array[13] = this@Mat4f.array[13] * s; array[14] = this@Mat4f.array[14] * s; array[15] = this@Mat4f.array[15] * s
         }
     }
 
     /**
      * Adds [other] to `this`.
      */
-    fun add(other: Mat4, dst: Mat4 = Mat4()): Mat4 {
+    fun add(other: Mat4f, dst: Mat4f = Mat4f()): Mat4f {
 
         return dst.apply {
-            array[0] = this@Mat4.array[0] + other.array[0]; array[1] = this@Mat4.array[1] + other.array[1]
-            array[2] = this@Mat4.array[2] + other.array[2]; array[3] = this@Mat4.array[3] + other.array[3]
-            array[4] = this@Mat4.array[4] + other.array[4]; array[5] = this@Mat4.array[5] + other.array[5]
-            array[6] = this@Mat4.array[6] + other.array[6]; array[7] = this@Mat4.array[7] + other.array[7]
-            array[8] = this@Mat4.array[8] + other.array[8]; array[9] = this@Mat4.array[9] + other.array[9]
-            array[10] = this@Mat4.array[10] + other.array[10]; array[11] = this@Mat4.array[11] + other.array[11]
-            array[12] = this@Mat4.array[12] + other.array[12]; array[13] = this@Mat4.array[13] + other.array[13]
-            array[14] = this@Mat4.array[14] + other.array[14]; array[15] = this@Mat4.array[15] + other.array[15]
+            array[0] = this@Mat4f.array[0] + other.array[0]; array[1] = this@Mat4f.array[1] + other.array[1]
+            array[2] = this@Mat4f.array[2] + other.array[2]; array[3] = this@Mat4f.array[3] + other.array[3]
+            array[4] = this@Mat4f.array[4] + other.array[4]; array[5] = this@Mat4f.array[5] + other.array[5]
+            array[6] = this@Mat4f.array[6] + other.array[6]; array[7] = this@Mat4f.array[7] + other.array[7]
+            array[8] = this@Mat4f.array[8] + other.array[8]; array[9] = this@Mat4f.array[9] + other.array[9]
+            array[10] = this@Mat4f.array[10] + other.array[10]; array[11] = this@Mat4f.array[11] + other.array[11]
+            array[12] = this@Mat4f.array[12] + other.array[12]; array[13] = this@Mat4f.array[13] + other.array[13]
+            array[14] = this@Mat4f.array[14] + other.array[14]; array[15] = this@Mat4f.array[15] + other.array[15]
         }
     }
 
     /**
      * Copies `this`.
      */
-    fun copy(dst: Mat4 = Mat4()): Mat4 {
+    fun copy(dst: Mat4f = Mat4f()): Mat4f {
         this.array.copyInto(dst.array)
         return dst
     }
@@ -474,12 +474,12 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Copies `this` (alias for [copy]).
      */
-    fun clone(dst: Mat4 = Mat4()): Mat4 = copy(dst)
+    fun clone(dst: Mat4f = Mat4f()): Mat4f = copy(dst)
 
     /**
      * Multiplies `this` by [other] (`this` * [other]).
      */
-    fun multiply(other: Mat4, dst: Mat4 = Mat4()): Mat4 {
+    fun multiply(other: Mat4f, dst: Mat4f = Mat4f()): Mat4f {
 
         val a00 = array[0]
         val a01 = array[1]
@@ -538,12 +538,12 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Multiplies `this` by [other] (`this` * [other]) (alias for [multiply]).
      */
-    fun mul(other: Mat4, dst: Mat4 = Mat4()): Mat4 = multiply(other, dst)
+    fun mul(other: Mat4f, dst: Mat4f = Mat4f()): Mat4f = multiply(other, dst)
 
     /**
      * Computes the transpose of `this`.
      */
-    fun transpose(dst: Mat4 = Mat4()): Mat4 {
+    fun transpose(dst: Mat4f = Mat4f()): Mat4f {
 
         if (dst === this) {
             // Perform in-place transpose
@@ -587,7 +587,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Computes the inverse of `this`.
      */
-    fun inverse(dst: Mat4 = Mat4()): Mat4 {
+    fun inverse(dst: Mat4f = Mat4f()): Mat4f {
 
         val m00 = array[0]
         val m01 = array[1]
@@ -677,7 +677,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Computes the inverse of `this` (alias for [inverse]).
      */
-    fun invert(dst: Mat4 = Mat4()): Mat4 = inverse(dst)
+    fun invert(dst: Mat4f = Mat4f()): Mat4f = inverse(dst)
 
     /**
      * Computes the determinant of `this`.
@@ -728,7 +728,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Creates a matrix copy of `this` with the translation component set to [v].
      */
-    fun setTranslation(v: Vec3, dst: Mat4 = Mat4()): Mat4 {
+    fun setTranslation(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
         val newDst = if (dst === this) this else copy(dst)
 
         newDst.array[12] = v.x
@@ -741,7 +741,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Gets the translation component of `this`.
      */
-    fun getTranslation(dst: Vec3 = Vec3.create()): Vec3 {
+    fun getTranslation(dst: Vec3f = Vec3f.create()): Vec3f {
         dst.x = array[12]
         dst.y = array[13]
         dst.z = array[14]
@@ -751,7 +751,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Gets the specified [axis] (0=x, 1=y, 2=z) of `this` as a Vec3.
      */
-    fun getAxis(axis: Int, dst: Vec3 = Vec3.create()): Vec3 {
+    fun getAxis(axis: Int, dst: Vec3f = Vec3f.create()): Vec3f {
         val off = axis * 4
         dst.x = array[off + 0]
         dst.y = array[off + 1]
@@ -762,7 +762,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y, 2=z) set to [v].
      */
-    fun setAxis(v: Vec3, axis: Int, dst: Mat4 = Mat4()): Mat4 {
+    fun setAxis(v: Vec3f, axis: Int, dst: Mat4f = Mat4f()): Mat4f {
         val newDst = if (dst === this) this else copy(dst)
 
         val off = axis * 4
@@ -776,7 +776,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Gets the scaling component of `this`.
      */
-    fun getScaling(dst: Vec3 = Vec3.create()): Vec3 {
+    fun getScaling(dst: Vec3f = Vec3f.create()): Vec3f {
 
         val xx = array[0]
         val xy = array[1]
@@ -798,7 +798,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Translates `this` by [v].
      */
-    fun translate(v: Vec3, dst: Mat4 = Mat4()): Mat4 {
+    fun translate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
         val v0 = v.x
         val v1 = v.y
@@ -843,7 +843,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Rotates `this` by [angleInRadians] around the X axis.
      */
-    fun rotateX(angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+    fun rotateX(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
         val m10 = array[4]
         val m11 = array[5]
@@ -883,7 +883,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Rotates `this` by [angleInRadians] around the Y axis.
      */
-    fun rotateY(angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+    fun rotateY(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
         val m00 = array[0]
         val m01 = array[1]
@@ -923,7 +923,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Rotates `this` by [angleInRadians] around the Z axis.
      */
-    fun rotateZ(angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+    fun rotateZ(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
         val m00 = array[0]
         val m01 = array[1]
@@ -963,7 +963,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Rotates `this` around the given [axis] by [angleInRadians].
      */
-    fun axisRotate(axis: Vec3, angleInRadians: Float, dst: Mat4 = Mat4()): Mat4 {
+    fun axisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
         val x = axis.x
         val y = axis.y
@@ -978,17 +978,17 @@ class Mat4 private constructor(val array: FloatArray) {
         val axisY = y / n
         val axisZ = z / n
 
-        val m = Mat4.axisRotation(Vec3(axisX, axisY, axisZ), angleInRadians)
+        val m = Mat4f.axisRotation(Vec3f(axisX, axisY, axisZ), angleInRadians)
 
         return multiply(m, dst)
     }
 
-    fun rotate(axis: Vec3, angleInRadians: Float, dst: Mat4 = Mat4()) = axisRotate(axis, angleInRadians, dst)
+    fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
 
     /**
      * Scales `this` by the components of [v].
      */
-    fun scale(v: Vec3, dst: Mat4 = Mat4()): Mat4 {
+    fun scale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
         val v0 = v.x
         val v1 = v.y
@@ -1020,7 +1020,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Scales `this` uniformly by [s].
      */
-    fun uniformScale(s: Float, dst: Mat4 = Mat4()): Mat4 {
+    fun uniformScale(s: Float, dst: Mat4f = Mat4f()): Mat4f {
 
         dst.array[0] = s * array[0]
         dst.array[1] = s * array[1]
@@ -1048,7 +1048,7 @@ class Mat4 private constructor(val array: FloatArray) {
     /**
      * Checks if `this` is approximately equal to [other].
      */
-    fun equalsApproximately(other: Mat4): Boolean {
+    fun equalsApproximately(other: Mat4f): Boolean {
         return abs(array[0] - other.array[0]) < EPSILON &&
                 abs(array[1] - other.array[1]) < EPSILON &&
                 abs(array[2] - other.array[2]) < EPSILON &&
@@ -1071,7 +1071,7 @@ class Mat4 private constructor(val array: FloatArray) {
      * Checks if `this` is exactly equal to [other].
      */
     override fun equals(other: Any?): Boolean {
-        return other is Mat4 &&
+        return other is Mat4f &&
                 array[0] == other.array[0] &&
                 array[1] == other.array[1] &&
                 array[2] == other.array[2] &&
