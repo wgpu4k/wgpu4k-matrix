@@ -8,10 +8,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 
-
-
-
-
 /**
  * Represents a 3x3 matrix stored in a 12-element FloatArray,
  * using a layout similar to a 4x4 matrix for potential compatibility or alignment.
@@ -28,6 +24,8 @@ import kotlin.math.sqrt
  * Where () are unused for Mat3 but might be present in the 12-element array.
  * The provided JS code uses indices 0-2, 4-6, 8-10, which corresponds to the
  * first 3 rows and first 3 columns of a 4x4 matrix.
+ *
+ * Do not depend on the values in the padding cells, as the behavior of those may change in the future.
  */
 /*@JvmInline value*/ class Mat3f private constructor(val arrays: FloatArray) {
     inline val m00 get() = this[0]
@@ -46,6 +44,14 @@ import kotlin.math.sqrt
         }
     }
 
+    inline operator fun plus(other: Mat3f) = add(this, other)
+    inline operator fun minus(other: Mat3f) = diff(this, other)
+    inline operator fun times(scalar: Float) = multiplyScalar(scalar)
+    inline operator fun times(matrix: Mat3f) = multiply(matrix)
+    inline operator fun div(scalar: Float) = div(scalar, Mat3f())
+    inline operator fun unaryMinus() = negate()
+
+
     inline operator fun get(index: Int): Float {
         return this.arrays[index]
     }
@@ -57,7 +63,7 @@ import kotlin.math.sqrt
     constructor(
         v0: Float = 0f, v1: Float = 0f, v2: Float = 0f,
         v3: Float = 0f, v4: Float = 0f, v5: Float = 0f,
-        v6: Float = 0f, v7: Float = 0f, v8: Float = 0f
+        v6: Float = 0f, v7: Float = 0f, v8: Float = 0f,
     ) : this(FloatArray(12).apply {
         this[0] = v0
         this[1] = v1
@@ -107,9 +113,9 @@ import kotlin.math.sqrt
          */
         fun identity(dst: Mat3f = Mat3f()): Mat3f {
             return dst.apply {
-                arrays[ 0] = 1f; arrays[ 1] = 0f; arrays[ 2] = 0f; arrays[ 3] = 0f
-                arrays[ 4] = 0f; arrays[ 5] = 1f; arrays[ 6] = 0f; arrays[ 7] = 0f
-                arrays[ 8] = 0f; arrays[ 9] = 0f; arrays[10] = 1f; arrays[11] = 0f
+                arrays[0] = 1f; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = 1f; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = 0f; arrays[10] = 1f; arrays[11] = 0f
             }
         }
 
@@ -118,9 +124,9 @@ import kotlin.math.sqrt
          */
         fun fromMat4(m4: Mat4f, dst: Mat3f = Mat3f()): Mat3f {
             return dst.apply {
-                arrays[0] = m4[0];  arrays[1] = m4[1];  arrays[ 2] = m4[ 2];  arrays[ 3] = 0f
-                arrays[4] = m4[4];  arrays[5] = m4[5];  arrays[ 6] = m4[ 6];  arrays[ 7] = 0f
-                arrays[8] = m4[8];  arrays[9] = m4[9];  arrays[10] = m4[10];  arrays[11] = 0f
+                arrays[0] = m4[0]; arrays[1] = m4[1]; arrays[2] = m4[2]; arrays[3] = 0f
+                arrays[4] = m4[4]; arrays[5] = m4[5]; arrays[6] = m4[6]; arrays[7] = 0f
+                arrays[8] = m4[8]; arrays[9] = m4[9]; arrays[10] = m4[10]; arrays[11] = 0f
             }
         }
 
@@ -128,9 +134,13 @@ import kotlin.math.sqrt
          * Creates a Mat3 rotation matrix from [q].
          */
         fun fromQuat(q: Quatf, dst: Mat3f = Mat3f()): Mat3f { // Assuming QuatArg is FloatArray
-
-            val x = q.x; val y = q.y; val z = q.z; val w = q.w;
-            val x2 = x + x; val y2 = y + y; val z2 = z + z;
+            val x = q.x;
+            val y = q.y;
+            val z = q.z;
+            val w = q.w;
+            val x2 = x + x;
+            val y2 = y + y;
+            val z2 = z + z;
 
             val xx = x * x2;
             val yx = y * x2;
@@ -143,9 +153,9 @@ import kotlin.math.sqrt
             val wz = w * z2;
 
             return dst.apply {
-                arrays[ 0] = 1f - yy - zz;  arrays[ 1] = yx + wz;      arrays[ 2] = zx - wy;      arrays[ 3] = 0f;
-                arrays[ 4] = yx - wz;      arrays[ 5] = 1f - xx - zz;  arrays[ 6] = zy + wx;      arrays[ 7] = 0f;
-                arrays[ 8] = zx + wy;      arrays[ 9] = zy - wx;      arrays[10] = 1f - xx - yy;  arrays[11] = 0f;
+                arrays[0] = 1f - yy - zz; arrays[1] = yx + wz; arrays[2] = zx - wy; arrays[3] = 0f;
+                arrays[4] = yx - wz; arrays[5] = 1f - xx - zz; arrays[6] = zy + wx; arrays[7] = 0f;
+                arrays[8] = zx + wy; arrays[9] = zy - wx; arrays[10] = 1f - xx - yy; arrays[11] = 0f;
             }
         }
 
@@ -153,11 +163,10 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which translates by the given vector [v].
          */
         fun translation(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-
             return dst.apply {
-                arrays[ 0] = 1f;     arrays[ 1] = 0f;     arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = 0f;     arrays[ 5] = 1f;     arrays[ 6] = 0f; arrays[7] = 0f
-                arrays[ 8] = v.x;  arrays[ 9] = v.y;  arrays[10] = 1f; arrays[11] = 0f
+                arrays[0] = 1f; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = 1f; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = v.x; arrays[9] = v.y; arrays[10] = 1f; arrays[11] = 0f
             }
         }
 
@@ -165,14 +174,13 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates by the given [angleInRadians].
          */
         fun rotation(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-
             val c = cos(angleInRadians);
             val s = sin(angleInRadians);
 
             return dst.apply {
-                arrays[ 0] =  c;  arrays[ 1] = s;  arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = -s;  arrays[ 5] = c;  arrays[ 6] = 0f; arrays[7] = 0f
-                arrays[ 8] =  0f;  arrays[ 9] = 0f;  arrays[10] = 1f; arrays[11] = 0f
+                arrays[0] = c; arrays[1] = s; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = -s; arrays[5] = c; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = 0f; arrays[10] = 1f; arrays[11] = 0f
             }
         }
 
@@ -180,14 +188,13 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates around the x-axis by the given [angleInRadians].
          */
         fun rotationX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-
             val c = cos(angleInRadians);
             val s = sin(angleInRadians);
 
             return dst.apply {
-                arrays[ 0] = 1f;  arrays[ 1] =  0f; arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = 0f;  arrays[ 5] =  c;  arrays[ 6] = s; arrays[7] = 0f
-                arrays[ 8] = 0f;  arrays[ 9] = -s;  arrays[10] = c; arrays[11] = 0f
+                arrays[0] = 1f; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = c; arrays[6] = s; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = -s; arrays[10] = c; arrays[11] = 0f
             }
         }
 
@@ -195,14 +202,13 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which rotates around the y-axis by the given [angleInRadians].
          */
         fun rotationY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-
             val c = cos(angleInRadians);
             val s = sin(angleInRadians);
 
             return dst.apply {
-                arrays[ 0] = c;  arrays[ 1] = 0f;  arrays[ 2] = -s; arrays[3] = 0f
-                arrays[ 4] = 0f;  arrays[ 5] = 1f;  arrays[ 6] =  0f; arrays[7] = 0f
-                arrays[ 8] = s;  arrays[ 9] = 0f;  arrays[10] =  c; arrays[11] = 0f
+                arrays[0] = c; arrays[1] = 0f; arrays[2] = -s; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = 1f; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = s; arrays[9] = 0f; arrays[10] = c; arrays[11] = 0f
             }
         }
 
@@ -216,11 +222,10 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which scales in the X and Y dimensions by the components of [v].
          */
         fun scaling(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-
             return dst.apply {
-                arrays[ 0] = v.x;  arrays[ 1] = 0f;     arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = 0f;     arrays[ 5] = v.y;  arrays[ 6] = 0f; arrays[7] = 0f
-                arrays[ 8] = 0f;     arrays[ 9] = 0f;     arrays[10] = 1f; arrays[11] = 0f
+                arrays[0] = v.x; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = v.y; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = 0f; arrays[10] = 1f; arrays[11] = 0f
             }
         }
 
@@ -228,11 +233,10 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which scales in each dimension by the components of [v].
          */
         fun scaling3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
-
             return dst.apply {
-                arrays[ 0] = v[0];  arrays[ 1] = 0f;     arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = 0f;     arrays[ 5] = v[1];  arrays[ 6] = 0f; arrays[7] = 0f
-                arrays[ 8] = 0f;     arrays[ 9] = 0f;     arrays[10] = v[2]; arrays[11] = 0f
+                arrays[0] = v[0]; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = v[1]; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = 0f; arrays[10] = v[2]; arrays[11] = 0f
             }
         }
 
@@ -240,11 +244,10 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which scales uniformly in the X and Y dimensions by [s].
          */
         fun uniformScaling(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-
             return dst.apply {
-                arrays[ 0] = s;  arrays[ 1] = 0f;  arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = 0f;  arrays[ 5] = s;  arrays[ 6] = 0f; arrays[7] = 0f
-                arrays[ 8] = 0f;  arrays[ 9] = 0f;  arrays[10] = 1f; arrays[11] = 0f
+                arrays[0] = s; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = s; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = 0f; arrays[10] = 1f; arrays[11] = 0f
             }
         }
 
@@ -252,11 +255,10 @@ import kotlin.math.sqrt
          * Creates a 3-by-3 matrix which scales uniformly in each dimension by [s].
          */
         fun uniformScaling3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-
             return dst.apply {
-                arrays[ 0] = s;  arrays[ 1] = 0f;  arrays[ 2] = 0f; arrays[3] = 0f
-                arrays[ 4] = 0f;  arrays[ 5] = s;  arrays[ 6] = 0f; arrays[7] = 0f
-                arrays[ 8] = 0f;  arrays[ 9] = 0f;  arrays[10] = s; arrays[11] = 0f
+                arrays[0] = s; arrays[1] = 0f; arrays[2] = 0f; arrays[3] = 0f
+                arrays[4] = 0f; arrays[5] = s; arrays[6] = 0f; arrays[7] = 0f
+                arrays[8] = 0f; arrays[9] = 0f; arrays[10] = s; arrays[11] = 0f
             }
         }
     }
@@ -273,22 +275,21 @@ import kotlin.math.sqrt
     fun set(
         v0: Float, v1: Float, v2: Float,
         v3: Float, v4: Float, v5: Float,
-        v6: Float, v7: Float, v8: Float
+        v6: Float, v7: Float, v8: Float,
     ): Mat3f = this.apply {
-        arrays[0] = v0;  arrays[1] = v1;  arrays[ 2] = v2;  arrays[ 3] = 0f;
-        arrays[4] = v3;  arrays[5] = v4;  arrays[ 6] = v5;  arrays[ 7] = 0f;
-        arrays[8] = v6;  arrays[9] = v7;  arrays[10] = v8;  arrays[11] = 0f;
+        arrays[0] = v0; arrays[1] = v1; arrays[2] = v2; arrays[3] = 0f;
+        arrays[4] = v3; arrays[5] = v4; arrays[6] = v5; arrays[7] = 0f;
+        arrays[8] = v6; arrays[9] = v7; arrays[10] = v8; arrays[11] = 0f;
     }
 
     /**
      * Negates `this` matrix.
      */
     fun negate(dst: Mat3f = Mat3f()): Mat3f {
-
         return dst.apply {
-            arrays[ 0] = -this@Mat3f.arrays[ 0];  arrays[ 1] = -this@Mat3f.arrays[ 1];  arrays[ 2] = -this@Mat3f.arrays[ 2]; arrays[3] = 0f
-            arrays[ 4] = -this@Mat3f.arrays[ 4];  arrays[ 5] = -this@Mat3f.arrays[ 5];  arrays[ 6] = -this@Mat3f.arrays[ 6]; arrays[7] = 0f
-            arrays[ 8] = -this@Mat3f.arrays[ 8];  arrays[ 9] = -this@Mat3f.arrays[ 9];  arrays[10] = -this@Mat3f.arrays[10]; arrays[11] = 0f
+            arrays[0] = -this@Mat3f.arrays[0]; arrays[1] = -this@Mat3f.arrays[1]; arrays[2] = -this@Mat3f.arrays[2]; arrays[3] = 0f
+            arrays[4] = -this@Mat3f.arrays[4]; arrays[5] = -this@Mat3f.arrays[5]; arrays[6] = -this@Mat3f.arrays[6]; arrays[7] = 0f
+            arrays[8] = -this@Mat3f.arrays[8]; arrays[9] = -this@Mat3f.arrays[9]; arrays[10] = -this@Mat3f.arrays[10]; arrays[11] = 0f
         }
     }
 
@@ -296,25 +297,51 @@ import kotlin.math.sqrt
      * Multiplies `this` matrix by the scalar [s].
      */
     fun multiplyScalar(s: Float, dst: Mat3f = Mat3f()): Mat3f {
+        dst.arrays[0] = arrays[0] * s; dst.arrays[1] = arrays[1] * s; dst.arrays[2] = arrays[2] * s;arrays[3] = 0f
+        dst.arrays[4] = arrays[4] * s; dst.arrays[5] = arrays[5] * s; dst.arrays[6] = arrays[6] * s;arrays[7] = 0f
+        dst.arrays[8] = arrays[8] * s; dst.arrays[9] = arrays[9] * s; dst.arrays[10] = arrays[10] * s;arrays[11] = 0f
 
-        return dst.apply {
-            arrays[ 0] = this@Mat3f.arrays[ 0] * s;  arrays[ 1] = this@Mat3f.arrays[ 1] * s;  arrays[ 2] = this@Mat3f.arrays[ 2] * s; arrays[3] = 0f
-            arrays[ 4] = this@Mat3f.arrays[ 4] * s;  arrays[ 5] = this@Mat3f.arrays[ 5] * s;  arrays[ 6] = this@Mat3f.arrays[ 6] * s; arrays[7] = 0f
-            arrays[ 8] = this@Mat3f.arrays[ 8] * s;  arrays[ 9] = this@Mat3f.arrays[ 9] * s;  arrays[10] = this@Mat3f.arrays[10] * s; arrays[11] = 0f
-        }
+        return dst
+    }
+
+    /**
+     * Divides `this` matrix by the scalar [s].
+     */
+    fun div(s: Float, dst: Mat3f = Mat3f()): Mat3f {
+        dst.arrays[0] = arrays[0] / s; dst.arrays[1] = arrays[1] / s; dst.arrays[2] = arrays[2] / s; arrays[3] = 0f
+        dst.arrays[4] = arrays[4] / s; dst.arrays[5] = arrays[5] / s; dst.arrays[6] = arrays[6] / s;arrays[7] = 0f
+        dst.arrays[8] = arrays[8] / s; dst.arrays[9] = arrays[9] / s; dst.arrays[10] = arrays[10] / s;arrays[11] = 0f
+
+        return dst
     }
 
     /**
      * Adds [other] to `this` matrix.
      */
     fun add(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
+        dst.arrays[0] = arrays[0] + other.arrays[0]; dst.arrays[1] = arrays[1] + other.arrays[1]; dst.arrays[2] = arrays[2] + other.arrays[2]; arrays[3] = 0f
+        dst.arrays[4] = arrays[4] + other.arrays[4]; dst.arrays[5] = arrays[5] + other.arrays[5]; dst.arrays[6] = arrays[6] + other.arrays[6]; arrays[7] = 0f
+        dst.arrays[8] = arrays[8] + other.arrays[8]; dst.arrays[9] = arrays[9] + other.arrays[9]; dst.arrays[10] = arrays[10] + other.arrays[10]; arrays[11] =
+            0f
 
-        return dst.apply {
-            arrays[ 0] = this@Mat3f.arrays[ 0] + other.arrays[ 0];  arrays[ 1] = this@Mat3f.arrays[ 1] + other.arrays[ 1];  arrays[ 2] = this@Mat3f.arrays[ 2] + other.arrays[ 2]; arrays[3] = 0f
-            arrays[ 4] = this@Mat3f.arrays[ 4] + other.arrays[ 4];  arrays[ 5] = this@Mat3f.arrays[ 5] + other.arrays[ 5];  arrays[ 6] = this@Mat3f.arrays[ 6] + other.arrays[ 6]; arrays[7] = 0f
-            arrays[ 8] = this@Mat3f.arrays[ 8] + other.arrays[ 8];  arrays[ 9] = this@Mat3f.arrays[ 9] + other.arrays[ 9];  arrays[10] = this@Mat3f.arrays[10] + other.arrays[10]; arrays[11] = 0f
-        }
+        return dst
     }
+
+    inline fun plus(other: Mat3f, dst: Mat3f = Mat3f()) = add(other, dst)
+
+    /**
+     * Calculates the difference between `this` and [other].
+     */
+    fun diff(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
+        dst.arrays[0] = arrays[0] - other.arrays[0]; dst.arrays[1] = arrays[1] - other.arrays[1]; dst.arrays[2] = arrays[2] - other.arrays[2];arrays[3] = 0f
+        dst.arrays[4] = arrays[4] - other.arrays[4]; dst.arrays[5] = arrays[5] - other.arrays[5]; dst.arrays[6] = arrays[6] - other.arrays[6];arrays[7] = 0f
+        dst.arrays[8] = arrays[8] - other.arrays[8]; dst.arrays[9] = arrays[9] - other.arrays[9]; dst.arrays[10] = arrays[10] - other.arrays[10]; arrays[11] =
+            0f
+
+        return dst
+    }
+
+    inline fun minus(other: Mat3f, dst: Mat3f = Mat3f()) = diff(other, dst)
 
     /**
      * Copies `this` matrix.
@@ -327,20 +354,20 @@ import kotlin.math.sqrt
     /**
      * Copies `this` matrix (alias for [copy]).
      */
-    fun clone(dst: Mat3f = Mat3f()): Mat3f = copy(dst)
+    inline fun clone(dst: Mat3f = Mat3f()): Mat3f = copy(dst)
 
     /**
      * Checks if `this` matrix is approximately equal to [other].
      */
     fun equalsApproximately(other: Mat3f): Boolean {
-        return abs(arrays[ 0] - other.arrays[ 0]) < EPSILON &&
-                abs(arrays[ 1] - other.arrays[ 1]) < EPSILON &&
-                abs(arrays[ 2] - other.arrays[ 2]) < EPSILON &&
-                abs(arrays[ 4] - other.arrays[ 4]) < EPSILON &&
-                abs(arrays[ 5] - other.arrays[ 5]) < EPSILON &&
-                abs(arrays[ 6] - other.arrays[ 6]) < EPSILON &&
-                abs(arrays[ 8] - other.arrays[ 8]) < EPSILON &&
-                abs(arrays[ 9] - other.arrays[ 9]) < EPSILON &&
+        return abs(arrays[0] - other.arrays[0]) < EPSILON &&
+                abs(arrays[1] - other.arrays[1]) < EPSILON &&
+                abs(arrays[2] - other.arrays[2]) < EPSILON &&
+                abs(arrays[4] - other.arrays[4]) < EPSILON &&
+                abs(arrays[5] - other.arrays[5]) < EPSILON &&
+                abs(arrays[6] - other.arrays[6]) < EPSILON &&
+                abs(arrays[8] - other.arrays[8]) < EPSILON &&
+                abs(arrays[9] - other.arrays[9]) < EPSILON &&
                 abs(arrays[10] - other.arrays[10]) < EPSILON
     }
 
@@ -349,14 +376,14 @@ import kotlin.math.sqrt
      */
     override fun equals(other: Any?): Boolean {
         return other is Mat3f &&
-                arrays[ 0] == other.arrays[ 0] &&
-                arrays[ 1] == other.arrays[ 1] &&
-                arrays[ 2] == other.arrays[ 2] &&
-                arrays[ 4] == other.arrays[ 4] &&
-                arrays[ 5] == other.arrays[ 5] &&
-                arrays[ 6] == other.arrays[ 6] &&
-                arrays[ 8] == other.arrays[ 8] &&
-                arrays[ 9] == other.arrays[ 9] &&
+                arrays[0] == other.arrays[0] &&
+                arrays[1] == other.arrays[1] &&
+                arrays[2] == other.arrays[2] &&
+                arrays[4] == other.arrays[4] &&
+                arrays[5] == other.arrays[5] &&
+                arrays[6] == other.arrays[6] &&
+                arrays[8] == other.arrays[8] &&
+                arrays[9] == other.arrays[9] &&
                 arrays[10] == other.arrays[10]
     }
 
@@ -382,11 +409,11 @@ import kotlin.math.sqrt
     /**
      * Creates a 3-by-3 identity matrix.
      */
-    fun identity(dst: Mat3f = Mat3f()): Mat3f  {
+    fun identity(dst: Mat3f = Mat3f()): Mat3f {
 
-        dst.arrays[ 0] = 1f;  dst.arrays[ 1] = 0f;  dst.arrays[ 2] = 0f;
-        dst.arrays[ 4] = 0f;  dst.arrays[ 5] = 1f;  dst.arrays[ 6] = 0f;
-        dst.arrays[ 8] = 0f;  dst.arrays[ 9] = 0f;  dst.arrays[10] = 1f;
+        dst.arrays[0] = 1f; dst.arrays[1] = 0f; dst.arrays[2] = 0f;
+        dst.arrays[4] = 0f; dst.arrays[5] = 1f; dst.arrays[6] = 0f;
+        dst.arrays[8] = 0f; dst.arrays[9] = 0f; dst.arrays[10] = 1f;
 
         return dst
     }
@@ -421,9 +448,9 @@ import kotlin.math.sqrt
         val m22 = arrays[2 * 4 + 2]
 
         return dst.apply {
-            arrays[ 0] = m00;  arrays[ 1] = m10;  arrays[ 2] = m20; arrays[3] = 0f
-            arrays[ 4] = m01;  arrays[ 5] = m11;  arrays[ 6] = m21; arrays[7] = 0f
-            arrays[ 8] = m02;  arrays[ 9] = m12;  arrays[10] = m22; arrays[11] = 0f
+            arrays[0] = m00; arrays[1] = m10; arrays[2] = m20; arrays[3] = 0f
+            arrays[4] = m01; arrays[5] = m11; arrays[6] = m21; arrays[7] = 0f
+            arrays[8] = m02; arrays[9] = m12; arrays[10] = m22; arrays[11] = 0f
         }
     }
 
@@ -443,9 +470,9 @@ import kotlin.math.sqrt
         val m21 = arrays[2 * 4 + 1]
         val m22 = arrays[2 * 4 + 2]
 
-        val b01 =  m22 * m11 - m12 * m21
+        val b01 = m22 * m11 - m12 * m21
         val b11 = -m22 * m10 + m12 * m20
-        val b21 =  m21 * m10 - m11 * m20
+        val b21 = m21 * m10 - m11 * m20
 
         val det = m00 * b01 + m01 * b11 + m02 * b21
         if (det == 0f) {
@@ -455,15 +482,15 @@ import kotlin.math.sqrt
         val invDet = 1 / det
 
         return dst.apply {
-            arrays[ 0] = b01 * invDet; arrays[3] = 0f
-            arrays[ 1] = (-m22 * m01 + m02 * m21) * invDet; arrays[7] = 0f
-            arrays[ 2] = ( m12 * m01 - m02 * m11) * invDet; arrays[11] = 0f
-            arrays[ 4] = b11 * invDet
-            arrays[ 5] = ( m22 * m00 - m02 * m20) * invDet
-            arrays[ 6] = (-m12 * m00 + m02 * m10) * invDet
-            arrays[ 8] = b21 * invDet
-            arrays[ 9] = (-m21 * m00 + m01 * m20) * invDet
-            arrays[10] = ( m11 * m00 - m01 * m10) * invDet
+            arrays[0] = b01 * invDet; arrays[3] = 0f
+            arrays[1] = (-m22 * m01 + m02 * m21) * invDet; arrays[7] = 0f
+            arrays[2] = (m12 * m01 - m02 * m11) * invDet; arrays[11] = 0f
+            arrays[4] = b11 * invDet
+            arrays[5] = (m22 * m00 - m02 * m20) * invDet
+            arrays[6] = (-m12 * m00 + m02 * m10) * invDet
+            arrays[8] = b21 * invDet
+            arrays[9] = (-m21 * m00 + m01 * m20) * invDet
+            arrays[10] = (m11 * m00 - m01 * m10) * invDet
         }
     }
 
@@ -500,31 +527,31 @@ import kotlin.math.sqrt
         val a00 = arrays[0]
         val a01 = arrays[1]
         val a02 = arrays[2]
-        val a10 = arrays[ 4 + 0]
-        val a11 = arrays[ 4 + 1]
-        val a12 = arrays[ 4 + 2]
-        val a20 = arrays[ 8 + 0]
-        val a21 = arrays[ 8 + 1]
-        val a22 = arrays[ 8 + 2]
+        val a10 = arrays[4 + 0]
+        val a11 = arrays[4 + 1]
+        val a12 = arrays[4 + 2]
+        val a20 = arrays[8 + 0]
+        val a21 = arrays[8 + 1]
+        val a22 = arrays[8 + 2]
         val b00 = other.arrays[0]
         val b01 = other.arrays[1]
         val b02 = other.arrays[2]
-        val b10 = other.arrays[ 4 + 0]
-        val b11 = other.arrays[ 4 + 1]
-        val b12 = other.arrays[ 4 + 2]
-        val b20 = other.arrays[ 8 + 0]
-        val b21 = other.arrays[ 8 + 1]
-        val b22 = other.arrays[ 8 + 2]
+        val b10 = other.arrays[4 + 0]
+        val b11 = other.arrays[4 + 1]
+        val b12 = other.arrays[4 + 2]
+        val b20 = other.arrays[8 + 0]
+        val b21 = other.arrays[8 + 1]
+        val b22 = other.arrays[8 + 2]
 
         return dst.apply {
-            arrays[ 0] = a00 * b00 + a10 * b01 + a20 * b02; arrays[3] = 0f
-            arrays[ 1] = a01 * b00 + a11 * b01 + a21 * b02; arrays[7] = 0f
-            arrays[ 2] = a02 * b00 + a12 * b01 + a22 * b02; arrays[11] = 0f
-            arrays[ 4] = a00 * b10 + a10 * b11 + a20 * b12
-            arrays[ 5] = a01 * b10 + a11 * b11 + a21 * b12
-            arrays[ 6] = a02 * b10 + a12 * b11 + a22 * b12
-            arrays[ 8] = a00 * b20 + a10 * b21 + a20 * b22
-            arrays[ 9] = a01 * b20 + a11 * b21 + a21 * b22
+            arrays[0] = a00 * b00 + a10 * b01 + a20 * b02; arrays[3] = 0f
+            arrays[1] = a01 * b00 + a11 * b01 + a21 * b02; arrays[7] = 0f
+            arrays[2] = a02 * b00 + a12 * b01 + a22 * b02; arrays[11] = 0f
+            arrays[4] = a00 * b10 + a10 * b11 + a20 * b12
+            arrays[5] = a01 * b10 + a11 * b11 + a21 * b12
+            arrays[6] = a02 * b10 + a12 * b11 + a22 * b12
+            arrays[8] = a00 * b20 + a10 * b21 + a20 * b22
+            arrays[9] = a01 * b20 + a11 * b21 + a21 * b22
             arrays[10] = a02 * b20 + a12 * b21 + a22 * b22
         }
     }
@@ -532,7 +559,7 @@ import kotlin.math.sqrt
     /**
      * Multiplies `this` matrix by [other] (`this` * [other]) (alias for [multiply]).
      */
-    fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
+    inline fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
 
     /**
      * Creates a matrix copy of `this` with the translation component set to [v].
@@ -540,15 +567,15 @@ import kotlin.math.sqrt
     fun setTranslation(v: Vec2f, dst: Mat3f = identity()): Mat3f { // Use identity if dst is null
 
         if (this !== dst) {
-            dst.arrays[ 0] = arrays[ 0];
-            dst.arrays[ 1] = arrays[ 1];
-            dst.arrays[ 2] = arrays[ 2];
-            dst.arrays[ 4] = arrays[ 4];
-            dst.arrays[ 5] = arrays[ 5];
-            dst.arrays[ 6] = arrays[ 6];
+            dst.arrays[0] = arrays[0];
+            dst.arrays[1] = arrays[1];
+            dst.arrays[2] = arrays[2];
+            dst.arrays[4] = arrays[4];
+            dst.arrays[5] = arrays[5];
+            dst.arrays[6] = arrays[6];
         }
-        dst.arrays[ 8] = v.x;
-        dst.arrays[ 9] = v.y;
+        dst.arrays[8] = v.x;
+        dst.arrays[9] = v.y;
         dst.arrays[10] = 1f; // Ensure the bottom-right is 1 for translation
         return dst
     }
@@ -642,16 +669,16 @@ import kotlin.math.sqrt
         val m22 = arrays[2 * 4 + 2]
 
         if (this !== dst) {
-            dst.arrays[ 0] = m00
-            dst.arrays[ 1] = m01
-            dst.arrays[ 2] = m02
-            dst.arrays[ 4] = m10
-            dst.arrays[ 5] = m11
-            dst.arrays[ 6] = m12
+            dst.arrays[0] = m00
+            dst.arrays[1] = m01
+            dst.arrays[2] = m02
+            dst.arrays[4] = m10
+            dst.arrays[5] = m11
+            dst.arrays[6] = m12
         }
 
-        dst.arrays[ 8] = m00 * v0 + m10 * v1 + m20
-        dst.arrays[ 9] = m01 * v0 + m11 * v1 + m21
+        dst.arrays[8] = m00 * v0 + m10 * v1 + m20
+        dst.arrays[9] = m01 * v0 + m11 * v1 + m21
         dst.arrays[10] = m02 * v0 + m12 * v1 + m22
 
         return dst
@@ -671,18 +698,18 @@ import kotlin.math.sqrt
         val c = cos(angleInRadians)
         val s = sin(angleInRadians)
 
-        dst.arrays[ 0] = c * m00 + s * m10
-        dst.arrays[ 1] = c * m01 + s * m11
-        dst.arrays[ 2] = c * m02 + s * m12; dst.arrays[3] = 0f
+        dst.arrays[0] = c * m00 + s * m10
+        dst.arrays[1] = c * m01 + s * m11
+        dst.arrays[2] = c * m02 + s * m12; dst.arrays[3] = 0f
 
-        dst.arrays[ 4] = c * m10 - s * m00
-        dst.arrays[ 5] = c * m11 - s * m01
-        dst.arrays[ 6] = c * m12 - s * m02; dst.arrays[7] = 0f
+        dst.arrays[4] = c * m10 - s * m00
+        dst.arrays[5] = c * m11 - s * m01
+        dst.arrays[6] = c * m12 - s * m02; dst.arrays[7] = 0f
 
 
         if (this !== dst) {
-            dst.arrays[ 8] = arrays[ 8];
-            dst.arrays[ 9] = arrays[ 9];
+            dst.arrays[8] = arrays[8];
+            dst.arrays[9] = arrays[9];
             dst.arrays[10] = arrays[10]; dst.arrays[11] = 0f
         }
 
@@ -704,17 +731,17 @@ import kotlin.math.sqrt
         val c = cos(angleInRadians)
         val s = sin(angleInRadians)
 
-        dst.arrays[4]  = c * m10 + s * m20; dst.arrays[7] = 0f
-        dst.arrays[5]  = c * m11 + s * m21
-        dst.arrays[6]  = c * m12 + s * m22
-        dst.arrays[8]  = c * m20 - s * m10; dst.arrays[11] = 0f
-        dst.arrays[9]  = c * m21 - s * m11
+        dst.arrays[4] = c * m10 + s * m20; dst.arrays[7] = 0f
+        dst.arrays[5] = c * m11 + s * m21
+        dst.arrays[6] = c * m12 + s * m22
+        dst.arrays[8] = c * m20 - s * m10; dst.arrays[11] = 0f
+        dst.arrays[9] = c * m21 - s * m11
         dst.arrays[10] = c * m22 - s * m12
 
         if (this !== dst) {
-            dst.arrays[ 0] = arrays[ 0];
-            dst.arrays[ 1] = arrays[ 1];
-            dst.arrays[ 2] = arrays[ 2]; dst.arrays[3] = 0f
+            dst.arrays[0] = arrays[0];
+            dst.arrays[1] = arrays[1];
+            dst.arrays[2] = arrays[2]; dst.arrays[3] = 0f
         }
 
         return dst
@@ -734,17 +761,17 @@ import kotlin.math.sqrt
         val c = cos(angleInRadians)
         val s = sin(angleInRadians)
 
-        dst.arrays[ 0] = c * m00 - s * m20; dst.arrays[3] = 0f
-        dst.arrays[ 1] = c * m01 - s * m21
-        dst.arrays[ 2] = c * m02 - s * m22
-        dst.arrays[ 8] = c * m20 + s * m00; dst.arrays[11] = 0f
-        dst.arrays[ 9] = c * m21 + s * m01
+        dst.arrays[0] = c * m00 - s * m20; dst.arrays[3] = 0f
+        dst.arrays[1] = c * m01 - s * m21
+        dst.arrays[2] = c * m02 - s * m22
+        dst.arrays[8] = c * m20 + s * m00; dst.arrays[11] = 0f
+        dst.arrays[9] = c * m21 + s * m01
         dst.arrays[10] = c * m22 + s * m02
 
         if (this !== dst) {
-            dst.arrays[ 4] = arrays[ 4];
-            dst.arrays[ 5] = arrays[ 5];
-            dst.arrays[ 6] = arrays[ 6]; dst.arrays[7] = 0f
+            dst.arrays[4] = arrays[4];
+            dst.arrays[5] = arrays[5];
+            dst.arrays[6] = arrays[6]; dst.arrays[7] = 0f
         }
 
         return dst
@@ -763,17 +790,17 @@ import kotlin.math.sqrt
         val v0 = v.x
         val v1 = v.y
 
-        dst.arrays[ 0] = v0 * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
-        dst.arrays[ 1] = v0 * arrays[0 * 4 + 1]
-        dst.arrays[ 2] = v0 * arrays[0 * 4 + 2]
+        dst.arrays[0] = v0 * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
+        dst.arrays[1] = v0 * arrays[0 * 4 + 1]
+        dst.arrays[2] = v0 * arrays[0 * 4 + 2]
 
-        dst.arrays[ 4] = v1 * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
-        dst.arrays[ 5] = v1 * arrays[1 * 4 + 1]
-        dst.arrays[ 6] = v1 * arrays[1 * 4 + 2]
+        dst.arrays[4] = v1 * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
+        dst.arrays[5] = v1 * arrays[1 * 4 + 1]
+        dst.arrays[6] = v1 * arrays[1 * 4 + 2]
 
         if (this !== dst) {
-            dst.arrays[ 8] = arrays[ 8];
-            dst.arrays[ 9] = arrays[ 9];
+            dst.arrays[8] = arrays[8];
+            dst.arrays[9] = arrays[9];
             dst.arrays[10] = arrays[10]; dst.arrays[11] = 0f
         }
 
@@ -789,16 +816,16 @@ import kotlin.math.sqrt
         val v1 = v[1]
         val v2 = v[2]
 
-        dst.arrays[ 0] = v0 * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
-        dst.arrays[ 1] = v0 * arrays[0 * 4 + 1]
-        dst.arrays[ 2] = v0 * arrays[0 * 4 + 2]
+        dst.arrays[0] = v0 * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
+        dst.arrays[1] = v0 * arrays[0 * 4 + 1]
+        dst.arrays[2] = v0 * arrays[0 * 4 + 2]
 
-        dst.arrays[ 4] = v1 * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
-        dst.arrays[ 5] = v1 * arrays[1 * 4 + 1]
-        dst.arrays[ 6] = v1 * arrays[1 * 4 + 2]
+        dst.arrays[4] = v1 * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
+        dst.arrays[5] = v1 * arrays[1 * 4 + 1]
+        dst.arrays[6] = v1 * arrays[1 * 4 + 2]
 
-        dst.arrays[ 8] = v2 * arrays[2 * 4 + 0]; dst.arrays[11] = 0f
-        dst.arrays[ 9] = v2 * arrays[2 * 4 + 1]
+        dst.arrays[8] = v2 * arrays[2 * 4 + 0]; dst.arrays[11] = 0f
+        dst.arrays[9] = v2 * arrays[2 * 4 + 1]
         dst.arrays[10] = v2 * arrays[2 * 4 + 2]
 
         return dst
@@ -809,17 +836,17 @@ import kotlin.math.sqrt
      */
     fun uniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
-        dst.arrays[ 0] = s * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
-        dst.arrays[ 1] = s * arrays[0 * 4 + 1]
-        dst.arrays[ 2] = s * arrays[0 * 4 + 2]
+        dst.arrays[0] = s * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
+        dst.arrays[1] = s * arrays[0 * 4 + 1]
+        dst.arrays[2] = s * arrays[0 * 4 + 2]
 
-        dst.arrays[ 4] = s * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
-        dst.arrays[ 5] = s * arrays[1 * 4 + 1]
-        dst.arrays[ 6] = s * arrays[1 * 4 + 2]
+        dst.arrays[4] = s * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
+        dst.arrays[5] = s * arrays[1 * 4 + 1]
+        dst.arrays[6] = s * arrays[1 * 4 + 2]
 
         if (this !== dst) {
-            dst.arrays[ 8] = arrays[ 8];
-            dst.arrays[ 9] = arrays[ 9];
+            dst.arrays[8] = arrays[8];
+            dst.arrays[9] = arrays[9];
             dst.arrays[10] = arrays[10]; dst.arrays[11] = 0f
         }
 
@@ -831,16 +858,16 @@ import kotlin.math.sqrt
      */
     fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
-        dst.arrays[ 0] = s * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
-        dst.arrays[ 1] = s * arrays[0 * 4 + 1]
-        dst.arrays[ 2] = s * arrays[0 * 4 + 2]
+        dst.arrays[0] = s * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
+        dst.arrays[1] = s * arrays[0 * 4 + 1]
+        dst.arrays[2] = s * arrays[0 * 4 + 2]
 
-        dst.arrays[ 4] = s * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
-        dst.arrays[ 5] = s * arrays[1 * 4 + 1]
-        dst.arrays[ 6] = s * arrays[1 * 4 + 2]
+        dst.arrays[4] = s * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
+        dst.arrays[5] = s * arrays[1 * 4 + 1]
+        dst.arrays[6] = s * arrays[1 * 4 + 2]
 
-        dst.arrays[ 8] = s * arrays[2 * 4 + 0]; dst.arrays[11] = 0f
-        dst.arrays[ 9] = s * arrays[2 * 4 + 1]
+        dst.arrays[8] = s * arrays[2 * 4 + 0]; dst.arrays[11] = 0f
+        dst.arrays[9] = s * arrays[2 * 4 + 1]
         dst.arrays[10] = s * arrays[2 * 4 + 2]
 
         return dst
