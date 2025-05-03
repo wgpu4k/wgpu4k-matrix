@@ -2,11 +2,7 @@
 
 package io.github.natanfudge.wgpu4k.matrix
 
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
-import kotlin.math.tan
-import kotlin.math.abs
+import kotlin.math.*
 
 /**
  * Represents a 4x4 matrix stored in a 16-element FloatArray.
@@ -43,12 +39,18 @@ class Mat4f private constructor(val array: FloatArray) {
         }
     }
 
+    inline operator fun plus(other: Mat4f) = add(other)
+    inline operator fun minus(other: Mat4f) = diff(other)
+    inline operator fun times(scalar: Float) = multiplyScalar(scalar)
+    inline operator fun times(matrix: Mat4f) = multiply(matrix)
+    inline operator fun div(scalar: Float) = div(scalar, Mat4f())
+    inline operator fun unaryMinus() = negate()
     inline operator fun get(index: Int): Float {
         return this.array[index]
     }
 
     inline operator fun set(index: Int, value: Float) {
-         this.array[index] = value
+        this.array[index] = value
     }
 
     /**
@@ -58,7 +60,7 @@ class Mat4f private constructor(val array: FloatArray) {
         v0: Float = 0f, v1: Float = 0f, v2: Float = 0f, v3: Float = 0f,
         v4: Float = 0f, v5: Float = 0f, v6: Float = 0f, v7: Float = 0f,
         v8: Float = 0f, v9: Float = 0f, v10: Float = 0f, v11: Float = 0f,
-        v12: Float = 0f, v13: Float = 0f, v14: Float = 0f, v15: Float = 0f
+        v12: Float = 0f, v13: Float = 0f, v14: Float = 0f, v15: Float = 0f,
     ) : this(FloatArray(16).apply {
         this[0] = v0; this[1] = v1; this[2] = v2; this[3] = v3
         this[4] = v4; this[5] = v5; this[6] = v6; this[7] = v7
@@ -122,8 +124,13 @@ class Mat4f private constructor(val array: FloatArray) {
          */
         fun fromQuat(q: Quatf, dst: Mat4f = Mat4f()): Mat4f {
 
-            val x = q.x; val y = q.y; val z = q.z; val w = q.w
-            val x2 = x + x; val y2 = y + y; val z2 = z + z
+            val x = q.x;
+            val y = q.y;
+            val z = q.z;
+            val w = q.w
+            val x2 = x + x;
+            val y2 = y + y;
+            val z2 = z + z
 
             val xx = x * x2
             val yx = y * x2
@@ -412,7 +419,7 @@ class Mat4f private constructor(val array: FloatArray) {
         v0: Float, v1: Float, v2: Float, v3: Float,
         v4: Float, v5: Float, v6: Float, v7: Float,
         v8: Float, v9: Float, v10: Float, v11: Float,
-        v12: Float, v13: Float, v14: Float, v15: Float
+        v12: Float, v13: Float, v14: Float, v15: Float,
     ): Mat4f = this.apply {
         array[0] = v0; array[1] = v1; array[2] = v2; array[3] = v3
         array[4] = v4; array[5] = v5; array[6] = v6; array[7] = v7
@@ -442,7 +449,21 @@ class Mat4f private constructor(val array: FloatArray) {
             array[0] = this@Mat4f.array[0] * s; array[1] = this@Mat4f.array[1] * s; array[2] = this@Mat4f.array[2] * s; array[3] = this@Mat4f.array[3] * s
             array[4] = this@Mat4f.array[4] * s; array[5] = this@Mat4f.array[5] * s; array[6] = this@Mat4f.array[6] * s; array[7] = this@Mat4f.array[7] * s
             array[8] = this@Mat4f.array[8] * s; array[9] = this@Mat4f.array[9] * s; array[10] = this@Mat4f.array[10] * s; array[11] = this@Mat4f.array[11] * s
-            array[12] = this@Mat4f.array[12] * s; array[13] = this@Mat4f.array[13] * s; array[14] = this@Mat4f.array[14] * s; array[15] = this@Mat4f.array[15] * s
+            array[12] = this@Mat4f.array[12] * s; array[13] = this@Mat4f.array[13] * s; array[14] = this@Mat4f.array[14] * s; array[15] =
+            this@Mat4f.array[15] * s
+        }
+    }
+
+    /**
+     * Divides `this` matrix by the scalar [s].
+     */
+    fun div(s: Float, dst: Mat4f = Mat4f()): Mat4f {
+        return dst.apply {
+            array[0] = this@Mat4f.array[0] / s; array[1] = this@Mat4f.array[1] / s; array[2] = this@Mat4f.array[2] / s; array[3] = this@Mat4f.array[3] / s
+            array[4] = this@Mat4f.array[4] / s; array[5] = this@Mat4f.array[5] / s; array[6] = this@Mat4f.array[6] / s; array[7] = this@Mat4f.array[7] / s
+            array[8] = this@Mat4f.array[8] / s; array[9] = this@Mat4f.array[9] / s; array[10] = this@Mat4f.array[10] / s; array[11] = this@Mat4f.array[11] / s
+            array[12] = this@Mat4f.array[12] / s; array[13] = this@Mat4f.array[13] / s; array[14] = this@Mat4f.array[14] / s; array[15] =
+            this@Mat4f.array[15] / s
         }
     }
 
@@ -460,6 +481,22 @@ class Mat4f private constructor(val array: FloatArray) {
             array[10] = this@Mat4f.array[10] + other.array[10]; array[11] = this@Mat4f.array[11] + other.array[11]
             array[12] = this@Mat4f.array[12] + other.array[12]; array[13] = this@Mat4f.array[13] + other.array[13]
             array[14] = this@Mat4f.array[14] + other.array[14]; array[15] = this@Mat4f.array[15] + other.array[15]
+        }
+    }
+
+    /**
+     * Calculates the difference between `this` and [other].
+     */
+    fun diff(other: Mat4f, dst: Mat4f = Mat4f()): Mat4f {
+        return dst.apply {
+            array[0] = this@Mat4f.array[0] - other.array[0]; array[1] = this@Mat4f.array[1] - other.array[1]
+            array[2] = this@Mat4f.array[2] - other.array[2]; array[3] = this@Mat4f.array[3] - other.array[3]
+            array[4] = this@Mat4f.array[4] - other.array[4]; array[5] = this@Mat4f.array[5] - other.array[5]
+            array[6] = this@Mat4f.array[6] - other.array[6]; array[7] = this@Mat4f.array[7] - other.array[7]
+            array[8] = this@Mat4f.array[8] - other.array[8]; array[9] = this@Mat4f.array[9] - other.array[9]
+            array[10] = this@Mat4f.array[10] - other.array[10]; array[11] = this@Mat4f.array[11] - other.array[11]
+            array[12] = this@Mat4f.array[12] - other.array[12]; array[13] = this@Mat4f.array[13] - other.array[13]
+            array[14] = this@Mat4f.array[14] - other.array[14]; array[15] = this@Mat4f.array[15] - other.array[15]
         }
     }
 

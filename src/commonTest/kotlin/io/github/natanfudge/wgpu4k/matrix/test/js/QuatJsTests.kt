@@ -1,4 +1,4 @@
-package io.github.natanfudge.wgpu4k.matrix.test
+package io.github.natanfudge.wgpu4k.matrix.test.js
 
 import io.github.natanfudge.wgpu4k.matrix.EPSILON
 import io.github.natanfudge.wgpu4k.matrix.FloatPi
@@ -13,7 +13,7 @@ import kotlin.test.*
 
 // --- Test Suite ---
 
-class QuatTest {
+class QuatJsTests {
 
     // Helper to safely copy a Quat without using the problematic copy() method
     private fun safeQuatCopy(q: Quatf): Quatf {

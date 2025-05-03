@@ -1,11 +1,8 @@
 package io.github.natanfudge.wgpu4k.matrix
 
+import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.create
 import kotlin.math.*
-import kotlin.random.Random // Needed for Vec3.random
-
-
-
-
+import kotlin.random.Random
 
 
 /**
@@ -14,7 +11,7 @@ import kotlin.random.Random // Needed for Vec3.random
 class Vec3f(
     var x: Float = 0f,
     var y: Float = 0f,
-    var z: Float = 0f
+    var z: Float = 0f,
 ) {
 
     // Constructors are now handled by default parameters in the primary constructor.
@@ -43,6 +40,11 @@ class Vec3f(
         }
     }
 
+    inline operator fun plus(other: Vec3f) = add(other)
+    inline operator fun minus(other: Vec3f) = subtract(other)
+    inline operator fun times(scalar: Float) = mulScalar(scalar)
+    inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun unaryMinus() = negate()
     // --- Instance Methods (where `this` is the first parameter 'v' or 'a') ---
 
     /**
@@ -145,7 +147,6 @@ class Vec3f(
     }
 
 
-
     /**
      * Linearly interpolates between `this` and [b] using coefficient [t].
      */
@@ -234,8 +235,12 @@ class Vec3f(
      * Computes the cross product of `this` and [b].
      */
     fun cross(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
-        val ax = this.x; val ay = this.y; val az = this.z
-        val bx = b.x; val by = b.y; val bz = b.z
+        val ax = this.x;
+        val ay = this.y;
+        val az = this.z
+        val bx = b.x;
+        val by = b.y;
+        val bz = b.z
 
         dst.x = ay * bz - az * by
         dst.y = az * bx - ax * bz
@@ -395,7 +400,9 @@ class Vec3f(
      * Transforms `this` vector (point, w=1) by the 4x4 matrix [m].
      */
     fun transformMat4(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
-        val x = this.x; val y = this.y; val z = this.z
+        val x = this.x;
+        val y = this.y;
+        val z = this.z
         var w = (m[3] * x + m[7] * y + m[11] * z + m[15])
         if (w == 0f) {
             w = 1f
@@ -412,7 +419,9 @@ class Vec3f(
      * Transforms `this` vector (direction, w=0) by the upper 3x3 part of the 4x4 matrix [m].
      */
     fun transformMat4Upper3x3(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
-        val vx = this.x; val vy = this.y; val vz = this.z
+        val vx = this.x;
+        val vy = this.y;
+        val vz = this.z
 
         dst.x = vx * m[0 * 4 + 0] + vy * m[1 * 4 + 0] + vz * m[2 * 4 + 0]
         dst.y = vx * m[0 * 4 + 1] + vy * m[1 * 4 + 1] + vz * m[2 * 4 + 1]
@@ -426,7 +435,9 @@ class Vec3f(
      */
     fun transformMat3(m: Mat3f, dst: Vec3f = Vec3f()): Vec3f {
         // Using standard math (Mat3 * Vec3, Col Major Mat3) as the JS source had inconsistent indices.
-        val x = this.x; val y = this.y; val z = this.z
+        val x = this.x;
+        val y = this.y;
+        val z = this.z
         dst.x = (m[0] * x) + (m[4] * y) + (m[8] * z)
         dst.y = m[1] * x + m[5] * y + m[9] * z
         dst.z = m[2] * x + m[6] * y + m[10] * z
@@ -438,10 +449,15 @@ class Vec3f(
      */
     fun transformQuat(q: Quatf, dst: Vec3f = Vec3f()): Vec3f {
         // Access quaternion components using properties and ensure they are Float
-        val qx = q.x; val qy = q.y; val qz = q.z; val qw = q.w
+        val qx = q.x;
+        val qy = q.y;
+        val qz = q.z;
+        val qw = q.w
         // Calculation based on transforming a vector by a quaternion: v' = q * v * conjugate(q)
         // Simplified calculation:
-        val x = this.x; val y = this.y; val z = this.z
+        val x = this.x;
+        val y = this.y;
+        val z = this.z
 
         // Correct calculation: v' = v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v)
         // Or using the optimized formula:
@@ -647,9 +663,15 @@ class Vec3f(
          * Gets the scaling component of the 4x4 matrix [m].
          */
         fun getScaling(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
-            val xColX = m[0]; val xColY = m[1]; val xColZ = m[2]
-            val yColX = m[4]; val yColY = m[5]; val yColZ = m[6]
-            val zColX = m[8]; val zColY = m[9]; val zColZ = m[10]
+            val xColX = m[0];
+            val xColY = m[1];
+            val xColZ = m[2]
+            val yColX = m[4];
+            val yColY = m[5];
+            val yColZ = m[6]
+            val zColX = m[8];
+            val zColY = m[9];
+            val zColZ = m[10]
 
             dst.x = sqrt(xColX * xColX + xColY * xColY + xColZ * xColZ)
             dst.y = sqrt(yColX * yColX + yColY * yColY + yColZ * yColZ)
@@ -669,7 +691,7 @@ class Vec3f(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec3f) return false
-        
+
         if (x != other.x) return false
         if (y != other.y) return false
         if (z != other.z) return false

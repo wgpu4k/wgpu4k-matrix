@@ -9,8 +9,14 @@ data class Vec4f(
     var x: Float = 0.0f,
     var y: Float = 0.0f,
     var z: Float = 0.0f,
-    var w: Float = 0.0f
+    var w: Float = 0.0f,
 ) {
+
+    inline operator fun plus(other: Vec4f) = add(other)
+    inline operator fun minus(other: Vec4f) = subtract(other)
+    inline operator fun times(scalar: Float) = mulScalar(scalar)
+    inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun unaryMinus() = negate()
 
     companion object {
         const val EPSILON = 0.00001f
@@ -128,9 +134,9 @@ data class Vec4f(
      */
     fun equalsApproximately(other: Vec4f, epsilon: Float = EPSILON): Boolean {
         return abs(this.x - other.x) < epsilon &&
-               abs(this.y - other.y) < epsilon &&
-               abs(this.z - other.z) < epsilon &&
-               abs(this.w - other.w) < epsilon
+                abs(this.y - other.y) < epsilon &&
+                abs(this.z - other.z) < epsilon &&
+                abs(this.w - other.w) < epsilon
     }
 
     /**
@@ -151,20 +157,20 @@ data class Vec4f(
         dst.x = this.x + t * (other.x - this.x)
         dst.y = this.y + t * (other.y - this.y)
         dst.z = this.z + t * (other.z - this.z)
-         dst.w = this.w + t * (other.w - this.w)
-         return dst
+        dst.w = this.w + t * (other.w - this.w)
+        return dst
     }
 
     /**
      * Performs linear interpolation between `this` and [other] using coefficient vector [t].
      * Calculates `this` + [t] * ([other] - `this`) component-wise.
      */
-     fun lerpV(other: Vec4f, t: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
-         dst.x = this.x + t.x * (other.x - this.x)
-         dst.y = this.y + t.y * (other.y - this.y)
-         dst.z = this.z + t.z * (other.z - this.z)
-         dst.w = this.w + t.w * (other.w - this.w)
-         return dst
+    fun lerpV(other: Vec4f, t: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = this.x + t.x * (other.x - this.x)
+        dst.y = this.y + t.y * (other.y - this.y)
+        dst.z = this.z + t.z * (other.z - this.z)
+        dst.w = this.w + t.w * (other.w - this.w)
+        return dst
     }
 
     /**
@@ -299,20 +305,20 @@ data class Vec4f(
      * Normalizes `this` (divides by its length).
      * Returns a zero vector if the length is close to zero.
      */
-     fun normalize(dst: Vec4f = Vec4f()): Vec4f {
-         val l = this.length
-         if (l > EPSILON) {
-             dst.x = this.x / l
-             dst.y = this.y / l
-             dst.z = this.z / l
-             dst.w = this.w / l
-         } else {
-             dst.x = 0.0f
-             dst.y = 0.0f
-             dst.z = 0.0f
-             dst.w = 0.0f
-         }
-         return dst
+    fun normalize(dst: Vec4f = Vec4f()): Vec4f {
+        val l = this.length
+        if (l > EPSILON) {
+            dst.x = this.x / l
+            dst.y = this.y / l
+            dst.z = this.z / l
+            dst.w = this.w / l
+        } else {
+            dst.x = 0.0f
+            dst.y = 0.0f
+            dst.z = 0.0f
+            dst.w = 0.0f
+        }
+        return dst
     }
 
     /**
@@ -396,18 +402,18 @@ data class Vec4f(
      * Note: Assumes Mat4 provides an indexer `get(index: Int)` that maps to column-major order like the TS version.
      * (m[0]=m00, m[1]=m10, m[2]=m20, m[3]=m30, m[4]=m01, m[5]=m11, ...)
      */
-     fun transformMat4(m: Mat4f, dst: Vec4f = Vec4f()): Vec4f {
-         val x = this.x
-         val y = this.y
-         val z = this.z
-         val w = this.w
+    fun transformMat4(m: Mat4f, dst: Vec4f = Vec4f()): Vec4f {
+        val x = this.x
+        val y = this.y
+        val z = this.z
+        val w = this.w
 
-         dst.x = m[0] * x + m[4] * y + m[8] * z + m[12] * w
-         dst.y = m[1] * x + m[5] * y + m[9] * z + m[13] * w
-         dst.z = m[2] * x + m[6] * y + m[10] * z + m[14] * w
-         dst.w = m[3] * x + m[7] * y + m[11] * z + m[15] * w
+        dst.x = m[0] * x + m[4] * y + m[8] * z + m[12] * w
+        dst.y = m[1] * x + m[5] * y + m[9] * z + m[13] * w
+        dst.z = m[2] * x + m[6] * y + m[10] * z + m[14] * w
+        dst.w = m[3] * x + m[7] * y + m[11] * z + m[15] * w
 
-         return dst
+        return dst
     }
 
     /**
@@ -422,11 +428,11 @@ data class Vec4f(
      * Ensures `this` is not longer than [maxLen].
      * @return The vector, shortened to [maxLen] if its original length was greater, otherwise a copy of `this`.
      */
-     fun truncate(maxLen: Float, dst: Vec4f = Vec4f()): Vec4f {
-         if (this.length > maxLen) {
-             return this.setLength(maxLen, dst)
-         }
-         return this.copy(dst)
+    fun truncate(maxLen: Float, dst: Vec4f = Vec4f()): Vec4f {
+        if (this.length > maxLen) {
+            return this.setLength(maxLen, dst)
+        }
+        return this.copy(dst)
     }
 
     /**

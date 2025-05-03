@@ -1,4 +1,4 @@
-package io.github.natanfudge.wgpu4k.matrix.test
+package io.github.natanfudge.wgpu4k.matrix.test.js
 
 import io.github.natanfudge.wgpu4k.matrix.Mat4f
 import io.github.natanfudge.wgpu4k.matrix.Vec4f
@@ -556,7 +556,7 @@ class Vec4Tests {
     @Test
     fun `should transform by 4x4`() {
         // Requires Mat4 class which is not available.
-        // Follows pattern from Vec3Test.kt
+        // Follows pattern from Vec3JsTests.kt
          val expected = Vec4f(17.0f, 24.0f, 33.0f, 4.0f)
          val m = Mat4f(
              1f, 0.0f, 0.0f, 0.0f, // Col 0

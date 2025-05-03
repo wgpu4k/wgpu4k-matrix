@@ -1,4 +1,4 @@
-package io.github.natanfudge.wgpu4k.matrix.test
+package io.github.natanfudge.wgpu4k.matrix.test.js
 
 import io.github.natanfudge.wgpu4k.matrix.EPSILON
 import io.github.natanfudge.wgpu4k.matrix.FloatPi

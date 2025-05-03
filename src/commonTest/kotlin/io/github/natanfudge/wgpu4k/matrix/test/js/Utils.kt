@@ -1,4 +1,4 @@
-package io.github.natanfudge.wgpu4k.matrix.test
+package io.github.natanfudge.wgpu4k.matrix.test.js
 
 fun assertStrictEquals(actual: Any, expected: Any?, msg: String = "") {
     if (actual != expected) {

@@ -1,4 +1,4 @@
-package io.github.natanfudge.wgpu4k.matrix.test
+package io.github.natanfudge.wgpu4k.matrix.test.js
 
 import io.github.natanfudge.wgpu4k.matrix.*
 import kotlin.math.abs
@@ -101,7 +101,7 @@ fun assertArrayEqualsApproximately(expected: FloatArray, actual: FloatArray, tol
     }
 }
 
-// --- Vec4 Helpers (Additions from Vec4Test.kt) ---
+// --- Vec4 Helpers (Additions from Vec4JsTests.kt) ---
 
 // Vec4 comparison (assuming Vec4 uses Double)
 fun assertVec4Equals(expected: Vec4f, actual: Vec4f, message: String? = null) {

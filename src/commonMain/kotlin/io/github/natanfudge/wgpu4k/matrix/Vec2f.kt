@@ -1,10 +1,6 @@
 package io.github.natanfudge.wgpu4k.matrix
 
-import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
 import kotlin.random.Random
 
 /**
@@ -13,6 +9,11 @@ import kotlin.random.Random
  */
 data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
 
+    inline operator fun plus(other: Vec2f) = add(other)
+    inline operator fun minus(other: Vec2f) = subtract(other)
+    inline operator fun times(scalar: Float) = mulScalar(scalar)
+    inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun unaryMinus() = negate()
     // --- Instance Methods (Operating on `this`, supporting 'dst') ---
 
     /**
@@ -117,20 +118,20 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
      * Linearly interpolates between `this` vector and [other] using coefficient [t].
      * Result = `this` + [t] * ([other] - `this`).
      */
-     fun lerp(other: Vec2f, t: Float, dst: Vec2f = Vec2f()): Vec2f {
-         dst.x = this.x + t * (other.x - this.x)
-         dst.y = this.y + t * (other.y - this.y)
-         return dst
+    fun lerp(other: Vec2f, t: Float, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x + t * (other.x - this.x)
+        dst.y = this.y + t * (other.y - this.y)
+        return dst
     }
 
     /**
      * Performs component-wise linear interpolation between `this` vector and [other] using coefficient vector [t].
      * Result = `this` + [t] * ([other] - `this`).
      */
-     fun lerpV(other: Vec2f, t: Vec2f, dst: Vec2f = Vec2f()): Vec2f {
-         dst.x = this.x + t.x * (other.x - this.x)
-         dst.y = this.y + t.y * (other.y - this.y)
-         return dst
+    fun lerpV(other: Vec2f, t: Vec2f, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x + t.x * (other.x - this.x)
+        dst.y = this.y + t.y * (other.y - this.y)
+        return dst
     }
 
     /**

@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package io.github.natanfudge.wgpu4k.matrix
 
 import io.github.natanfudge.wgpu4k.matrix.Quatf.Companion.create
@@ -19,6 +21,12 @@ data class Quatf(
     var z: Float = 0.0f,
     var w: Float = 1.0f, // Default to identity quaternion
 ) {
+    inline operator fun plus(other: Quatf) = add(other)
+    inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
+    inline operator fun times(scalar: Float) = mulScalar(scalar)
+    inline operator fun times(other: Quatf) = multiply(other)
+    inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun unaryMinus() = negate()
 
     companion object {
         // Access to Vec3 companion object methods if needed, or instantiate Vec3 directly
@@ -565,6 +573,17 @@ data class Quatf(
         dst.y = this.y * invK
         dst.z = this.z * invK
         dst.w = this.w * invK
+        return dst
+    }
+
+    /**
+     * Negates `this` quaternion (negates all components).
+     */
+    fun negate(dst: Quatf = Quatf()): Quatf {
+        dst.x = -this.x
+        dst.y = -this.y
+        dst.z = -this.z
+        dst.w = -this.w
         return dst
     }
 
