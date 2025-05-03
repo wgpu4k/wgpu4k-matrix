@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package io.github.natanfudge.wgpu4k.matrix
 
 import kotlin.math.*
@@ -81,6 +83,7 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
 
     /**
      * Computes the angle in radians between `this` vector and [other].
+     * If `this` or [other] is the zero vector, will return PI/2
      */
     fun angle(other: Vec2f): Float {
         // length() method now refers to 'this.length()'
@@ -402,7 +405,9 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
             return dst
         }
 
-        /** Creates a zero vector (components are 0). */
+        /**
+         * Either creates a new zero vector, or sets [dst] to 0,0.
+         * */
         fun zero(dst: Vec2f = Vec2f()): Vec2f {
             dst.x = 0f
             dst.y = 0f

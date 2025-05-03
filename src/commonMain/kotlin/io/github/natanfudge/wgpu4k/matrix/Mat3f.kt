@@ -56,6 +56,10 @@ import kotlin.math.sqrt
         return this.arrays[index]
     }
 
+    inline operator fun set(index: Int, value: Float) {
+        this.arrays[index] = value
+    }
+
 
     /**
      * Creates a new Mat3 with the given values ([v0] to [v8]) in column-major order.

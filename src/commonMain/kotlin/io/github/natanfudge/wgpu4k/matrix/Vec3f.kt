@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package io.github.natanfudge.wgpu4k.matrix
 
 import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.create
