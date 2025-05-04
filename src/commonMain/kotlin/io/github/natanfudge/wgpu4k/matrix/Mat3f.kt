@@ -674,8 +674,10 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Translates `this` by [v].
-     */
+     * Post-multiplies this 3x3 matrix by a 2D translation and writes the result into[dst].
+     * So if you would multiply a vector with the resulting matrix, the translation would apply first, and only then the original matrix's transform.
+     *
+     * */
     fun translate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
         val v0 = v.x

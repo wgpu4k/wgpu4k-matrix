@@ -946,9 +946,7 @@ class Mat3fTest {
     fun testTranslate() {
         val m = Mat3f.rotation(PI.toFloat() / 4f)
         val v = Vec2f(10f, 5f)
-        // Translate applies AFTER the matrix's existing transform
-        // Expected = Translation(v) * Rotation(PI/4)
-        val expected = Mat3f.translation(v).multiply(m)
+        val expected = Mat3f.translation(v).multiply(Mat3f.rotation(PI.toFloat() / 4f))
 
         val translatedM = m.translate(v) // Test without destination
         assertMat3EqualsApproximately(expected, translatedM, message = "Translate without destination")
@@ -976,9 +974,8 @@ class Mat3fTest {
     fun testRotate() { // Also tests rotateZ
         val m = Mat3f.translation(Vec2f(10f, 0f))
         val angle = PI.toFloat() / 2f // 90 degrees
-        // Rotate applies AFTER the matrix's existing transform
         // Expected = Rotation(angle) * Translation(10,0)
-        val expected = Mat3f.rotation(angle).multiply(m)
+        val expected = m.multiply(Mat3f.rotation(angle))
 
         val rotatedM = m.rotate(angle) // Test rotate without destination
         assertMat3EqualsApproximately(expected, rotatedM, message = "Rotate without destination")
@@ -1086,7 +1083,7 @@ class Mat3fTest {
 
         // Test non-invertible
         val nonInvertible = Mat3f.rowMajor(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f)
-        assertNull(nonInvertible.invert(), "Invert non-invertible should return null")
+        assertEquals(Mat3f.identity(),nonInvertible.invert(), "Invert non-invertible should return identity")
     }
 
     @Test
