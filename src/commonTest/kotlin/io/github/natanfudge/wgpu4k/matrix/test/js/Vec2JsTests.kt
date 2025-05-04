@@ -1,3 +1,4 @@
+import io.github.natanfudge.wgpu4k.matrix.EPSILON
 import io.github.natanfudge.wgpu4k.matrix.FloatPi
 import io.github.natanfudge.wgpu4k.matrix.Mat3f
 import io.github.natanfudge.wgpu4k.matrix.Mat4f
@@ -10,7 +11,7 @@ import kotlin.math.*
 // --- Test Utilities ---
 
 // Custom assertion for Vec2 approximate equality using kotlin.test
-fun assertVec2EqualsApproximately(expected: Vec2f, actual: Vec2f, tolerance: Float = Vec2f.EPSILON, message: String? = null) {
+fun assertVec2EqualsApproximately(expected: Vec2f, actual: Vec2f, tolerance: Float = EPSILON, message: String? = null) {
 
     val dx = abs(expected.x - actual.x)
     val dy = abs(expected.y - actual.y)
@@ -19,7 +20,7 @@ fun assertVec2EqualsApproximately(expected: Vec2f, actual: Vec2f, tolerance: Flo
 }
 
 // Custom assertion for Vec3 (FloatArray) approximate equality using kotlin.test
-fun assertVec3EqualsApproximately(expected: FloatArray, actual: FloatArray, tolerance: Float = Vec2f.EPSILON, message: String? = null) {
+fun assertVec3EqualsApproximately(expected: FloatArray, actual: FloatArray, tolerance: Float = EPSILON, message: String? = null) {
     assertEquals(3, expected.size, "Expected array must have size 3")
     assertEquals(3, actual.size, "Actual array must have size 3")
     val dx = abs(expected[0] - actual[0])
@@ -47,7 +48,7 @@ class Vec2Tests {
         v1Initial: Vec2f,
         v2Initial: Vec2f,
         expected: Vec2f,
-        tolerance: Float = Vec2f.EPSILON
+        tolerance: Float = EPSILON
     ) {
 
         // --- Test Case 2: With dst = new Vec2() ---
@@ -95,7 +96,7 @@ class Vec2Tests {
         vInitial: Vec2f,
         scalar: Float,
         expected: Vec2f,
-        tolerance: Float = Vec2f.EPSILON
+        tolerance: Float = EPSILON
     ) {
         // --- Test Case 2: dst = new ---
         run {
@@ -120,7 +121,7 @@ class Vec2Tests {
         operation: Vec2f.(Vec2f) -> Vec2f,
         vInitial: Vec2f,
         expected: Vec2f,
-        tolerance: Float = Vec2f.EPSILON
+        tolerance: Float = EPSILON
     ) {
 
         // --- Test Case 2: dst = new ---
@@ -204,7 +205,7 @@ class Vec2Tests {
     @Test
     fun `should equals approximately`() {
         assertTrue(Vec2f(2f, 3f).equalsApproximately(Vec2f(2f, 3f)))
-        assertTrue(Vec2f(2f, 3f).equalsApproximately(Vec2f(2f + Vec2f.EPSILON * 0.5f, 3f)))
+        assertTrue(Vec2f(2f, 3f).equalsApproximately(Vec2f(2f + EPSILON * 0.5f, 3f)))
         assertFalse(Vec2f(2f, 3f).equalsApproximately(Vec2f(2.001f, 3f)))
     }
 
@@ -212,7 +213,7 @@ class Vec2Tests {
     fun `should equals`() {
         // Uses data class equals `==`
         assertTrue(Vec2f(2f, 3f) == Vec2f(2f, 3f))
-        assertFalse(Vec2f(2f, 3f) == Vec2f(2f + Vec2f.EPSILON * 0.5f, 3f))
+        assertFalse(Vec2f(2f, 3f) == Vec2f(2f + EPSILON * 0.5f, 3f))
     }
 
     @Test

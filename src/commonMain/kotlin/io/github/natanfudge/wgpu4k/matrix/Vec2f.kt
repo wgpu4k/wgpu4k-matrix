@@ -27,6 +27,12 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
         return this
     }
 
+    fun absoluteValue(dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = abs(this.x)
+        dst.y = abs(this.y)
+        return dst
+    }
+
     /**
      * Applies Math.ceil to each component of `this`.
      */
@@ -108,14 +114,10 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
     /**
      * Checks if `this` vector is approximately equal to [other].
      */
-    fun equalsApproximately(other: Vec2f): Boolean {
-        return abs(this.x - other.x) < EPSILON &&
-                abs(this.y - other.y) < EPSILON
+    fun equalsApproximately(other: Vec2f, tolerance: Float = EPSILON): Boolean {
+        return abs(this.x - other.x) < tolerance &&
+                abs(this.y - other.y) < tolerance
     }
-
-    // Note: Default data class `equals` provides exact component-wise equality.
-    // The explicit `equals(a, b)` from the previous version is removed as it conflicts
-    // and the data class provides the standard behavior for `this == other`.
 
     /**
      * Linearly interpolates between `this` vector and [other] using coefficient [t].
@@ -388,8 +390,7 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
 
     // --- Companion Object for Static Factories and Constants ---
     companion object {
-        /** A small epsilon value for floating-point comparisons. */
-        const val EPSILON: Float = io.github.natanfudge.wgpu4k.matrix.EPSILON
+
 
         /** Creates a new Vec2 instance. */
         fun create(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)

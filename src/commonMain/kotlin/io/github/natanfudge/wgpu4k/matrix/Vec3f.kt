@@ -49,6 +49,14 @@ class Vec3f(
     inline operator fun unaryMinus() = negate()
     // --- Instance Methods (where `this` is the first parameter 'v' or 'a') ---
 
+    fun absoluteValue(dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = abs(this.x)
+        dst.y = abs(this.y)
+        dst.z = abs(this.z)
+        return dst
+    }
+
+
     /**
      * Computes the ceiling of each component of `this`.
      */
@@ -142,10 +150,10 @@ class Vec3f(
     /**
      * Checks if `this` and [b] are approximately equal.
      */
-    fun equalsApproximately(b: Vec3f): Boolean {
-        return abs(this.x - b.x) < EPSILON &&
-                abs(this.y - b.y) < EPSILON &&
-                abs(this.z - b.z) < EPSILON
+    fun equalsApproximately(b: Vec3f, tolerance: Float = EPSILON): Boolean {
+        return abs(this.x - b.x) < tolerance &&
+                abs(this.y - b.y) < tolerance &&
+                abs(this.z - b.z) < tolerance
     }
 
 

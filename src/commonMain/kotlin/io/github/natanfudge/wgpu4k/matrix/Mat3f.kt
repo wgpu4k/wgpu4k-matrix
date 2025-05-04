@@ -2,6 +2,7 @@
 
 package io.github.natanfudge.wgpu4k.matrix
 
+import io.github.natanfudge.wgpu4k.matrix.Mat3f.Companion.rowMajor
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -56,13 +57,19 @@ import kotlin.math.sqrt
         return this.arrays[index]
     }
 
+
+    inline operator fun get(row: Int, col: Int): Float {
+        return this.arrays[col * 4 + row] // Column-major order
+    }
+
     inline operator fun set(index: Int, value: Float) {
         this.arrays[index] = value
     }
 
 
     /**
-     * Creates a new Mat3 with the given values ([v0] to [v8]) in column-major order.
+     * Creates a new Mat3 with the given values ([v0] to [v8]) in **column-major** order.
+     * See [rowMajor] for constructing a matrix in row-major order (WebGPU uses column-major so we will convert it)
      */
     constructor(
         v0: Float = 0f, v1: Float = 0f, v2: Float = 0f,
@@ -94,6 +101,19 @@ import kotlin.math.sqrt
     }
 
     companion object {
+        /**
+         * Constructs a [Mat3f] in row-major order.
+         */
+        fun rowMajor(
+            v0: Float, v1: Float, v2: Float,
+            v3: Float, v4: Float, v5: Float,
+            v6: Float, v7: Float, v8: Float,
+        ) = Mat3f(
+            v0, v3, v6,
+            v1, v4, v7,
+            v2, v5, v8
+        )
+
 
         /**
          * Creates a Mat3 from the given [values].
@@ -274,7 +294,7 @@ import kotlin.math.sqrt
     fun toFloatArray(): FloatArray = arrays.copyOf() // Return a copy for safety
 
     /**
-     * Sets the values of `this` from [v0] to [v8].
+     * Sets the values of `this` from [v0] to [v8], in column-major order.
      */
     fun set(
         v0: Float, v1: Float, v2: Float,
@@ -287,7 +307,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Negates `this` matrix.
+     * Negates `this`.
      */
     fun negate(dst: Mat3f = Mat3f()): Mat3f {
         return dst.apply {
@@ -298,7 +318,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Multiplies `this` matrix by the scalar [s].
+     * Multiplies `this` by the scalar [s].
      */
     fun multiplyScalar(s: Float, dst: Mat3f = Mat3f()): Mat3f {
         dst.arrays[0] = arrays[0] * s; dst.arrays[1] = arrays[1] * s; dst.arrays[2] = arrays[2] * s;arrays[3] = 0f
@@ -309,7 +329,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Divides `this` matrix by the scalar [s].
+     * Divides `this` by the scalar [s].
      */
     fun div(s: Float, dst: Mat3f = Mat3f()): Mat3f {
         dst.arrays[0] = arrays[0] / s; dst.arrays[1] = arrays[1] / s; dst.arrays[2] = arrays[2] / s; arrays[3] = 0f
@@ -320,7 +340,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Adds [other] to `this` matrix.
+     * Adds [other] to `this`.
      */
     fun add(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
         dst.arrays[0] = arrays[0] + other.arrays[0]; dst.arrays[1] = arrays[1] + other.arrays[1]; dst.arrays[2] = arrays[2] + other.arrays[2]; arrays[3] = 0f
@@ -348,7 +368,7 @@ import kotlin.math.sqrt
     inline fun minus(other: Mat3f, dst: Mat3f = Mat3f()) = diff(other, dst)
 
     /**
-     * Copies `this` matrix.
+     * Copies `this`.
      */
     fun copy(dst: Mat3f = Mat3f()): Mat3f {
         this.arrays.copyInto(dst.arrays)
@@ -356,27 +376,27 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Copies `this` matrix (alias for [copy]).
+     * Copies `this` (alias for [copy]).
      */
     inline fun clone(dst: Mat3f = Mat3f()): Mat3f = copy(dst)
 
     /**
-     * Checks if `this` matrix is approximately equal to [other].
+     * Checks if `this` is approximately equal to [other].
      */
-    fun equalsApproximately(other: Mat3f): Boolean {
-        return abs(arrays[0] - other.arrays[0]) < EPSILON &&
-                abs(arrays[1] - other.arrays[1]) < EPSILON &&
-                abs(arrays[2] - other.arrays[2]) < EPSILON &&
-                abs(arrays[4] - other.arrays[4]) < EPSILON &&
-                abs(arrays[5] - other.arrays[5]) < EPSILON &&
-                abs(arrays[6] - other.arrays[6]) < EPSILON &&
-                abs(arrays[8] - other.arrays[8]) < EPSILON &&
-                abs(arrays[9] - other.arrays[9]) < EPSILON &&
-                abs(arrays[10] - other.arrays[10]) < EPSILON
+    fun equalsApproximately(other: Mat3f, tolerance: Float = EPSILON): Boolean {
+        return abs(arrays[0] - other.arrays[0]) < tolerance &&
+                abs(arrays[1] - other.arrays[1]) < tolerance &&
+                abs(arrays[2] - other.arrays[2]) < tolerance &&
+                abs(arrays[4] - other.arrays[4]) < tolerance &&
+                abs(arrays[5] - other.arrays[5]) < tolerance &&
+                abs(arrays[6] - other.arrays[6]) < tolerance &&
+                abs(arrays[8] - other.arrays[8]) < tolerance &&
+                abs(arrays[9] - other.arrays[9]) < tolerance &&
+                abs(arrays[10] - other.arrays[10]) < tolerance
     }
 
     /**
-     * Checks if `this` matrix is exactly equal to [other].
+     * Checks if `this` is exactly equal to [other].
      */
     override fun equals(other: Any?): Boolean {
         return other is Mat3f &&
@@ -392,7 +412,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Computes the hash code for `this` matrix.
+     * Computes the hash code for `this`.
      */
     override fun hashCode(): Int {
         var result = arrays.contentHashCode()
@@ -423,7 +443,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Computes the transpose of `this` matrix.
+     * Computes the transpose of `this`.
      */
     fun transpose(dst: Mat3f = Mat3f()): Mat3f {
         if (dst === this) {
@@ -459,7 +479,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Computes the inverse of `this` matrix.
+     * Computes the inverse of `this`.
      * Returns identity if the matrix is not invertible.
      */
     fun inverse(dst: Mat3f = Mat3f()): Mat3f {
@@ -499,7 +519,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Computes the determinant of `this` matrix.
+     * Computes the determinant of `this`.
      */
     fun determinant(): Float {
         val m00 = arrays[0 * 4 + 0]
@@ -518,13 +538,13 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Computes the inverse of `this` matrix (alias for [inverse]).
+     * Computes the inverse of `this` (alias for [inverse]).
      * Returns identity if the matrix is not invertible.
      */
     fun invert(dst: Mat3f = Mat3f()): Mat3f = inverse(dst)
 
     /**
-     * Multiplies `this` matrix by [other] (`this` * [other]).
+     * Multiplies `this` by [other] (`this` * [other]).
      */
     fun multiply(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -561,7 +581,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Multiplies `this` matrix by [other] (`this` * [other]) (alias for [multiply]).
+     * Multiplies `this` by [other] (`this` * [other]) (alias for [multiply]).
      */
     inline fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
 
@@ -585,7 +605,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Gets the translation component of `this` matrix.
+     * Gets the translation component of `this`.
      */
     fun getTranslation(dst: Vec2f = Vec2f.create()): Vec2f {
         dst.x = arrays[8]
@@ -594,7 +614,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Gets the specified [axis] (0=x, 1=y) of `this` matrix as a Vec2.
+     * Gets the specified [axis] (0=x, 1=y) of `this` as a Vec2.
      */
     fun getAxis(axis: Int, dst: Vec2f = Vec2f.create()): Vec2f {
         val off = axis * 4
@@ -616,10 +636,9 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Gets the 2D scaling component of `this` matrix.
+     * Calculates the absolute value of how much this matrix scales vectors in the X and Y axes.
      */
     fun getScaling(dst: Vec2f = Vec2f.create()): Vec2f {
-
         val xx = arrays[0]
         val xy = arrays[1]
         val yx = arrays[4]
@@ -633,7 +652,7 @@ import kotlin.math.sqrt
 
 
     /**
-     * Gets the 3D scaling component of `this` matrix.
+     * Gets the absolute value of how much this matrix scales 3D vectors in the X,Y,Z dimensions.
      */
     fun get3DScaling(dst: Vec3f = Vec3f.create()): Vec3f {
 
@@ -655,7 +674,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Translates `this` matrix by [v].
+     * Translates `this` by [v].
      */
     fun translate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -689,7 +708,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the Z axis.
+     * Rotates `this` by [angleInRadians] around the Z axis.
      */
     fun rotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -721,7 +740,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the X axis.
+     * Rotates `this` by [angleInRadians] around the X axis.
      */
     fun rotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -752,7 +771,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the Y axis.
+     * Rotates `this` by [angleInRadians] around the Y axis.
      */
     fun rotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -782,25 +801,26 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` matrix by [angleInRadians] around the Z axis (alias for [rotate]).
+     * Rotates `this` by [angleInRadians] around the Z axis (alias for [rotate]).
      */
     fun rotateZ(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f = rotate(angleInRadians, dst)
 
     /**
-     * Scales the X and Y dimensions of `this` matrix by the components of [v].
+     * Scales the X and Y dimensions of `this` by the components of [v].
      */
     fun scale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
         val v0 = v.x
         val v1 = v.y
 
-        dst.arrays[0] = v0 * arrays[0 * 4 + 0]; dst.arrays[3] = 0f
-        dst.arrays[1] = v0 * arrays[0 * 4 + 1]
-        dst.arrays[2] = v0 * arrays[0 * 4 + 2]
-
-        dst.arrays[4] = v1 * arrays[1 * 4 + 0]; dst.arrays[7] = 0f
-        dst.arrays[5] = v1 * arrays[1 * 4 + 1]
-        dst.arrays[6] = v1 * arrays[1 * 4 + 2]
+        dst.arrays[0] = v0 * arrays[0]
+        dst.arrays[1] = v0 * arrays[1]
+        dst.arrays[2] = v0 * arrays[2]
+        dst.arrays[3] = 0f
+        dst.arrays[4] = v1 * arrays[4]
+        dst.arrays[5] = v1 * arrays[5]
+        dst.arrays[6] = v1 * arrays[6]
+        dst.arrays[7] = 0f
 
         if (this !== dst) {
             dst.arrays[8] = arrays[8];
@@ -812,7 +832,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Scales each dimension of `this` matrix by the components of [v].
+     * Scales each dimension of `this` by the components of [v].
      */
     fun scale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -836,7 +856,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Scales the X and Y dimensions of `this` matrix uniformly by [s].
+     * Scales the X and Y dimensions of `this` uniformly by [s].
      */
     fun uniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -858,7 +878,7 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Scales each dimension of `this` matrix uniformly by [s].
+     * Scales each dimension of `this` uniformly by [s].
      */
     fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 

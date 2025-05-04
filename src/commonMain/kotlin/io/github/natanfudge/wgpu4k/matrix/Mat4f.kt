@@ -1085,23 +1085,23 @@ class Mat4f private constructor(val array: FloatArray) {
     /**
      * Checks if `this` is approximately equal to [other].
      */
-    fun equalsApproximately(other: Mat4f): Boolean {
-        return abs(array[0] - other.array[0]) < EPSILON &&
-                abs(array[1] - other.array[1]) < EPSILON &&
-                abs(array[2] - other.array[2]) < EPSILON &&
-                abs(array[3] - other.array[3]) < EPSILON &&
-                abs(array[4] - other.array[4]) < EPSILON &&
-                abs(array[5] - other.array[5]) < EPSILON &&
-                abs(array[6] - other.array[6]) < EPSILON &&
-                abs(array[7] - other.array[7]) < EPSILON &&
-                abs(array[8] - other.array[8]) < EPSILON &&
-                abs(array[9] - other.array[9]) < EPSILON &&
-                abs(array[10] - other.array[10]) < EPSILON &&
-                abs(array[11] - other.array[11]) < EPSILON &&
-                abs(array[12] - other.array[12]) < EPSILON &&
-                abs(array[13] - other.array[13]) < EPSILON &&
-                abs(array[14] - other.array[14]) < EPSILON &&
-                abs(array[15] - other.array[15]) < EPSILON
+    fun equalsApproximately(other: Mat4f, tolerance: Float = EPSILON): Boolean {
+        return abs(array[0] - other.array[0]) < tolerance &&
+                abs(array[1] - other.array[1]) < tolerance &&
+                abs(array[2] - other.array[2]) < tolerance &&
+                abs(array[3] - other.array[3]) < tolerance &&
+                abs(array[4] - other.array[4]) < tolerance &&
+                abs(array[5] - other.array[5]) < tolerance &&
+                abs(array[6] - other.array[6]) < tolerance &&
+                abs(array[7] - other.array[7]) < tolerance &&
+                abs(array[8] - other.array[8]) < tolerance &&
+                abs(array[9] - other.array[9]) < tolerance &&
+                abs(array[10] - other.array[10]) < tolerance &&
+                abs(array[11] - other.array[11]) < tolerance &&
+                abs(array[12] - other.array[12]) < tolerance &&
+                abs(array[13] - other.array[13]) < tolerance &&
+                abs(array[14] - other.array[14]) < tolerance &&
+                abs(array[15] - other.array[15]) < tolerance
     }
 
     /**
