@@ -13,6 +13,7 @@ data class Vec4f(
     var z: Float = 0.0f,
     var w: Float = 0.0f,
 ) {
+    override fun toString(): String = "($x,$y,$z,$w)"
 
     inline operator fun plus(other: Vec4f) = add(other)
     inline operator fun minus(other: Vec4f) = subtract(other)
@@ -21,7 +22,8 @@ data class Vec4f(
     inline operator fun unaryMinus() = negate()
 
     companion object {
-        const val EPSILON = 0.00001f
+        // 4 * 4 bytes
+        const val SIZE_BYTES = 16u
 
         /**
          * Creates a vec4 with initial values [x], [y], [z], and [w].
@@ -36,6 +38,13 @@ data class Vec4f(
         fun fromValues(x: Float = 0.0f, y: Float = 0.0f, z: Float = 0.0f, w: Float = 0.0f): Vec4f {
             return Vec4f(x, y, z, w)
         }
+    }
+
+    /**
+     * Sets this vector to the zero vec4
+     */
+    fun setZero() {
+        zero(this)
     }
 
     /**

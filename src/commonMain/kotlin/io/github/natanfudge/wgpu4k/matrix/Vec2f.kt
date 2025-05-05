@@ -10,6 +10,7 @@ import kotlin.random.Random
  * including optional 'dst' parameter support.
  */
 data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
+    override fun toString(): String = "($x,$y)"
 
     inline operator fun plus(other: Vec2f) = add(other)
     inline operator fun minus(other: Vec2f) = subtract(other)
@@ -17,6 +18,13 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
     // --- Instance Methods (Operating on `this`, supporting 'dst') ---
+
+    /**
+     * Sets this vector to the zero vec2
+     */
+    fun setZero() {
+        zero(this)
+    }
 
     /**
      * Sets the components of `this` to [x] and [y].
@@ -390,7 +398,8 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
 
     // --- Companion Object for Static Factories and Constants ---
     companion object {
-
+        // 2 * 4 bytes
+        const val SIZE_BYTES = 8u
 
         /** Creates a new Vec2 instance. */
         fun create(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)

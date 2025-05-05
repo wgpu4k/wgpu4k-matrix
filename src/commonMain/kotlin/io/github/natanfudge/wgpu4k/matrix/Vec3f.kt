@@ -49,6 +49,13 @@ class Vec3f(
     inline operator fun unaryMinus() = negate()
     // --- Instance Methods (where `this` is the first parameter 'v' or 'a') ---
 
+    /**
+     * Sets this vector to the zero vec3
+     */
+    fun setZero() {
+        zero(this)
+    }
+
     fun absoluteValue(dst: Vec3f = Vec3f()): Vec3f {
         dst.x = abs(this.x)
         dst.y = abs(this.y)
@@ -601,6 +608,8 @@ class Vec3f(
 
     // --- Companion Object for static-like methods ---
     companion object {
+        // 3 * 4 bytes
+        const val SIZE_BYTES = 12u
         /**
          * Creates a vec3 with initial values [x], [y], and [z].
          */
@@ -690,14 +699,7 @@ class Vec3f(
         }
     }
 
-    // Override toString for better debugging/logging
-    override fun toString(): String {
-        return "Vec3(x=$x, y=$y, z=$z)"
-    }
-
-    // Override equals and hashCode for proper comparisons and use in collections
-    // Note: This provides standard Kotlin equality, different from the JS 'equals'
-    // and 'equalsApproximately' which are preserved as explicit methods.
+    override fun toString(): String = "($x,$y,$z)"
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec3f) return false

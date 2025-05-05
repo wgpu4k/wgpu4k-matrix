@@ -78,6 +78,8 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     companion object {
+        // 16 * 4 bytes
+        const val SIZE_BYTES = 64u
         /**
          * Creates a Mat4 from the given [values].
          * You should generally not use this constructor as it assumes the array is already in the correct format.
@@ -404,6 +406,13 @@ class Mat4f private constructor(val array: FloatArray) {
                 array[15] = 1f
             }
         }
+    }
+
+    /**
+     * Sets this matrix to the identity matrix
+     */
+    fun setIdentity() {
+        identity(this)
     }
 
     /**

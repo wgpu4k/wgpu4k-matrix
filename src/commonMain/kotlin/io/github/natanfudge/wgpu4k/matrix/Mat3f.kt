@@ -101,6 +101,8 @@ import kotlin.math.sqrt
     }
 
     companion object {
+        // 12 * 4 bytes
+        const val SIZE_BYTES = 48u
         /**
          * Constructs a [Mat3f] in row-major order.
          */
@@ -285,6 +287,13 @@ import kotlin.math.sqrt
                 arrays[8] = 0f; arrays[9] = 0f; arrays[10] = s; arrays[11] = 0f
             }
         }
+    }
+
+    /**
+     * Sets this matrix to the identity matrix
+     */
+    fun setIdentity() {
+        identity(this)
     }
 
     /**
@@ -674,12 +683,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Post-multiplies this 3x3 matrix by a 2D translation and writes the result into[dst].
-     * So if you would multiply a vector with the resulting matrix, the translation would apply first, and only then the original matrix's transform.
+     * Post-multiplies this 3x3 matrix by a 2D translation matrix created from [v] and writes the result into [dst].
+     * `dst = this * translation(v)`
      *
-     * */
+     * If you multiply a [Vec2f] with the resulting matrix (`dst * vec`), the translation applies *after* the original matrix's (`this`) transform.
+     */
     fun translate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-
         val v0 = v.x
         val v1 = v.y
 

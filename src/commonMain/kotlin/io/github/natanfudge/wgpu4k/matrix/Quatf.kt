@@ -21,6 +21,7 @@ data class Quatf(
     var z: Float = 0.0f,
     var w: Float = 1.0f, // Default to identity quaternion
 ) {
+override fun toString(): String = "($x,$y,$z,$w)"
     inline operator fun plus(other: Quatf) = add(other)
     inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
     inline operator fun times(scalar: Float) = mulScalar(scalar)
@@ -29,11 +30,8 @@ data class Quatf(
     inline operator fun unaryMinus() = negate()
 
     companion object {
-        // Access to Vec3 companion object methods if needed, or instantiate Vec3 directly
-        // private val vec3Companion = Vec3 // If Vec3 has companion object methods we need
-
-        // Constants
-        const val EPSILON = 1e-6f // Epsilon for quaternion comparisons, potentially different from Vec
+        // 4 * 4 bytes
+        const val SIZE_BYTES = 16u
 
 
         /**
@@ -288,6 +286,14 @@ data class Quatf(
             return dst
         }
     }
+
+    /**
+     * Sets this quaternion to the identity quaternion
+     */
+    fun setIdentity() {
+        identity(this)
+    }
+
 
     /**
      * Sets the components of `this` to [x], [y], [z], [w].
