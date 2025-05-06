@@ -1,9 +1,4 @@
-2. Go over the transformation functions and check if they post-multiply, and document accordingly using gemini, example:
-   /**
-    * Post-multiplies this 3x3 matrix by a 2D translation and writes the result into[dst].
-    * So if you would multiply a vector with the resulting matrix, the translation would apply first, and only then the original matrix's transform.
-    *
-    * */
+1. .ns for all toString()s 
 2. Rewrite the tests given this new information.
 3. probably add premultiplication functions so it will be less nonsensical
 5. Add column-major as its own factory function, and make default row-major (?)

@@ -110,16 +110,25 @@ class Mat3fTest {
 
     @Test
     fun testCompanionFromMat4() {
+        val t = Mat4f.translation(Vec3f(10f, 20f, 30f))
+        val r = t.rotateY(FloatPi / 2f)
+        val s = r.scale(Vec3f(2f, 3f, 4f))
+
         val m4 = Mat4f.translation(Vec3f(10f, 20f, 30f))
             .rotateY(PI.toFloat() / 2f)
             .scale(Vec3f(2f, 3f, 4f))
 
         val expected = Mat3f.rowMajor(
-            0f, 0f, -2f,
+            0f, 0f, 4f,
             0f, 3f, 0f,
-            4f, 0f, 0f
-        ).setTranslation(Vec2f(10f, 20f)) // Translation part is copied
+            -2f, 0f, 0f
+        ) // Translation part is copied
 
+        // m4 =
+        //[0,0,4,10]
+        //[0,3,0,20]
+        //[-2,0,0,30]
+        //[0,0,0,1]
         val actual = Mat3f.fromMat4(m4)
         assertMat3EqualsApproximately(expected, actual, message = "fromMat4 basic")
 
@@ -129,8 +138,16 @@ class Mat3fTest {
         assertMat3Equals(expectedId3, Mat3f.fromMat4(id4), "fromMat4 identity")
 
         // Edge case: Mat4 with only translation
+        // [1,0,0,5]
+        //[0,1,0,-5]
+        //[0,0,1,0]
+        //[0,0,0,1]
         val trans4 = Mat4f.translation(Vec3f(5f, -5f, 0f))
-        val expectedTrans3 = Mat3f.identity().setTranslation(Vec2f(5f, -5f))
+        val expectedTrans3 = Mat3f.rowMajor(
+            1f,0f,0f,
+            0f,1f,0f,
+            0f,0f,1f
+        )
         assertMat3Equals(expectedTrans3, Mat3f.fromMat4(trans4), "fromMat4 translation only")
     }
 
@@ -653,8 +670,12 @@ class Mat3fTest {
     @Test
     fun testInverse() { // Also tests invert
         // Basic invertible matrix
-        val m = Mat3f.scaling(Vec2f(2f, 0.5f)).rotate(PI.toFloat() / 2f) // Scale then rotate 90 deg
-        val expectedInverse = Mat3f.rotation(-PI.toFloat() / 2f).scale(Vec2f(0.5f, 2f)) // Rotate back then inverse scale
+        // Order of operations for m: Scale(2, 0.5) then Rotate(PI/2)
+        // m = Rotate(PI/2) * Scale(2, 0.5)
+        // So, m.inverse() = Scale(2, 0.5).inverse() * Rotate(PI/2).inverse()
+        // = Scale(0.5, 2) * Rotate(-PI/2)
+        val m = Mat3f.scaling(Vec2f(2f, 0.5f)).rotate(PI.toFloat() / 2f)
+        val expectedInverse = Mat3f.scaling(Vec2f(0.5f, 2f)).rotate(-PI.toFloat() / 2f)
 
         val inverseM = m.inverse() // Test inverse without destination
         assertMat3EqualsApproximately(expectedInverse, inverseM, message = "Inverse without destination")
@@ -678,9 +699,11 @@ class Mat3fTest {
         assertNotSame(id, idInverse, "Inverse identity new instance")
 
         // Edge case: Non-invertible matrix (determinant is zero)
-        val nonInvertible = Mat3f.rowMajor(1f, 2f, 3f, 2f, 4f, 6f, 7f, 8f, 9f) // Col 1 = 2 * Col 0
-        assertNull(nonInvertible.inverse(Mat3f.identity()), "Inverse non-invertible should return null") // Check return null when dst provided
-        assertNull(nonInvertible.inverse(), "Inverse non-invertible without dst should return null")
+        val nonInvertible = Mat3f.rowMajor(1f, 2f, 3f, 2f, 4f, 6f, 7f, 8f, 9f) // Col 1 is 2 * Col 0, making it non-invertible
+        val identityMat = Mat3f.identity()
+        // The inverse function returns identity if the matrix is not invertible.
+        assertMat3Equals(identityMat, nonInvertible.inverse(Mat3f()), "Inverse non-invertible should return identity when dst provided")
+        assertMat3Equals(identityMat, nonInvertible.inverse(), "Inverse non-invertible without dst should return identity")
     }
 
     @Test
@@ -714,33 +737,46 @@ class Mat3fTest {
             0f, 3f, 0f,
             0f, 0f, 1f
         )
-        // Expected: Apply m2 then m1 (Scale -> Rotate -> Translate)
+        // m1.multiply(m2) means m1 * m2
+        // m1: Rotate(90deg) * Translate(7,8)
+        // m2: Scale(2,3)
+        // Expected: (Rotate(90deg) * Translate(7,8)) * Scale(2,3)
+        // Let's verify with a point: p = (1,0)
+        // p' = Scale(2,3) * p = (2,0)
+        // p'' = Translate(7,8) * p' = (2+7, 0+8) = (9,8)  -- This is if Translate is applied first to the scaled point
+        // p''' = Rotate(90deg) * p'' = (-8, 9)
+        //
+        // If m1 is applied first, then m2:
+        // p' = Translate(7,8) * p = (1+7, 0+8) = (8,8)
+        // p'' = Rotate(90deg) * p' = (-8, 8)
+        // p''' = Scale(2,3) * p'' = (-16, 24)
+        //
+        // The function is m1.multiply(m2), so it's m1 * m2.
+        // m1 = [[0, -1, 7], [1, 0, 8], [0, 0, 1]] (row-major display)
+        // m2 = [[2, 0, 0], [0, 3, 0], [0, 0, 1]] (row-major display)
+        // m1 * m2 =
+        // [ (0*2 + -1*0 + 7*0), (0*0 + -1*3 + 7*0), (0*0 + -1*0 + 7*1) ] = [0, -3, 7]
+        // [ (1*2 +  0*0 + 8*0), (1*0 +  0*3 + 8*0), (1*0 +  0*0 + 8*1) ] = [2,  0, 8]
+        // [ (0*2 +  0*0 + 1*0), (0*0 +  0*3 + 1*0), (0*0 +  0*0 + 1*1) ] = [0,  0, 1]
+        // So, expected (row-major):
         val expected = Mat3f.rowMajor(
-            0f, 3f, 0f, // Col 0: m1 * (2,0,0)t = (0,-2,7)t -> wrong, matrix mul is different
-            -2f, 0f, 0f, // Col 1: m1 * (0,3,0)t = (3,0,8)t -> wrong
-            7f, 8f, 1f  // Col 2: m1 * (0,0,1)t = (0,0,1)t -> wrong
+            0f, -3f, 7f,
+            2f, 0f, 8f,
+            0f, 0f, 1f
         )
-        // Manual calculation:
-        // Row 0: [0, -1, 7] * [2,0,0]t = 0, * [0,3,0]t = -3, * [0,0,1]t = 7 -> [0, -3, 7]
-        // Row 1: [1, 0, 8] * [2,0,0]t = 2, * [0,3,0]t = 0, * [0,0,1]t = 8 -> [2, 0, 8]
-        // Row 2: [0, 0, 1] * [2,0,0]t = 0, * [0,3,0]t = 0, * [0,0,1]t = 1 -> [0, 0, 1]
-        // Result (row major): [0,-3,7], [2,0,8], [0,0,1]
-        // Result (column major for constructor): 0,2,0, -3,0,0, 7,8,1
-        val expectedCorrect = Mat3f.rowMajor(0f, 2f, 0f, -3f, 0f, 0f, 7f, 8f, 1f)
-
 
         val multipliedM = m1.multiply(m2) // Test multiply without destination
-        assertMat3EqualsApproximately(expectedCorrect, multipliedM, message = "Multiply without destination")
+        assertMat3EqualsApproximately(expected, multipliedM, message = "Multiply without destination")
         assertNotSame(m1, multipliedM, "Multiply without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m1.multiply(m2, dst) // Test multiply with destination
-        assertMat3EqualsApproximately(expectedCorrect, dst, message = "Multiply with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "Multiply with destination")
         assertSame(dst, result, "Multiply with destination should return destination")
 
         // Test mul alias
         val mulM = m1.mul(m2)
-        assertMat3EqualsApproximately(expectedCorrect, mulM, message = "Mul alias")
+        assertMat3EqualsApproximately(expected, mulM, message = "Mul alias")
         assertNotSame(m1, mulM, "Mul alias new instance")
 
         // Edge case: Multiply by identity
@@ -946,27 +982,29 @@ class Mat3fTest {
     fun testTranslate() {
         val m = Mat3f.rotation(PI.toFloat() / 4f)
         val v = Vec2f(10f, 5f)
-        val expected = Mat3f.translation(v).multiply(Mat3f.rotation(PI.toFloat() / 4f))
+        // m.translate(v) means m * translation(v)
+        // Expected = Rotation(PI/4) * Translation(10,5)
+        val expected = m.multiply(Mat3f.translation(v))
 
         val translatedM = m.translate(v) // Test without destination
-        assertMat3EqualsApproximately(expected, translatedM, message = "Translate without destination")
+        assertMat3EqualsApproximately(expected, translatedM, message = "Translate (post-multiply) without destination")
         assertNotSame(m, translatedM, "Translate without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.translate(v, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "Translate with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "Translate (post-multiply) with destination")
         assertSame(dst, result, "Translate with destination should return destination")
 
         // Edge case: Translate identity
         val id = Mat3f.identity()
-        val idTranslated = id.translate(v)
-        val expectedIdTranslated = Mat3f.translation(v)
-        assertMat3Equals(expectedIdTranslated, idTranslated, "Translate identity")
+        val idTranslated = id.translate(v) // id * translation(v)
+        val expectedIdTranslated = Mat3f.identity().multiply(Mat3f.translation(v))
+        assertMat3EqualsApproximately(expectedIdTranslated, idTranslated, message = "Translate identity (post-multiply)")
         assertNotSame(id, idTranslated, "Translate identity new instance")
 
         // Edge case: Translate by zero vector
-        val mTranslatedZero = m.translate(Vec2f(0f, 0f))
-        assertMat3Equals(m, mTranslatedZero, "Translate by zero")
+        val mTranslatedZero = m.translate(Vec2f(0f, 0f)) // m * identity
+        assertMat3EqualsApproximately(m, mTranslatedZero, message = "Translate by zero (post-multiply)")
         assertNotSame(m, mTranslatedZero, "Translate by zero new instance")
     }
 
@@ -974,33 +1012,34 @@ class Mat3fTest {
     fun testRotate() { // Also tests rotateZ
         val m = Mat3f.translation(Vec2f(10f, 0f))
         val angle = PI.toFloat() / 2f // 90 degrees
-        // Expected = Rotation(angle) * Translation(10,0)
+        // m.rotate(angle) means m * rotation(angle)
+        // Expected = Translation(10,0) * Rotation(angle)
         val expected = m.multiply(Mat3f.rotation(angle))
 
         val rotatedM = m.rotate(angle) // Test rotate without destination
-        assertMat3EqualsApproximately(expected, rotatedM, message = "Rotate without destination")
+        assertMat3EqualsApproximately(expected, rotatedM, message = "Rotate (post-multiply) without destination")
         assertNotSame(m, rotatedM, "Rotate without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.rotate(angle, dst) // Test rotate with destination
-        assertMat3EqualsApproximately(expected, dst, message = "Rotate with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "Rotate (post-multiply) with destination")
         assertSame(dst, result, "Rotate with destination should return destination")
 
         // Test rotateZ alias
         val rotatedZ_M = m.rotateZ(angle)
-        assertMat3EqualsApproximately(expected, rotatedZ_M, message = "RotateZ alias")
+        assertMat3EqualsApproximately(expected, rotatedZ_M, message = "RotateZ alias (post-multiply)")
         assertNotSame(m, rotatedZ_M, "RotateZ alias new instance")
 
         // Edge case: Rotate identity
         val id = Mat3f.identity()
-        val idRotated = id.rotate(angle)
-        val expectedIdRotated = Mat3f.rotation(angle)
-        assertMat3EqualsApproximately(expectedIdRotated, idRotated, message = "Rotate identity")
+        val idRotated = id.rotate(angle) // id * rotation(angle)
+        val expectedIdRotated = Mat3f.identity().multiply(Mat3f.rotation(angle))
+        assertMat3EqualsApproximately(expectedIdRotated, idRotated, message = "Rotate identity (post-multiply)")
         assertNotSame(id, idRotated, "Rotate identity new instance")
 
         // Edge case: Rotate by zero angle
-        val mRotatedZero = m.rotate(0f)
-        assertMat3Equals(m, mRotatedZero, "Rotate by zero")
+        val mRotatedZero = m.rotate(0f) // m * identity
+        assertMat3EqualsApproximately(m, mRotatedZero, message = "Rotate by zero (post-multiply)")
         assertNotSame(m, mRotatedZero, "Rotate by zero new instance")
     }
 
@@ -1008,24 +1047,24 @@ class Mat3fTest {
     fun testRotateX() {
         val m = Mat3f.scaling3D(Vec3f(1f, 2f, 3f)) // Affects 3D part
         val angle = PI.toFloat() / 3f
-        // RotateX applies AFTER the matrix's existing transform
-        // Expected = RotationX(angle) * Scaling3D(1,2,3)
-        val expected = Mat3f.rotationX(angle).multiply(m)
+        // m.rotateX(angle) means m * rotationX(angle)
+        // Expected = Scaling3D(1,2,3) * RotationX(angle)
+        val expected = m.multiply(Mat3f.rotationX(angle))
 
         val rotatedM = m.rotateX(angle) // Test without destination
-        assertMat3EqualsApproximately(expected, rotatedM, message = "RotateX without destination")
+        assertMat3EqualsApproximately(expected, rotatedM, message = "RotateX (post-multiply) without destination")
         assertNotSame(m, rotatedM, "RotateX without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.rotateX(angle, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "RotateX with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "RotateX (post-multiply) with destination")
         assertSame(dst, result, "RotateX with destination should return destination")
 
         // Edge case: Rotate identity
         val id = Mat3f.identity()
-        val idRotated = id.rotateX(angle)
-        val expectedIdRotated = Mat3f.rotationX(angle)
-        assertMat3EqualsApproximately(expectedIdRotated, idRotated, message = "RotateX identity")
+        val idRotated = id.rotateX(angle) // id * rotationX(angle)
+        val expectedIdRotated = Mat3f.identity().multiply(Mat3f.rotationX(angle))
+        assertMat3EqualsApproximately(expectedIdRotated, idRotated, message = "RotateX identity (post-multiply)")
         assertNotSame(id, idRotated, "RotateX identity new instance")
     }
 
@@ -1082,8 +1121,9 @@ class Mat3fTest {
         assertNotSame(m, invertedM, "Invert alias should create new instance")
 
         // Test non-invertible
-        val nonInvertible = Mat3f.rowMajor(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f)
-        assertEquals(Mat3f.identity(),nonInvertible.invert(), "Invert non-invertible should return identity")
+        val nonInvertible = Mat3f.rowMajor(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f) // Determinant is 0
+        val identityMat = Mat3f.identity()
+        assertMat3Equals(identityMat, nonInvertible.invert(), "Invert non-invertible should return identity")
     }
 
     @Test
@@ -1111,24 +1151,24 @@ class Mat3fTest {
     fun testRotateY() {
         val m = Mat3f.scaling3D(Vec3f(1f, 2f, 3f)) // Affects 3D part
         val angle = -PI.toFloat() / 4f
-        // RotateY applies AFTER the matrix's existing transform
-        // Expected = RotationY(angle) * Scaling3D(1,2,3)
-        val expected = Mat3f.rotationY(angle).multiply(m)
+        // m.rotateY(angle) means m * rotationY(angle)
+        // Expected = Scaling3D(1,2,3) * RotationY(angle)
+        val expected = m.multiply(Mat3f.rotationY(angle))
 
         val rotatedM = m.rotateY(angle) // Test without destination
-        assertMat3EqualsApproximately(expected, rotatedM, message = "RotateY without destination")
+        assertMat3EqualsApproximately(expected, rotatedM, message = "RotateY (post-multiply) without destination")
         assertNotSame(m, rotatedM, "RotateY without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.rotateY(angle, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "RotateY with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "RotateY (post-multiply) with destination")
         assertSame(dst, result, "RotateY with destination should return destination")
 
         // Edge case: Rotate identity
         val id = Mat3f.identity()
-        val idRotated = id.rotateY(angle)
-        val expectedIdRotated = Mat3f.rotationY(angle)
-        assertMat3EqualsApproximately(expectedIdRotated, idRotated, message = "RotateY identity")
+        val idRotated = id.rotateY(angle) // id * rotationY(angle)
+        val expectedIdRotated = Mat3f.identity().multiply(Mat3f.rotationY(angle))
+        assertMat3EqualsApproximately(expectedIdRotated, idRotated, message = "RotateY identity (post-multiply)")
         assertNotSame(id, idRotated, "RotateY identity new instance")
     }
 
@@ -1136,29 +1176,29 @@ class Mat3fTest {
     fun testScale() {
         val m = Mat3f.rotation(PI.toFloat() / 3f)
         val v = Vec2f(2f, -1f)
-        // Scale applies AFTER the matrix's existing transform
-        // Expected = Scaling(v) * Rotation(PI/3)
-        val expected = Mat3f.scaling(v).multiply(m)
+        // m.scale(v) means m * scaling(v)
+        // Expected = Rotation(PI/3) * Scaling(v)
+        val expected = m.multiply(Mat3f.scaling(v))
 
         val scaledM = m.scale(v) // Test without destination
-        assertMat3EqualsApproximately(expected, scaledM, message = "Scale without destination")
+        assertMat3EqualsApproximately(expected, scaledM, message = "Scale (post-multiply) without destination")
         assertNotSame(m, scaledM, "Scale without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.scale(v, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "Scale with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "Scale (post-multiply) with destination")
         assertSame(dst, result, "Scale with destination should return destination")
 
         // Edge case: Scale identity
         val id = Mat3f.identity()
-        val idScaled = id.scale(v)
-        val expectedIdScaled = Mat3f.scaling(v)
-        assertMat3Equals(expectedIdScaled, idScaled, "Scale identity")
+        val idScaled = id.scale(v) // id * scaling(v)
+        val expectedIdScaled = Mat3f.identity().multiply(Mat3f.scaling(v))
+        assertMat3EqualsApproximately(expectedIdScaled, idScaled, message = "Scale identity (post-multiply)")
         assertNotSame(id, idScaled, "Scale identity new instance")
 
         // Edge case: Scale by (1,1)
-        val mScaledOne = m.scale(Vec2f(1f, 1f))
-        assertMat3Equals(m, mScaledOne, "Scale by one")
+        val mScaledOne = m.scale(Vec2f(1f, 1f)) // m * identity
+        assertMat3EqualsApproximately(m, mScaledOne, message = "Scale by one (post-multiply)")
         assertNotSame(m, mScaledOne, "Scale by one new instance")
     }
 
@@ -1166,24 +1206,24 @@ class Mat3fTest {
     fun testScale3D() {
         val m = Mat3f.rotationY(PI.toFloat() / 6f) // Affects 3D part
         val v = Vec3f(0.5f, 1f, 2f)
-        // Scale3D applies AFTER the matrix's existing transform
-        // Expected = Scaling3D(v) * RotationY(PI/6)
-        val expected = Mat3f.scaling3D(v).multiply(m)
+        // m.scale3D(v) means m * scaling3D(v)
+        // Expected = RotationY(PI/6) * Scaling3D(v)
+        val expected = m.multiply(Mat3f.scaling3D(v))
 
         val scaledM = m.scale3D(v) // Test without destination
-        assertMat3EqualsApproximately(expected, scaledM, message = "Scale3D without destination")
+        assertMat3EqualsApproximately(expected, scaledM, message = "Scale3D (post-multiply) without destination")
         assertNotSame(m, scaledM, "Scale3D without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.scale3D(v, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "Scale3D with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "Scale3D (post-multiply) with destination")
         assertSame(dst, result, "Scale3D with destination should return destination")
 
         // Edge case: Scale identity
         val id = Mat3f.identity()
-        val idScaled = id.scale3D(v)
-        val expectedIdScaled = Mat3f.scaling3D(v)
-        assertMat3Equals(expectedIdScaled, idScaled, "Scale3D identity")
+        val idScaled = id.scale3D(v) // id * scaling3D(v)
+        val expectedIdScaled = Mat3f.identity().multiply(Mat3f.scaling3D(v))
+        assertMat3EqualsApproximately(expectedIdScaled, idScaled, message = "Scale3D identity (post-multiply)")
         assertNotSame(id, idScaled, "Scale3D identity new instance")
     }
 
@@ -1191,24 +1231,24 @@ class Mat3fTest {
     fun testUniformScale() {
         val m = Mat3f.rotation(PI.toFloat() / 3f)
         val s = 3f
-        // UniformScale applies AFTER the matrix's existing transform
-        // Expected = UniformScaling(s) * Rotation(PI/3)
-        val expected = Mat3f.uniformScaling(s).multiply(m)
+        // m.uniformScale(s) means m * uniformScaling(s)
+        // Expected = Rotation(PI/3) * UniformScaling(s)
+        val expected = m.multiply(Mat3f.uniformScaling(s))
 
         val scaledM = m.uniformScale(s) // Test without destination
-        assertMat3EqualsApproximately(expected, scaledM, message = "UniformScale without destination")
+        assertMat3EqualsApproximately(expected, scaledM, message = "UniformScale (post-multiply) without destination")
         assertNotSame(m, scaledM, "UniformScale without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.uniformScale(s, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "UniformScale with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "UniformScale (post-multiply) with destination")
         assertSame(dst, result, "UniformScale with destination should return destination")
 
         // Edge case: Scale identity
         val id = Mat3f.identity()
-        val idScaled = id.uniformScale(s)
-        val expectedIdScaled = Mat3f.uniformScaling(s)
-        assertMat3Equals(expectedIdScaled, idScaled, "UniformScale identity")
+        val idScaled = id.uniformScale(s) // id * uniformScaling(s)
+        val expectedIdScaled = Mat3f.identity().multiply(Mat3f.uniformScaling(s))
+        assertMat3EqualsApproximately(expectedIdScaled, idScaled, message = "UniformScale identity (post-multiply)")
         assertNotSame(id, idScaled, "UniformScale identity new instance")
     }
 
@@ -1216,24 +1256,24 @@ class Mat3fTest {
     fun testUniformScale3D() {
         val m = Mat3f.rotationY(PI.toFloat() / 6f) // Affects 3D part
         val s = -0.5f
-        // UniformScale3D applies AFTER the matrix's existing transform
-        // Expected = UniformScaling3D(s) * RotationY(PI/6)
-        val expected = Mat3f.uniformScaling3D(s).multiply(m)
+        // m.uniformScale3D(s) means m * uniformScaling3D(s)
+        // Expected = RotationY(PI/6) * UniformScaling3D(s)
+        val expected = m.multiply(Mat3f.uniformScaling3D(s))
 
         val scaledM = m.uniformScale3D(s) // Test without destination
-        assertMat3EqualsApproximately(expected, scaledM, message = "UniformScale3D without destination")
+        assertMat3EqualsApproximately(expected, scaledM, message = "UniformScale3D (post-multiply) without destination")
         assertNotSame(m, scaledM, "UniformScale3D without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.uniformScale3D(s, dst) // Test with destination
-        assertMat3EqualsApproximately(expected, dst, message = "UniformScale3D with destination")
+        assertMat3EqualsApproximately(expected, dst, message = "UniformScale3D (post-multiply) with destination")
         assertSame(dst, result, "UniformScale3D with destination should return destination")
 
         // Edge case: Scale identity
         val id = Mat3f.identity()
-        val idScaled = id.uniformScale3D(s)
-        val expectedIdScaled = Mat3f.uniformScaling3D(s)
-        assertMat3Equals(expectedIdScaled, idScaled, "UniformScale3D identity")
+        val idScaled = id.uniformScale3D(s) // id * uniformScaling3D(s)
+        val expectedIdScaled = Mat3f.identity().multiply(Mat3f.uniformScaling3D(s))
+        assertMat3EqualsApproximately(expectedIdScaled, idScaled, message = "UniformScale3D identity (post-multiply)")
         assertNotSame(id, idScaled, "UniformScale3D identity new instance")
     }
 

@@ -70,12 +70,14 @@ class Mat4f private constructor(val array: FloatArray) {
 
     override fun toString(): String {
         return """
-            [$m00,$m01,$m02,$m03]
-            [$m10,$m11,$m12,$m13]
-            [$m20,$m21,$m22,$m23]
-            [$m30,$m31,$m32,$m33]
+            [${m00.ns},${m01.ns},${m02.ns},${m03.ns}]
+            [${m10.ns},${m11.ns},${m12.ns},${m13.ns}]
+            [${m20.ns},${m21.ns},${m22.ns},${m23.ns}]
+            [${m30.ns},${m31.ns},${m32.ns},${m33.ns}]
         """.trimIndent()
     }
+
+
 
     companion object {
         // 16 * 4 bytes
@@ -842,7 +844,10 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Translates `this` by [v].
+     * Post-multiplies this 4x4 matrix by a 3D translation matrix created from [v] and writes the result into [dst].
+     * `dst = this * translation(v)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f] with w=1) with the resulting matrix (`dst * vec`), the translation applies *after* the original matrix's (`this`) transform.
      */
     fun translate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -887,7 +892,10 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the X axis.
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix around the X-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationX(angleInRadians)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f]) with the resulting matrix (`dst * vec`), the rotation around the X-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateX(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -927,7 +935,10 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the Y axis.
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix around the Y-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationY(angleInRadians)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f]) with the resulting matrix (`dst * vec`), the rotation around the Y-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateY(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -967,7 +978,10 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the Z axis.
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix around the Z-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationZ(angleInRadians)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f]) with the resulting matrix (`dst * vec`), the rotation around the Z-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateZ(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -1007,7 +1021,11 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Rotates `this` around the given [axis] by [angleInRadians].
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix around the given [axis] by [angleInRadians] and writes the result into [dst].
+     * The [axis] vector will be normalized internally. If the axis is zero, the original matrix is copied to [dst].
+     * `dst = this * axisRotation(axis, angleInRadians)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f]) with the resulting matrix (`dst * vec`), the rotation applies *after* the original matrix's (`this`) transform.
      */
     fun axisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -1032,7 +1050,11 @@ class Mat4f private constructor(val array: FloatArray) {
     fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
 
     /**
-     * Scales `this` by the components of [v].
+     * Post-multiplies this 4x4 matrix by a 3D scaling matrix created from the components of [v] and writes the result into [dst].
+     * `dst = this * scaling(v)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f]) with the resulting matrix (`dst * vec`), the scaling applies *after* the original matrix's (`this`) transform.
+     * The W component of scaling is implicitly 1.
      */
     fun scale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -1064,7 +1086,11 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Scales `this` uniformly by [s].
+     * Post-multiplies this 4x4 matrix by a 3D uniform scaling matrix created from [s] and writes the result into [dst].
+     * `dst = this * uniformScaling(s)`
+     *
+     * If you multiply a [Vec3f] (or [Vec4f]) with the resulting matrix (`dst * vec`), the uniform scaling applies *after* the original matrix's (`this`) transform.
+     * The W component of scaling is implicitly 1.
      */
     fun uniformScale(s: Float, dst: Mat4f = Mat4f()): Mat4f {
 

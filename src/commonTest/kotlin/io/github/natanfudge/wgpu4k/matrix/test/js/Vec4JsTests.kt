@@ -1,5 +1,6 @@
 package io.github.natanfudge.wgpu4k.matrix.test.js
 
+import io.github.natanfudge.wgpu4k.matrix.EPSILON
 import io.github.natanfudge.wgpu4k.matrix.Mat4f
 import io.github.natanfudge.wgpu4k.matrix.Vec4f
 import kotlin.math.*
@@ -216,10 +217,10 @@ class Vec4Tests {
     @Test
     fun `should equals approximately`() {
         assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f, 3.0f, 4.0f)))
-        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f + Vec4f.EPSILON * 0.5f, 2.0f, 3.0f, 4.0f)))
-        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f + Vec4f.EPSILON * 0.5f, 3.0f, 4.0f)))
-        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f, 3.0f + Vec4f.EPSILON * 0.5f, 4.0f)))
-        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f, 3.0f, 4.0f + Vec4f.EPSILON * 0.5f)))
+        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f + EPSILON * 0.5f, 2.0f, 3.0f, 4.0f)))
+        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f + EPSILON * 0.5f, 3.0f, 4.0f)))
+        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f, 3.0f + EPSILON * 0.5f, 4.0f)))
+        assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f, 3.0f, 4.0f + EPSILON * 0.5f)))
         assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0001f, 2.0f, 3.0f, 4.0f)))
         assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0001f, 3.0f, 4.0f)))
         assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equalsApproximately(Vec4f(1.0f, 2.0f, 3.0001f, 4.0f)))
@@ -229,10 +230,10 @@ class Vec4Tests {
     @Test
     fun `should equals`() {
         assertTrue(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f, 3.0f, 4.0f)))
-        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f + Vec4f.EPSILON * 0.5f, 2.0f, 3.0f, 4.0f)))
-        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f + Vec4f.EPSILON * 0.5f, 3.0f, 4.0f)))
-        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f, 3.0f + Vec4f.EPSILON * 0.5f, 4.0f)))
-        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f, 3.0f, 4.0f + Vec4f.EPSILON * 0.5f)))
+        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f + EPSILON * 0.5f, 2.0f, 3.0f, 4.0f)))
+        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f + EPSILON * 0.5f, 3.0f, 4.0f)))
+        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f, 3.0f + EPSILON * 0.5f, 4.0f)))
+        assertFalse(Vec4f(1.0f, 2.0f, 3.0f, 4.0f).equals(Vec4f(1.0f, 2.0f, 3.0f, 4.0f + EPSILON * 0.5f)))
     }
 
     @Test

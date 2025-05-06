@@ -9,3 +9,4 @@ fun assertStrictEquals(actual: Any, expected: Any?, msg: String = "") {
 fun formatMsg(msg: String?): String {
     return "${msg ?: ""}${if(msg == "" || msg == null) "" else ": "}"
 }
+

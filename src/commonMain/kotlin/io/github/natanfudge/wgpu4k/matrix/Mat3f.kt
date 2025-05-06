@@ -94,9 +94,9 @@ import kotlin.math.sqrt
 
     override fun toString(): String {
         return """
-            [$m00,$m01,$m02]
-            [$m10,$m11,$m12]
-            [$m20,$m21,$m22]
+            [${m00.ns},${m01.ns},${m02.ns}]
+            [${m10.ns},${m11.ns},${m12.ns}]
+            [${m20.ns},${m21.ns},${m22.ns}]
         """.trimIndent()
     }
 
@@ -595,7 +595,7 @@ import kotlin.math.sqrt
     inline fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
 
     /**
-     * Creates a matrix copy of `this` with the translation component set to [v].
+     * Sets the translation component of `this` to [v].
      */
     fun setTranslation(v: Vec2f, dst: Mat3f = identity()): Mat3f { // Use identity if dst is null
 
@@ -719,7 +719,11 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the Z axis.
+     * Post-multiplies this 3x3 matrix by a 2D rotation matrix (around the Z-axis) created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationZ(angleInRadians)`
+     *
+     * If you multiply a [Vec2f] (or a [Vec3f] with z=0) with the resulting matrix (`dst * vec`), the rotation applies *after* the original matrix's (`this`) transform.
+     * This is equivalent to `rotateZ`. For 2D transformations, this rotates points in the XY plane.
      */
     fun rotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -751,7 +755,10 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the X axis.
+     * Post-multiplies this 3x3 matrix by a 3D rotation matrix around the X-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationX(angleInRadians)`
+     *
+     * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the rotation around the X-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -782,7 +789,10 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the Y axis.
+     * Post-multiplies this 3x3 matrix by a 3D rotation matrix around the Y-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationY(angleInRadians)`
+     *
+     * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the rotation around the Y-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -812,12 +822,21 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Rotates `this` by [angleInRadians] around the Z axis (alias for [rotate]).
+     * Post-multiplies this 3x3 matrix by a 2D rotation matrix (around the Z-axis) created from [angleInRadians] and writes the result into [dst].
+     * `dst = this * rotationZ(angleInRadians)`
+     *
+     * If you multiply a [Vec2f] (or a [Vec3f] with z=0) with the resulting matrix (`dst * vec`), the rotation applies *after* the original matrix's (`this`) transform.
+     * This is an alias for [rotate]. For 2D transformations, this rotates points in the XY plane.
      */
     fun rotateZ(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f = rotate(angleInRadians, dst)
 
     /**
-     * Scales the X and Y dimensions of `this` by the components of [v].
+     * Post-multiplies this 3x3 matrix by a 2D scaling matrix created from the components of [v] (for X and Y axes) and writes the result into [dst].
+     * The Z-axis scaling component is implicitly 1.
+     * `dst = this * scaling(v.x, v.y, 1.0f)`
+     *
+     * If you multiply a [Vec2f] (or a [Vec3f] with z component unaffected by this specific scaling's Z part) with the resulting matrix (`dst * vec`),
+     * the scaling on X and Y axes applies *after* the original matrix's (`this`) transform.
      */
     fun scale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -843,7 +862,10 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Scales each dimension of `this` by the components of [v].
+     * Post-multiplies this 3x3 matrix by a 3D scaling matrix created from the components of [v] (for X, Y, and Z axes) and writes the result into [dst].
+     * `dst = this * scaling(v.x, v.y, v.z)`
+     *
+     * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the scaling on X, Y, and Z axes applies *after* the original matrix's (`this`) transform.
      */
     fun scale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -867,7 +889,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Scales the X and Y dimensions of `this` uniformly by [s].
+     * Post-multiplies this 3x3 matrix by a 2D uniform scaling matrix created from [s] (for X and Y axes) and writes the result into [dst].
+     * The Z-axis scaling component is implicitly 1.
+     * `dst = this * scaling(s, s, 1.0f)`
+     *
+     * If you multiply a [Vec2f] (or a [Vec3f] with z component unaffected by this specific scaling's Z part) with the resulting matrix (`dst * vec`),
+     * the uniform scaling on X and Y axes applies *after* the original matrix's (`this`) transform.
      */
     fun uniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
@@ -889,7 +916,10 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Scales each dimension of `this` uniformly by [s].
+     * Post-multiplies this 3x3 matrix by a 3D uniform scaling matrix created from [s] (for X, Y, and Z axes) and writes the result into [dst].
+     * `dst = this * scaling(s, s, s)`
+     *
+     * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the uniform scaling on X, Y, and Z axes applies *after* the original matrix's (`this`) transform.
      */
     fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
 
