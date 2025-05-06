@@ -21,7 +21,7 @@ data class Quatf(
     var z: Float = 0.0f,
     var w: Float = 1.0f, // Default to identity quaternion
 ) {
-override fun toString(): String = "($x,$y,$z,$w)"
+override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
     inline operator fun plus(other: Quatf) = add(other)
     inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
     inline operator fun times(scalar: Float) = mulScalar(scalar)

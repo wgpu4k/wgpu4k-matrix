@@ -10,7 +10,7 @@ import kotlin.random.Random
  * including optional 'dst' parameter support.
  */
 data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
-    override fun toString(): String = "($x,$y)"
+    override fun toString(): String = "(${x.ns},${y.ns})"
 
     inline operator fun plus(other: Vec2f) = add(other)
     inline operator fun minus(other: Vec2f) = subtract(other)

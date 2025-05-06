@@ -699,7 +699,7 @@ class Vec3f(
         }
     }
 
-    override fun toString(): String = "($x,$y,$z)"
+    override fun toString(): String = "(${x.ns},${y.ns},${z.ns})"
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec3f) return false

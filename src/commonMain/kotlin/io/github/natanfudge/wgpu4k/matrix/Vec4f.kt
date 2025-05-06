@@ -13,7 +13,7 @@ data class Vec4f(
     var z: Float = 0.0f,
     var w: Float = 0.0f,
 ) {
-    override fun toString(): String = "($x,$y,$z,$w)"
+    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
 
     inline operator fun plus(other: Vec4f) = add(other)
     inline operator fun minus(other: Vec4f) = subtract(other)

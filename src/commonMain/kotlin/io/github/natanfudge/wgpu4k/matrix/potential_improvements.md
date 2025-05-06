@@ -1,7 +1,6 @@
 1. .ns for all toString()s 
 2. Rewrite the tests given this new information.
 3. probably add premultiplication functions so it will be less nonsensical
-5. Add column-major as its own factory function, and make default row-major (?)
 5. I think we don't want to have default values for the constructors, that will make easy mistakes. 
 5. Add more tests
 5.5. weird extra empty line at the start of every function
