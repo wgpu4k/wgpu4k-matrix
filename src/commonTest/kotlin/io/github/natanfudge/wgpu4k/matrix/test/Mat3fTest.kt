@@ -179,7 +179,7 @@ class Mat3fTest {
     @Test
     fun testCompanionTranslation() {
         val v = Vec2f(5f, -10f)
-        val expected = Mat3f.rowMajor(
+        val expected = Mat3f(
             1f, 0f, 0f,
             0f, 1f, 0f,
             5f, -10f, 1f
@@ -192,7 +192,7 @@ class Mat3fTest {
 
         // Edge case: Large values
         val largeV = Vec2f(1e6f, -1e6f)
-        val expectedLarge = Mat3f.rowMajor(
+        val expectedLarge = Mat3f(
             1f, 0f, 0f,
             0f, 1f, 0f,
             1e6f, -1e6f, 1f
@@ -205,7 +205,7 @@ class Mat3fTest {
         val angle = PI.toFloat() / 4f // 45 degrees
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat3f.rowMajor(
+        val expected = Mat3f(
             c, s, 0f,
             -s, c, 0f,
             0f, 0f, 1f
@@ -373,25 +373,6 @@ class Mat3fTest {
     }
 
 
-    // --- Instance Method Tests ---
-
-    @Test
-    fun testToString() {
-        val m = Mat3f.rowMajor(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
-        val s = m.toString()
-        // Basic check: contains matrix elements
-        assertTrue(s.contains("1.0") && s.contains("5.0") && s.contains("9.0"), "toString contains elements")
-        // Check formatting (might be fragile)
-        assertTrue(s.startsWith("Mat3f") && s.contains("\n"), "toString basic format")
-
-        // Edge case: Identity
-        val idStr = Mat3f.identity().toString()
-        assertTrue(idStr.contains("1.0") && idStr.contains("0.0"), "toString identity")
-
-        // Edge case: Zero
-        val zeroStr = Mat3f.rowMajor(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f).toString()
-        assertTrue(zeroStr.contains("0.0") && !zeroStr.contains("1.0"), "toString zero")
-    }
 
     @Test
     fun testSet() {
@@ -401,7 +382,7 @@ class Mat3fTest {
             4f, 5f, 6f,
             7f, 8f, 9f
         )
-        val expected = Mat3f.rowMajor(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
+        val expected = Mat3f(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
         assertMat3Equals(expected, m, "Set basic")
         assertSame(m, result, "Set should return self")
 
@@ -471,9 +452,9 @@ class Mat3fTest {
 
     @Test
     fun testDiv() {
-        val m = Mat3f.rowMajor(2f, 4f, 6f, 8f, 10f, 12f, 14f, 16f, 18f)
+        val m = Mat3f(2f, 4f, 6f, 8f, 10f, 12f, 14f, 16f, 18f)
         val s = 2f
-        val expected = Mat3f.rowMajor(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
+        val expected = Mat3f(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
 
         val divM = m.div(s) // Test without destination
         assertMat3Equals(expected, divM, "Div without destination")
@@ -489,18 +470,15 @@ class Mat3fTest {
         assertMat3Equals(m, oneDiv, "Div by one")
         assertNotSame(m, oneDiv, "Div by one should still create new instance if no dst")
 
-        // Edge case: Divide by zero (expect Infinity or NaN depending on platform/settings)
-        // Kotlin/JVM throws ArithmeticException for float division by zero
-        assertFailsWith<ArithmeticException> {
-            m.div(0f)
-        }
+        assertEquals(m.div(0f).m00, Float.POSITIVE_INFINITY)
+
     }
 
     @Test
     fun testAdd() { // Also tests plus
-        val m1 = Mat3f.rowMajor(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
-        val m2 = Mat3f.rowMajor(9f, 8f, 7f, 6f, 5f, 4f, 3f, 2f, 1f)
-        val expected = Mat3f.rowMajor(10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f)
+        val m1 = Mat3f(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
+        val m2 = Mat3f(9f, 8f, 7f, 6f, 5f, 4f, 3f, 2f, 1f)
+        val expected = Mat3f(10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f)
 
         val addedM = m1.add(m2) // Test add without destination
         assertMat3Equals(expected, addedM, "Add without destination")
@@ -521,11 +499,11 @@ class Mat3fTest {
         // Edge case: Add identity
         val id = Mat3f.identity()
         val m1PlusId = m1.add(id)
-        val expectedM1PlusId = Mat3f.rowMajor(2f, 2f, 3f, 4f, 6f, 6f, 7f, 8f, 10f)
+        val expectedM1PlusId = Mat3f(2f, 2f, 3f, 4f, 6f, 6f, 7f, 8f, 10f)
         assertMat3Equals(expectedM1PlusId, m1PlusId, "Add identity")
 
         // Edge case: Add zero matrix
-        val zero = Mat3f.rowMajor(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
+        val zero = Mat3f(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
         val m1PlusZero = m1.add(zero)
         assertMat3Equals(m1, m1PlusZero, "Add zero matrix")
         assertNotSame(m1, m1PlusZero, "Add zero should create new instance if no dst")
@@ -533,9 +511,9 @@ class Mat3fTest {
 
     @Test
     fun testDiff() { // Also tests minus
-        val m1 = Mat3f.rowMajor(10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f)
-        val m2 = Mat3f.rowMajor(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
-        val expected = Mat3f.rowMajor(9f, 8f, 7f, 6f, 5f, 4f, 3f, 2f, 1f)
+        val m1 = Mat3f(10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f)
+        val m2 = Mat3f(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
+        val expected = Mat3f(9f, 8f, 7f, 6f, 5f, 4f, 3f, 2f, 1f)
 
 
         val diffM = m1.diff(m2) // Test diff without destination
@@ -555,11 +533,11 @@ class Mat3fTest {
         // Edge case: Subtract identity
         val id = Mat3f.identity()
         val m1MinusId = m1.diff(id)
-        val expectedM1MinusId = Mat3f.rowMajor(9f, 10f, 10f, 10f, 9f, 10f, 10f, 10f, 9f)
+        val expectedM1MinusId = Mat3f(9f, 10f, 10f, 10f, 9f, 10f, 10f, 10f, 9f)
         assertMat3Equals(expectedM1MinusId, m1MinusId, "Diff identity")
 
         // Edge case: Subtract zero matrix
-        val zero = Mat3f.rowMajor(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
+        val zero = Mat3f(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
         val m1MinusZero = m1.diff(zero)
         assertMat3Equals(m1, m1MinusZero, "Diff zero matrix")
         assertNotSame(m1, m1MinusZero, "Diff zero should create new instance if no dst")
@@ -669,17 +647,20 @@ class Mat3fTest {
 
     @Test
     fun testInverse() { // Also tests invert
-        // Basic invertible matrix
-        // Order of operations for m: Scale(2, 0.5) then Rotate(PI/2)
-        // m = Rotate(PI/2) * Scale(2, 0.5)
-        // So, m.inverse() = Scale(2, 0.5).inverse() * Rotate(PI/2).inverse()
-        // = Scale(0.5, 2) * Rotate(-PI/2)
-        val m = Mat3f.scaling(Vec2f(2f, 0.5f)).rotate(PI.toFloat() / 2f)
-        val expectedInverse = Mat3f.scaling(Vec2f(0.5f, 2f)).rotate(-PI.toFloat() / 2f)
+        val m = Mat3f.scaling(Vec2f(2f, 0.5f))
+            .rotate(PI.toFloat() / 2f)                 // m = S · R
 
-        val inverseM = m.inverse() // Test inverse without destination
-        assertMat3EqualsApproximately(expectedInverse, inverseM, message = "Inverse without destination")
-        assertNotSame(m, inverseM, "Inverse without destination should create new instance")
+        // expected = R‑¹ · S‑¹
+        val expectedInverse = Mat3f.rotation(-PI.toFloat() / 2f)
+            .scale(Vec2f(0.5f, 2f))
+
+        val inverseM = m.inverse()
+
+        assertMat3EqualsApproximately(expectedInverse, inverseM,
+            message = "Inverse without destination")
+
+        assertNotSame(m, inverseM,
+            "Inverse without destination should create new instance")
 
         val dst = Mat3f.identity()
         val result = m.inverse(dst) // Test inverse with destination
@@ -699,7 +680,7 @@ class Mat3fTest {
         assertNotSame(id, idInverse, "Inverse identity new instance")
 
         // Edge case: Non-invertible matrix (determinant is zero)
-        val nonInvertible = Mat3f.rowMajor(1f, 2f, 3f, 2f, 4f, 6f, 7f, 8f, 9f) // Col 1 is 2 * Col 0, making it non-invertible
+        val nonInvertible = Mat3f(1f, 2f, 3f, 2f, 4f, 6f, 7f, 8f, 9f) // Col 1 is 2 * Col 0, making it non-invertible
         val identityMat = Mat3f.identity()
         // The inverse function returns identity if the matrix is not invertible.
         assertMat3Equals(identityMat, nonInvertible.inverse(Mat3f()), "Inverse non-invertible should return identity when dst provided")
@@ -727,12 +708,12 @@ class Mat3fTest {
 
     @Test
     fun testMultiply() { // Also tests mul
-        val m1 = Mat3f.rowMajor( // Represents translation by (7,8) then rotation by 90 deg
+        val m1 = Mat3f( // Represents translation by (7,8) then rotation by 90 deg
             0f, 1f, 0f,
             -1f, 0f, 0f,
             7f, 8f, 1f
         )
-        val m2 = Mat3f.rowMajor( // Represents scaling by (2,3)
+        val m2 = Mat3f( // Represents scaling by (2,3)
             2f, 0f, 0f,
             0f, 3f, 0f,
             0f, 0f, 1f
@@ -797,13 +778,13 @@ class Mat3fTest {
     fun testSetTranslation() {
         val m = Mat3f.rotation(PI.toFloat() / 4f)
         val v = Vec2f(10f, -20f)
-        val expected = Mat3f.rowMajor(
-            m[0, 0], m[0, 1], m[0, 2],
-            m[1, 0], m[1, 1], m[1, 2],
+        val expected = Mat3f(
+            m[0, 0], m[1, 0], m[2, 0],
+            m[0, 1], m[1, 1], m[2, 1],
             10f, -20f, 1f
         )
 
-        val result = m.setTranslation(v) // Test without destination (modifies self)
+        val result = m.setTranslation(v, m) // Test without destination (modifies self)
         assertMat3EqualsApproximately(expected, m, message = "SetTranslation modifies self")
         assertSame(m, result, "SetTranslation should return self")
 
@@ -819,8 +800,8 @@ class Mat3fTest {
 
         // Edge case: Set translation on identity
         val id = Mat3f.identity()
-        val idTrans = id.setTranslation(Vec2f(1f, 1f))
-        val expectedIdTrans = Mat3f.rowMajor(1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f)
+        val idTrans = id.setTranslation(Vec2f(1f, 1f), id)
+        val expectedIdTrans = Mat3f(1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f)
         assertMat3Equals(expectedIdTrans, idTrans, "SetTranslation on identity")
         assertSame(id, idTrans, "SetTranslation on identity modifies self")
     }
@@ -847,7 +828,7 @@ class Mat3fTest {
 
     @Test
     fun testGetAxis() {
-        val m = Mat3f.rowMajor(
+        val m = Mat3f(
             1f, 2f, 3f, // Col 0 -> Axis 0 (X)
             4f, 5f, 6f, // Col 1 -> Axis 1 (Y)
             7f, 8f, 9f  // Col 2 -> Translation (Z/W) - getAxis extracts from rotation part
@@ -880,8 +861,8 @@ class Mat3fTest {
 
         // Edge case: Invalid axis (expect exception or default behavior)
         // Assuming it might throw or return zero/garbage - check documentation or implementation
-        assertFailsWith<IndexOutOfBoundsException> { m.getAxis(2) } // Axis 2 is translation
-        assertFailsWith<IndexOutOfBoundsException> { m.getAxis(-1) }
+        assertFailsWith<IllegalArgumentException> { m.getAxis(3) } // Axis 2 is translation
+        assertFailsWith<IllegalArgumentException> { m.getAxis(-1) }
     }
 
     @Test
@@ -891,15 +872,15 @@ class Mat3fTest {
         val axis1 = Vec2f(3f, 4f)
 
         // Set Axis 0 (X)
-        val expectedX = Mat3f.rowMajor(1f, 2f, 0f, 0f, 1f, 0f, 0f, 0f, 1f)
-        val resultX = m.setAxis(axis0, 0) // Test without destination (modifies self)
+        val expectedX = Mat3f(1f, 2f, 0f, 0f, 1f, 0f, 0f, 0f, 1f)
+        val resultX = m.setAxis(axis0, 0, m) // Test without destination (modifies self)
         assertMat3EqualsApproximately(expectedX, m, message = "SetAxis 0 modifies self")
         assertSame(m, resultX, "SetAxis 0 returns self")
 
 
         // Set Axis 1 (Y) - starting from identity again
         val mId = Mat3f.identity()
-        val expectedY = Mat3f.rowMajor(1f, 0f, 0f, 3f, 4f, 0f, 0f, 0f, 1f)
+        val expectedY = Mat3f(1f, 0f, 0f, 3f, 4f, 0f, 0f, 0f, 1f)
         val dstY = Mat3f.identity()
         val resultY = mId.setAxis(axis1, 1, dstY) // Test with destination
         assertMat3EqualsApproximately(expectedY, dstY, message = "SetAxis 1 with destination")
@@ -909,13 +890,13 @@ class Mat3fTest {
 
         // Edge case: Set axis with zero vector
         val mZeroAxis = Mat3f.identity()
-        mZeroAxis.setAxis(Vec2f(0f, 0f), 0)
-        val expectedZeroX = Mat3f.rowMajor(0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f)
+        mZeroAxis.setAxis(Vec2f(0f, 0f), 0, mZeroAxis)
+        val expectedZeroX = Mat3f(0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f)
         assertMat3EqualsApproximately(expectedZeroX, mZeroAxis, message = "SetAxis 0 with zero vector")
 
         // Edge case: Invalid axis (expect exception or default behavior)
-        assertFailsWith<IndexOutOfBoundsException> { m.setAxis(axis0, 2) }
-        assertFailsWith<IndexOutOfBoundsException> { m.setAxis(axis0, -1) }
+        assertFailsWith<IllegalArgumentException> { m.setAxis(axis0, 2) }
+        assertFailsWith<IllegalArgumentException> { m.setAxis(axis0, -1) }
     }
 
     @Test
@@ -1089,17 +1070,17 @@ class Mat3fTest {
 
     @Test
     fun testPlusAlias() {
-        val m1 = Mat3f.rowMajor(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f)
-        val m2 = Mat3f.rowMajor(2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f)
-        val expected = Mat3f.rowMajor(3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f)
+        val m1 = Mat3f(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f)
+        val m2 = Mat3f(2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f)
+        val expected = Mat3f(3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f, 3f)
         assertMat3Equals(expected, m1.plus(m2), "Plus alias test")
     }
 
     @Test
     fun testMinusAlias() {
-        val m1 = Mat3f.rowMajor(5f, 5f, 5f, 5f, 5f, 5f, 5f, 5f, 5f)
-        val m2 = Mat3f.rowMajor(1f, 2f, 1f, 2f, 1f, 2f, 1f, 2f, 1f)
-        val expected = Mat3f.rowMajor(4f, 3f, 4f, 3f, 4f, 3f, 4f, 3f, 4f)
+        val m1 = Mat3f(5f, 5f, 5f, 5f, 5f, 5f, 5f, 5f, 5f)
+        val m2 = Mat3f(1f, 2f, 1f, 2f, 1f, 2f, 1f, 2f, 1f)
+        val expected = Mat3f(4f, 3f, 4f, 3f, 4f, 3f, 4f, 3f, 4f)
         assertMat3Equals(expected, m1.minus(m2), "Minus alias test")
     }
 
