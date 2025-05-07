@@ -16,22 +16,86 @@ import kotlin.math.*
  */
 class Mat4f private constructor(val array: FloatArray) {
 
-    inline val m00 get() = this[0]
-    inline val m01 get() = this[4]
-    inline val m02 get() = this[8]
-    inline val m03 get() = this[12]
-    inline val m10 get() = this[1]
-    inline val m11 get() = this[5]
-    inline val m12 get() = this[9]
-    inline val m13 get() = this[13]
-    inline val m20 get() = this[2]
-    inline val m21 get() = this[6]
-    inline val m22 get() = this[10]
-    inline val m23 get() = this[14]
-    inline val m30 get() = this[3]
-    inline val m31 get() = this[7]
-    inline val m32 get() = this[11]
-    inline val m33 get() = this[15]
+    inline var m00
+        get() = this[0];
+        set(value) {
+            array[0] = value
+        }
+    inline var m01
+        get() = this[4];
+        set(value) {
+            array[4] = value
+        }
+    inline var m02
+        get() = this[8];
+        set(value) {
+            array[8] = value
+        }
+    inline var m03
+        get() = this[12];
+        set(value) {
+            array[12] = value
+        }
+    inline var m10
+        get() = this[1];
+        set(value) {
+            array[1] = value
+        }
+    inline var m11
+        get() = this[5];
+        set(value) {
+            array[5] = value
+        }
+    inline var m12
+        get() = this[9];
+        set(value) {
+            array[9] = value
+        }
+    inline var m13
+        get() = this[13];
+        set(value) {
+            array[13] = value
+        }
+    inline var m20
+        get() = this[2];
+        set(value) {
+            array[2] = value
+        }
+    inline var m21
+        get() = this[6];
+        set(value) {
+            array[6] = value
+        }
+    inline var m22
+        get() = this[10];
+        set(value) {
+            array[10] = value
+        }
+    inline var m23
+        get() = this[14];
+        set(value) {
+            array[14] = value
+        }
+    inline var m30
+        get() = this[3];
+        set(value) {
+            array[3] = value
+        }
+    inline var m31
+        get() = this[7];
+        set(value) {
+            array[7] = value
+        }
+    inline var m32
+        get() = this[11];
+        set(value) {
+            array[11] = value
+        }
+    inline var m33
+        get() = this[15];
+        set(value) {
+            array[15] = value
+        }
 
     init {
         if (array.size != 16) {
@@ -52,6 +116,15 @@ class Mat4f private constructor(val array: FloatArray) {
     inline operator fun set(index: Int, value: Float) {
         this.array[index] = value
     }
+
+    inline operator fun get(row: Int, col: Int): Float {
+        return this.array[col * 4 + row] // Column-major order
+    }
+
+    inline operator fun set(row: Int, col: Int, value: Float) {
+        this.array[col * 4 + row] = value // Column-major order
+    }
+
 
     /**
      * Creates a new Mat4 with the given values ([v0] to [v15]) in column-major order.
@@ -78,10 +151,22 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
 
-
     companion object {
         // 16 * 4 bytes
         const val SIZE_BYTES = 64u
+
+        fun rowMajor(
+            a00: Float, a01: Float, a02: Float, a03: Float,
+            a10: Float, a11: Float, a12: Float, a13: Float,
+            a20: Float, a21: Float, a22: Float, a23: Float,
+            a30: Float, a31: Float, a32: Float, a33: Float,
+        ) = Mat4f(
+            a00, a10, a20, a30,
+            a01, a11, a21, a31,
+            a02, a12, a22, a32,
+            a03, a13, a23, a33
+        )
+
         /**
          * Creates a Mat4 from the given [values].
          * You should generally not use this constructor as it assumes the array is already in the correct format.
@@ -293,6 +378,7 @@ class Mat4f private constructor(val array: FloatArray) {
 
         /**
          * Creates a 4-by-4 perspective projection matrix.
+         * If [zNear] = [zFar], the result is undefined.
          * @param fieldOfViewYInRadians The field of view in the y direction (in radians).
          * @param aspect The aspect ratio (width / height).
          * @param zNear The distance to the near clipping plane.
@@ -310,9 +396,16 @@ class Mat4f private constructor(val array: FloatArray) {
                 array[12] = 0f; array[13] = 0f; array[14] = zNear * zFar * rangeInv * 2; array[15] = 0f
             }
         }
+        /**
+         * Creates a 4-by-4 orthographic projection matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
+         * If [left] = [right], the result is undefined.
+         */
+        fun orthographic(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4f = Mat4f()) =
+            ortho(left, right, bottom, top, near, far, dst)
 
         /**
          * Creates a 4-by-4 orthographic projection matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
+         * If [left] = [right], the result is undefined.
          */
         fun ortho(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4f = Mat4f()): Mat4f {
 
@@ -347,6 +440,7 @@ class Mat4f private constructor(val array: FloatArray) {
 
         /**
          * Creates a 4-by-4 look-at matrix.
+         * If [eye] == [target], or [up] is parallel the [eye] - [target], the result is undefined.
          * @param eye The position of the eye.
          * @param target The position to look at.
          * @param up The up vector.
@@ -421,10 +515,25 @@ class Mat4f private constructor(val array: FloatArray) {
      * Gets a copy of the internal FloatArray representation of the matrix.
      * Modifying the returned array will not affect the original matrix.
      */
-    fun toFloatArray(): FloatArray = array.copyOf() // Return a copy for safety
+    fun toFloatArray(dst: FloatArray = FloatArray(16)): FloatArray = array.copyInto(dst) // Return a copy for safety
 
     /**
-     * Sets the values of `this` from [v0] to [v15].
+     * Sets the values of `this` equal to the values of [mat].
+     */
+    fun set(mat: Mat4f) {
+        mat.array.copyInto(this.array)
+    }
+
+    /**
+     * Sets the values of `this` equal to the values of [arr], in column-major order.
+     */
+    fun set(arr: FloatArray) {
+        arr.copyInto(this.array)
+    }
+
+
+    /**
+     * Sets the values of `this` from [v0] to [v15], in column-major order.
      */
     fun set(
         v0: Float, v1: Float, v2: Float, v3: Float,
@@ -494,6 +603,8 @@ class Mat4f private constructor(val array: FloatArray) {
             array[14] = this@Mat4f.array[14] + other.array[14]; array[15] = this@Mat4f.array[15] + other.array[15]
         }
     }
+
+    fun subtract(other: Mat4f, dst: Mat4f = Mat4f()) = diff(other, dst)
 
     /**
      * Calculates the difference between `this` and [other].
@@ -634,6 +745,7 @@ class Mat4f private constructor(val array: FloatArray) {
 
     /**
      * Computes the inverse of `this`.
+     * If `this` has no inverse, the result is undefined.
      */
     fun inverse(dst: Mat4f = Mat4f()): Mat4f {
 

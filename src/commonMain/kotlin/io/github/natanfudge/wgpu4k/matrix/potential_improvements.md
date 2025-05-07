@@ -1,5 +1,4 @@
-1. .ns for all toString()s 
-2. Rewrite the tests given this new information.
+1. Run with coverage
 3. probably add premultiplication functions so it will be less nonsensical
 5. I think we don't want to have default values for the constructors, that will make easy mistakes. 
 5. Add more tests

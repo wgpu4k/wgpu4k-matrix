@@ -80,37 +80,6 @@ class Mat3Test {
 
 
 
-    @Test
-    fun testCreate() {
-        val tests = listOf(
-            Mat3f.fromFloatArray(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to emptyList<Float>(),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f, 2f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f, 2f, 3f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 4f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f, 2f, 3f, 4f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 4f, 5f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f, 2f, 3f, 4f, 5f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 4f, 5f, 6f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f, 2f, 3f, 4f, 5f, 6f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 4f, 5f, 6f, 0f, 7f, 0f, 0f, 0f)) to listOf(1f, 2f, 3f, 4f, 5f, 6f, 7f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 4f, 5f, 6f, 0f, 7f, 8f, 0f, 0f)) to listOf(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f),
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f, 0f, 4f, 5f, 6f, 0f, 7f, 8f, 9f, 0f)) to listOf(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
-        )
-        for ((expected, args) in tests) {
-            val actual = when (args.size) {
-                0 -> Mat3f()
-                1 -> Mat3f(v0 = args[0])
-                2 -> Mat3f(v0 = args[0], v1 = args[1])
-                3 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2])
-                4 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2], v3 = args[3])
-                5 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2], v3 = args[3], v4 = args[4])
-                6 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2], v3 = args[3], v4 = args[4], v5 = args[5])
-                7 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2], v3 = args[3], v4 = args[4], v5 = args[5], v6 = args[6])
-                8 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2], v3 = args[3], v4 = args[4], v5 = args[5], v6 = args[6], v7 = args[7])
-                9 -> Mat3f(v0 = args[0], v1 = args[1], v2 = args[2], v3 = args[3], v4 = args[4], v5 = args[5], v6 = args[6], v7 = args[7], v8 = args[8])
-                else -> throw IllegalArgumentException("Too many arguments for Mat3 create test")
-            }
-            assertMat3EqualApproximately(actual, expected)
-        }
-    }
 
     @Test
     fun testNegate() {

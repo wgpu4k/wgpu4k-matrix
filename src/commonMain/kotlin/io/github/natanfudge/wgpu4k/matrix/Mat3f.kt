@@ -62,19 +62,24 @@ import kotlin.math.sqrt
         return this.array[col * 4 + row] // Column-major order
     }
 
+    inline operator fun set(row: Int, col: Int, value: Float) {
+        this.array[col * 4 + row] = value // Column-major order
+    }
+
     inline operator fun set(index: Int, value: Float) {
         this.array[index] = value
     }
 
+    constructor(): this(FloatArray(12))
 
     /**
      * Creates a new Mat3 with the given values ([v0] to [v8]) in **column-major** order.
      * See [rowMajor] for constructing a matrix in row-major order (WebGPU uses column-major so we will convert it)
      */
     constructor(
-        v0: Float = 0f, v1: Float = 0f, v2: Float = 0f,
-        v3: Float = 0f, v4: Float = 0f, v5: Float = 0f,
-        v6: Float = 0f, v7: Float = 0f, v8: Float = 0f,
+        v0: Float, v1: Float , v2: Float ,
+        v3: Float , v4: Float , v5: Float ,
+        v6: Float, v7: Float , v8: Float,
     ) : this(FloatArray(12).apply {
         this[0] = v0
         this[1] = v1
@@ -598,7 +603,7 @@ import kotlin.math.sqrt
      * Sets the translation component of `dst` to [v].
      * Better named "withTranslation" but that's the JS name.
      */
-    fun setTranslation(v: Vec2f, dst: Mat3f = identity()): Mat3f {
+    fun setTranslation(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
 
         if (this !== dst) {
             dst.array[0] = array[0];
