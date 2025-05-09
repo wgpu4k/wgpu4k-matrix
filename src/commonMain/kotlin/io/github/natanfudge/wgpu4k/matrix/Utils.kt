@@ -44,16 +44,7 @@ internal val Float.ns: String get() {
     return s
 }
 
-///**
-// * Set the value for EPSILON for various checks
-// * @param v Value to use for EPSILON.
-// * @return previous value of EPSILON
-// */
-//fun setEpsilon(v: Float): Float {
-//    val old = EPSILON
-//    EPSILON = v
-//    return old
-//}
+
 
 /**
  * Converts angle [degrees] to radians.

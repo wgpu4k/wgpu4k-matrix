@@ -1206,6 +1206,181 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
+     * Pre-multiplies this matrix by a translation matrix created from [v].
+     * `dst = translation(v) * this`
+     */
+    fun preTranslate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+        val x = v.x; val y = v.y; val z = v.z
+
+        val a0 = array[0]; val a1 = array[1]; val a2 = array[2]; val a3 = array[3]
+        val a4 = array[4]; val a5 = array[5]; val a6 = array[6]; val a7 = array[7]
+        val a8 = array[8]; val a9 = array[9]; val a10 = array[10]; val a11 = array[11]
+        val a12 = array[12]; val a13 = array[13]; val a14 = array[14]; val a15 = array[15]
+
+        dst.array[0] = a0 + x * a3
+        dst.array[1] = a1 + y * a3
+        dst.array[2] = a2 + z * a3
+        dst.array[3] = a3
+
+        dst.array[4] = a4 + x * a7
+        dst.array[5] = a5 + y * a7
+        dst.array[6] = a6 + z * a7
+        dst.array[7] = a7
+
+        dst.array[8] = a8 + x * a11
+        dst.array[9] = a9 + y * a11
+        dst.array[10] = a10 + z * a11
+        dst.array[11] = a11
+
+        dst.array[12] = a12 + x * a15
+        dst.array[13] = a13 + y * a15
+        dst.array[14] = a14 + z * a15
+        dst.array[15] = a15
+        return dst
+    }
+
+    /**
+     * Pre-multiplies this matrix by a rotation matrix around the X axis.
+     * `dst = rotationX(angleInRadians) * this`
+     */
+    fun preRotateX(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+
+        val a1 = array[1]; val a2 = array[2]
+        val a5 = array[5]; val a6 = array[6]
+        val a9 = array[9]; val a10 = array[10]
+        val a13 = array[13]; val a14 = array[14]
+
+        if (dst !== this) {
+            // Copy elements that are not modified or are read before write for their column
+            dst.array[0] = array[0]; dst.array[3] = array[3]
+            dst.array[4] = array[4]; dst.array[7] = array[7]
+            dst.array[8] = array[8]; dst.array[11] = array[11]
+            dst.array[12] = array[12]; dst.array[15] = array[15]
+        }
+
+        dst.array[1] = c * a1 - s * a2
+        dst.array[2] = s * a1 + c * a2
+
+        dst.array[5] = c * a5 - s * a6
+        dst.array[6] = s * a5 + c * a6
+
+        dst.array[9] = c * a9 - s * a10
+        dst.array[10] = s * a9 + c * a10
+
+        dst.array[13] = c * a13 - s * a14
+        dst.array[14] = s * a13 + c * a14
+        return dst
+    }
+
+    /**
+     * Pre-multiplies this matrix by a rotation matrix around the Y axis.
+     * `dst = rotationY(angleInRadians) * this`
+     */
+    fun preRotateY(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+
+        val a0 = array[0]; val a2 = array[2]
+        val a4 = array[4]; val a6 = array[6]
+        val a8 = array[8]; val a10 = array[10]
+        val a12 = array[12]; val a14 = array[14]
+
+        if (dst !== this) {
+            dst.array[1] = array[1]; dst.array[3] = array[3]
+            dst.array[5] = array[5]; dst.array[7] = array[7]
+            dst.array[9] = array[9]; dst.array[11] = array[11]
+            dst.array[13] = array[13]; dst.array[15] = array[15]
+        }
+        
+        dst.array[0] = c * a0 + s * a2
+        dst.array[2] = -s * a0 + c * a2
+
+        dst.array[4] = c * a4 + s * a6
+        dst.array[6] = -s * a4 + c * a6
+
+        dst.array[8] = c * a8 + s * a10
+        dst.array[10] = -s * a8 + c * a10
+
+        dst.array[12] = c * a12 + s * a14
+        dst.array[14] = -s * a12 + c * a14
+        return dst
+    }
+
+    /**
+     * Pre-multiplies this matrix by a rotation matrix around the Z axis.
+     * `dst = rotationZ(angleInRadians) * this`
+     */
+    fun preRotateZ(angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+
+        val a0 = array[0]; val a1 = array[1]
+        val a4 = array[4]; val a5 = array[5]
+        val a8 = array[8]; val a9 = array[9]
+        val a12 = array[12]; val a13 = array[13]
+
+        if (dst !== this) {
+            dst.array[2] = array[2]; dst.array[3] = array[3]
+            dst.array[6] = array[6]; dst.array[7] = array[7]
+            dst.array[10] = array[10]; dst.array[11] = array[11]
+            dst.array[14] = array[14]; dst.array[15] = array[15]
+        }
+
+        dst.array[0] = c * a0 - s * a1
+        dst.array[1] = s * a0 + c * a1
+
+        dst.array[4] = c * a4 - s * a5
+        dst.array[5] = s * a4 + c * a5
+
+        dst.array[8] = c * a8 - s * a9
+        dst.array[9] = s * a8 + c * a9
+
+        dst.array[12] = c * a12 - s * a13
+        dst.array[13] = s * a12 + c * a13
+        return dst
+    }
+    
+    /**
+     * Pre-multiplies this matrix by a rotation matrix around the given [axis].
+     * `dst = axisRotation(axis, angleInRadians) * this`
+     */
+    fun preAxisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        // For complex transformations like axis-angle, it's often clearer and less error-prone
+        // to use the existing multiply with a temporary matrix, similar to how post-multiply is handled.
+        val rotationMatrix = Mat4f() // Consider a pool or companion object temp if performance critical
+        Mat4f.axisRotation(axis, angleInRadians, rotationMatrix)
+        return rotationMatrix.multiply(this, dst)
+    }
+
+    /**
+     * Pre-multiplies this matrix by a scaling matrix created from [v].
+     * `dst = scaling(v) * this`
+     */
+    fun preScale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+        val sx = v.x; val sy = v.y; val sz = v.z
+
+        dst.array[0] = array[0] * sx; dst.array[1] = array[1] * sy; dst.array[2] = array[2] * sz; dst.array[3] = array[3]
+        dst.array[4] = array[4] * sx; dst.array[5] = array[5] * sy; dst.array[6] = array[6] * sz; dst.array[7] = array[7]
+        dst.array[8] = array[8] * sx; dst.array[9] = array[9] * sy; dst.array[10] = array[10] * sz; dst.array[11] = array[11]
+        dst.array[12] = array[12] * sx; dst.array[13] = array[13] * sy; dst.array[14] = array[14] * sz; dst.array[15] = array[15]
+        return dst
+    }
+
+    /**
+     * Pre-multiplies this matrix by a uniform scaling matrix.
+     * `dst = uniformScaling(s) * this`
+     */
+    fun preUniformScale(s: Float, dst: Mat4f = Mat4f()): Mat4f {
+        dst.array[0] = array[0] * s; dst.array[1] = array[1] * s; dst.array[2] = array[2] * s; dst.array[3] = array[3]
+        dst.array[4] = array[4] * s; dst.array[5] = array[5] * s; dst.array[6] = array[6] * s; dst.array[7] = array[7]
+        dst.array[8] = array[8] * s; dst.array[9] = array[9] * s; dst.array[10] = array[10] * s; dst.array[11] = array[11]
+        dst.array[12] = array[12] * s; dst.array[13] = array[13] * s; dst.array[14] = array[14] * s; dst.array[15] = array[15]
+        return dst
+    }
+
+    /**
      * Checks if `this` is approximately equal to [other].
      */
     fun equalsApproximately(other: Mat4f, tolerance: Float = EPSILON): Boolean {

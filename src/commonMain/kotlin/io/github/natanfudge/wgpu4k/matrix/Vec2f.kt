@@ -9,7 +9,7 @@ import kotlin.random.Random
  * Represents a mutable 2D Vector with instance methods mimicking the JS API structure,
  * including optional 'dst' parameter support.
  */
-data class Vec2f(var x: Float , var y: Float) {
+class Vec2f(var x: Float , var y: Float) {
     constructor(): this(0f,0f)
     override fun toString(): String = "(${x.ns},${y.ns})"
 
@@ -19,6 +19,14 @@ data class Vec2f(var x: Float , var y: Float) {
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
 
+    /**
+     * Creates a copy of `this`.
+     */
+    fun copy(dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x
+        dst.y = this.y
+        return dst
+    }
     /**
      * Sets this vector to the zero vec2
      */
@@ -393,6 +401,16 @@ data class Vec2f(var x: Float , var y: Float) {
         // Calculate lerp(this, other, 0.5f) and store in target
         this.lerp(other, 0.5f, dst)
         return dst
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Vec2f && other.x == x && other.y == y
+    }
+
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        return result
     }
 
     companion object {

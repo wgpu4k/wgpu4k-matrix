@@ -5,7 +5,7 @@ package io.github.natanfudge.wgpu4k.matrix
 import io.github.natanfudge.wgpu4k.matrix.Quatf.Companion.create
 import kotlin.math.*
 
-typealias RotationOrder = String // Use String for simplicity, matching TS values like "xyz"
+typealias RotationOrder = String
 
 /**
  * Represents a quaternion for 3D rotations.
@@ -19,7 +19,7 @@ data class Quatf(
     var x: Float,
     var y: Float,
     var z: Float,
-    var w: Float, // Default to identity quaternion
+    var w: Float,
 ) {
     constructor() : this(0f, 0f, 0f, 1f)
 
@@ -720,5 +720,24 @@ data class Quatf(
     fun equals(other: Quatf): Boolean {
         return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
     }
-    // Note: Data class provides an equals method. This explicit one matches the TS API name.
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Quatf) return false
+
+        if (x != other.x) return false
+        if (y != other.y) return false
+        if (z != other.z) return false
+        if (w != other.w) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        result = 31 * result + z.hashCode()
+        result = 31 * result + w.hashCode()
+        return result
+    }
 }

@@ -1253,6 +1253,200 @@ class Mat4fTest {
         assertEquals(5f, mProps.m10) // This should be mProps.data[1]
         assertEquals(16f, mProps.m33)
     }
+    // --- Pre-multiplication Tests ---
+
+    @Test
+    fun testPreTranslate() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            13f, 14f, 15f, 16f
+        )
+        val v = Vec3f(10f, -5f, 2f)
+        val translationMatrix = Mat4f.translation(v)
+        val expected = translationMatrix.multiply(m)
+
+        // Test without dst
+        var actual = m.preTranslate(v)
+        assertMat4EqualsApproximately(expected, actual, "preTranslate basic")
+
+        // Test with dst
+        val dst = Mat4f()
+        actual = m.preTranslate(v, dst)
+        assertMat4EqualsApproximately(expected, dst, "preTranslate with dst")
+        assertSame(dst, actual, "preTranslate with dst should return dst")
+
+        // Test with dst == this
+        val mSelf = m.copy()
+        actual = mSelf.preTranslate(v, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preTranslate with dst == this")
+        assertSame(mSelf, actual, "preTranslate with dst == this should return self")
+
+        // Test with identity matrix
+        val id = Mat4f.identity()
+        val expectedId = Mat4f.translation(v)
+        actual = id.preTranslate(v)
+        assertMat4EqualsApproximately(expectedId, actual, "preTranslate on identity")
+    }
+
+    @Test
+    fun testPreRotateX() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            0f, 0f, 0f, 1f // Make it a typical transform matrix
+        )
+        val angle = PI.toFloat() / 3f // 60 degrees
+        val rotationMatrix = Mat4f.rotationX(angle)
+        val expected = rotationMatrix.multiply(m)
+
+        var actual = m.preRotateX(angle)
+        assertMat4EqualsApproximately(expected, actual, "preRotateX basic")
+
+        val dst = Mat4f()
+        actual = m.preRotateX(angle, dst)
+        assertMat4EqualsApproximately(expected, dst, "preRotateX with dst")
+        assertSame(dst, actual, "preRotateX with dst should return dst")
+
+        val mSelf = m.copy()
+        actual = mSelf.preRotateX(angle, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preRotateX with dst == this")
+        assertSame(mSelf, actual, "preRotateX with dst == this should return self")
+    }
+
+    @Test
+    fun testPreRotateY() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            0f, 0f, 0f, 1f
+        )
+        val angle = PI.toFloat() / 4f // 45 degrees
+        val rotationMatrix = Mat4f.rotationY(angle)
+        val expected = rotationMatrix.multiply(m)
+
+        var actual = m.preRotateY(angle)
+        assertMat4EqualsApproximately(expected, actual, "preRotateY basic")
+
+        val dst = Mat4f()
+        actual = m.preRotateY(angle, dst)
+        assertMat4EqualsApproximately(expected, dst, "preRotateY with dst")
+        assertSame(dst, actual, "preRotateY with dst should return dst")
+
+        val mSelf = m.copy()
+        actual = mSelf.preRotateY(angle, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preRotateY with dst == this")
+        assertSame(mSelf, actual, "preRotateY with dst == this should return self")
+    }
+
+    @Test
+    fun testPreRotateZ() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            0f, 0f, 0f, 1f
+        )
+        val angle = PI.toFloat() / 6f // 30 degrees
+        val rotationMatrix = Mat4f.rotationZ(angle)
+        val expected = rotationMatrix.multiply(m)
+
+        var actual = m.preRotateZ(angle)
+        assertMat4EqualsApproximately(expected, actual, "preRotateZ basic")
+
+        val dst = Mat4f()
+        actual = m.preRotateZ(angle, dst)
+        assertMat4EqualsApproximately(expected, dst, "preRotateZ with dst")
+        assertSame(dst, actual, "preRotateZ with dst should return dst")
+
+        val mSelf = m.copy()
+        actual = mSelf.preRotateZ(angle, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preRotateZ with dst == this")
+        assertSame(mSelf, actual, "preRotateZ with dst == this should return self")
+    }
+
+    @Test
+    fun testPreAxisRotate() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            0f, 0f, 0f, 1f
+        )
+        val angle = PI.toFloat() / 5f
+        val axis = Vec3f(1f, 2f, 3f).normalize()
+        val rotationMatrix = Mat4f.axisRotation(axis, angle)
+        val expected = rotationMatrix.multiply(m)
+
+        var actual = m.preAxisRotate(axis, angle)
+        assertMat4EqualsApproximately(expected, actual, "preAxisRotate basic", tolerance = 1e-6f)
+
+        val dst = Mat4f()
+        actual = m.preAxisRotate(axis, angle, dst)
+        assertMat4EqualsApproximately(expected, dst, "preAxisRotate with dst", tolerance = 1e-6f)
+        assertSame(dst, actual, "preAxisRotate with dst should return dst")
+
+        val mSelf = m.copy()
+        actual = mSelf.preAxisRotate(axis, angle, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preAxisRotate with dst == this", tolerance = 1e-6f)
+        assertSame(mSelf, actual, "preAxisRotate with dst == this should return self")
+    }
+
+
+    @Test
+    fun testPreScale() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            13f, 14f, 15f, 16f
+        )
+        val v = Vec3f(2f, -0.5f, 3f)
+        val scalingMatrix = Mat4f.scaling(v)
+        val expected = scalingMatrix.multiply(m)
+
+        var actual = m.preScale(v)
+        assertMat4EqualsApproximately(expected, actual, "preScale basic")
+
+        val dst = Mat4f()
+        actual = m.preScale(v, dst)
+        assertMat4EqualsApproximately(expected, dst, "preScale with dst")
+        assertSame(dst, actual, "preScale with dst should return dst")
+
+        val mSelf = m.copy()
+        actual = mSelf.preScale(v, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preScale with dst == this")
+        assertSame(mSelf, actual, "preScale with dst == this should return self")
+    }
+
+    @Test
+    fun testPreUniformScale() {
+        val m = Mat4f.rowMajor(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            13f, 14f, 15f, 16f
+        )
+        val s = 2.5f
+        val scalingMatrix = Mat4f.uniformScaling(s)
+        val expected = scalingMatrix.multiply(m)
+
+        var actual = m.preUniformScale(s)
+        assertMat4EqualsApproximately(expected, actual, "preUniformScale basic")
+
+        val dst = Mat4f()
+        actual = m.preUniformScale(s, dst)
+        assertMat4EqualsApproximately(expected, dst, "preUniformScale with dst")
+        assertSame(dst, actual, "preUniformScale with dst should return dst")
+
+        val mSelf = m.copy()
+        actual = mSelf.preUniformScale(s, mSelf)
+        assertMat4EqualsApproximately(expected, mSelf, "preUniformScale with dst == this")
+        assertSame(mSelf, actual, "preUniformScale with dst == this should return self")
+    }
 }
 
 // Helper for Quatf comparison (add if not present elsewhere)

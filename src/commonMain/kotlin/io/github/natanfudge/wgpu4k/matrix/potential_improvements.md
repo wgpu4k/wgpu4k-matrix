@@ -1,5 +1,5 @@
 3. Add premulplication for mat4f
-For the kdocs of mat4f, calrify for post multiplication that if you do M * v the transform applies before `this`, and 
+For the kdocs of mat4f, clarify for post multiplication that if you do M * v the transform applies before `this`, and 
 if you do v * M the transform applies after `this`, and vice versa for premultiplication
 
 1. Reorganize the files Mat3f, Mat4f, Quatf, Vec2f, Vec3f, Vec4f, to be ordered like this:
@@ -7,13 +7,17 @@ if you do v * M the transform applies after `this`, and vice versa for premultip
 <companion object>
     <constants>
     <static builders>
-    <static functions>
+    <static operators>
 </companion object>
 <`operator fun` functions>
+<properties>
 <functions with 0 parameters>
 <functions with 1 parameter>
 <functions with 2 parameters>
 <functions with 3 or more parameters>
+<toString>
+<equals>
+<hashcode>
 
 2. Remove references to javascript / typescript
 3. Remove hanging comments that seem like arbitrarily placed notes

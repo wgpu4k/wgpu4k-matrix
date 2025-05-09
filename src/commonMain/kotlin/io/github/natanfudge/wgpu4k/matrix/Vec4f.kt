@@ -7,7 +7,7 @@ import kotlin.math.*
 /**
  * Represents a 4-dimensional vector.
  */
-data class Vec4f(
+class Vec4f(
     var x: Float,
     var y: Float ,
     var z: Float ,
@@ -452,5 +452,25 @@ data class Vec4f(
      */
     fun midpoint(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
         return this.lerp(other, 0.5f, dst)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Vec4f) return false
+
+        if (x != other.x) return false
+        if (y != other.y) return false
+        if (z != other.z) return false
+        if (w != other.w) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        result = 31 * result + z.hashCode()
+        result = 31 * result + w.hashCode()
+        return result
     }
 }
