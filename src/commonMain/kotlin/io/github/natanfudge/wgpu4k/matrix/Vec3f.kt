@@ -504,9 +504,9 @@ class Vec3f(
         val vy = this.y;
         val vz = this.z
 
-        dst.x = vx * m[0 * 4 + 0] + vy * m[1 * 4 + 0] + vz * m[2 * 4 + 0]
-        dst.y = vx * m[0 * 4 + 1] + vy * m[1 * 4 + 1] + vz * m[2 * 4 + 1]
-        dst.z = vx * m[0 * 4 + 2] + vy * m[1 * 4 + 2] + vz * m[2 * 4 + 2]
+        dst.x = vx * m[0] + vy * m[4] + vz * m[8]
+        dst.y = vx * m[1] + vy * m[5] + vz * m[9]
+        dst.z = vx * m[2] + vy * m[6] + vz * m[10]
 
         return dst
     }

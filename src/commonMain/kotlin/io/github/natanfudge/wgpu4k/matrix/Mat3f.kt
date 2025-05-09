@@ -345,15 +345,15 @@ import kotlin.math.sqrt
      * Computes the determinant of `this`.
      */
     fun determinant(): Float {
-        val m00 = array[0 * 4 + 0]
-        val m01 = array[0 * 4 + 1]
-        val m02 = array[0 * 4 + 2]
-        val m10 = array[1 * 4 + 0]
-        val m11 = array[1 * 4 + 1]
-        val m12 = array[1 * 4 + 2]
-        val m20 = array[2 * 4 + 0]
-        val m21 = array[2 * 4 + 1]
-        val m22 = array[2 * 4 + 2]
+        val m00 = array[0]
+        val m01 = array[1]
+        val m02 = array[2]
+        val m10 = array[4]
+        val m11 = array[5]
+        val m12 = array[6]
+        val m20 = array[8]
+        val m21 = array[9]
+        val m22 = array[10]
 
         return m00 * (m11 * m22 - m21 * m12) -
                 m10 * (m01 * m22 - m21 * m02) +
@@ -465,15 +465,15 @@ import kotlin.math.sqrt
             return dst
         }
 
-        val m00 = array[0 * 4 + 0]
-        val m01 = array[0 * 4 + 1]
-        val m02 = array[0 * 4 + 2]
-        val m10 = array[1 * 4 + 0]
-        val m11 = array[1 * 4 + 1]
-        val m12 = array[1 * 4 + 2]
-        val m20 = array[2 * 4 + 0]
-        val m21 = array[2 * 4 + 1]
-        val m22 = array[2 * 4 + 2]
+        val m00 = array[0]
+        val m01 = array[1]
+        val m02 = array[2]
+        val m10 = array[4]
+        val m11 = array[5]
+        val m12 = array[6]
+        val m20 = array[8]
+        val m21 = array[9]
+        val m22 = array[10]
 
         return dst.apply {
             array[0] = m00; array[1] = m10; array[2] = m20; array[3] = 0f
@@ -487,15 +487,15 @@ import kotlin.math.sqrt
      * Returns identity if the matrix is not invertible.
      */
     fun inverse(dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0 * 4 + 0]
-        val m01 = array[0 * 4 + 1]
-        val m02 = array[0 * 4 + 2]
-        val m10 = array[1 * 4 + 0]
-        val m11 = array[1 * 4 + 1]
-        val m12 = array[1 * 4 + 2]
-        val m20 = array[2 * 4 + 0]
-        val m21 = array[2 * 4 + 1]
-        val m22 = array[2 * 4 + 2]
+        val m00 = array[0]
+        val m01 = array[1]
+        val m02 = array[2]
+        val m10 = array[4]
+        val m11 = array[5]
+        val m12 = array[6]
+        val m20 = array[8]
+        val m21 = array[9]
+        val m22 = array[10]
 
         val b01 = m22 * m11 - m12 * m21
         val b11 = -m22 * m10 + m12 * m20
@@ -534,21 +534,21 @@ import kotlin.math.sqrt
         val a00 = array[0]
         val a01 = array[1]
         val a02 = array[2]
-        val a10 = array[4 + 0]
-        val a11 = array[4 + 1]
-        val a12 = array[4 + 2]
-        val a20 = array[8 + 0]
-        val a21 = array[8 + 1]
-        val a22 = array[8 + 2]
+        val a10 = array[4]
+        val a11 = array[5]
+        val a12 = array[6]
+        val a20 = array[8]
+        val a21 = array[9]
+        val a22 = array[10]
         val b00 = other.array[0]
         val b01 = other.array[1]
         val b02 = other.array[2]
-        val b10 = other.array[4 + 0]
-        val b11 = other.array[4 + 1]
-        val b12 = other.array[4 + 2]
-        val b20 = other.array[8 + 0]
-        val b21 = other.array[8 + 1]
-        val b22 = other.array[8 + 2]
+        val b10 = other.array[4]
+        val b11 = other.array[5]
+        val b12 = other.array[6]
+        val b20 = other.array[8]
+        val b21 = other.array[9]
+        val b22 = other.array[10]
 
         return dst.apply {
             array[0] = a00 * b00 + a10 * b01 + a20 * b02; array[3] = 0f
@@ -629,12 +629,12 @@ import kotlin.math.sqrt
         val m00 = array[0]
         val m01 = array[1]
         val m02 = array[2]
-        val m10 = array[1 * 4 + 0]
-        val m11 = array[1 * 4 + 1]
-        val m12 = array[1 * 4 + 2]
-        val m20 = array[2 * 4 + 0]
-        val m21 = array[2 * 4 + 1]
-        val m22 = array[2 * 4 + 2]
+        val m10 = array[4]
+        val m11 = array[5]
+        val m12 = array[6]
+        val m20 = array[8]
+        val m21 = array[9]
+        val m22 = array[10]
 
         if (this !== dst) {
             dst.array[0] = m00
@@ -662,12 +662,12 @@ import kotlin.math.sqrt
      * This is equivalent to `rotateZ`. For 2D transformations, this rotates points in the XY plane.
      */
     fun rotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0 * 4 + 0]
-        val m01 = array[0 * 4 + 1]
-        val m02 = array[0 * 4 + 2]
-        val m10 = array[1 * 4 + 0]
-        val m11 = array[1 * 4 + 1]
-        val m12 = array[1 * 4 + 2]
+        val m00 = array[0]
+        val m01 = array[1]
+        val m02 = array[2]
+        val m10 = array[4]
+        val m11 = array[5]
+        val m12 = array[6]
         val c = cos(angleInRadians)
         val s = sin(angleInRadians)
 
@@ -729,12 +729,12 @@ import kotlin.math.sqrt
      * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the rotation around the Y-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0 * 4 + 0]
-        val m01 = array[0 * 4 + 1]
-        val m02 = array[0 * 4 + 2]
-        val m20 = array[2 * 4 + 0]
-        val m21 = array[2 * 4 + 1]
-        val m22 = array[2 * 4 + 2]
+        val m00 = array[0]
+        val m01 = array[1]
+        val m02 = array[2]
+        val m20 = array[8]
+        val m21 = array[9]
+        val m22 = array[10]
         val c = cos(angleInRadians)
         val s = sin(angleInRadians)
 
@@ -804,17 +804,17 @@ import kotlin.math.sqrt
         val v1 = v[1]
         val v2 = v[2]
 
-        dst.array[0] = v0 * array[0 * 4 + 0]; dst.array[3] = 0f
-        dst.array[1] = v0 * array[0 * 4 + 1]
-        dst.array[2] = v0 * array[0 * 4 + 2]
+        dst.array[0] = v0 * array[0]; dst.array[3] = 0f
+        dst.array[1] = v0 * array[1]
+        dst.array[2] = v0 * array[2]
 
-        dst.array[4] = v1 * array[1 * 4 + 0]; dst.array[7] = 0f
-        dst.array[5] = v1 * array[1 * 4 + 1]
-        dst.array[6] = v1 * array[1 * 4 + 2]
+        dst.array[4] = v1 * array[4]; dst.array[7] = 0f
+        dst.array[5] = v1 * array[5]
+        dst.array[6] = v1 * array[6]
 
-        dst.array[8] = v2 * array[2 * 4 + 0]; dst.array[11] = 0f
-        dst.array[9] = v2 * array[2 * 4 + 1]
-        dst.array[10] = v2 * array[2 * 4 + 2]
+        dst.array[8] = v2 * array[8]; dst.array[11] = 0f
+        dst.array[9] = v2 * array[9]
+        dst.array[10] = v2 * array[10]
 
         return dst
     }
@@ -828,13 +828,13 @@ import kotlin.math.sqrt
      * the uniform scaling on X and Y axes applies *after* the original matrix's (`this`) transform.
      */
     fun uniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-        dst.array[0] = s * array[0 * 4 + 0]; dst.array[3] = 0f
-        dst.array[1] = s * array[0 * 4 + 1]
-        dst.array[2] = s * array[0 * 4 + 2]
+        dst.array[0] = s * array[0]; dst.array[3] = 0f
+        dst.array[1] = s * array[1]
+        dst.array[2] = s * array[2]
 
-        dst.array[4] = s * array[1 * 4 + 0]; dst.array[7] = 0f
-        dst.array[5] = s * array[1 * 4 + 1]
-        dst.array[6] = s * array[1 * 4 + 2]
+        dst.array[4] = s * array[4]; dst.array[7] = 0f
+        dst.array[5] = s * array[5]
+        dst.array[6] = s * array[6]
 
         if (this !== dst) {
             dst.array[8] = array[8];
@@ -854,17 +854,17 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The uniform scaling defined by [s] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
     fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-        dst.array[0] = s * array[0 * 4 + 0]; dst.array[3] = 0f
-        dst.array[1] = s * array[0 * 4 + 1]
-        dst.array[2] = s * array[0 * 4 + 2]
+        dst.array[0] = s * array[0]; dst.array[3] = 0f
+        dst.array[1] = s * array[1]
+        dst.array[2] = s * array[2]
 
-        dst.array[4] = s * array[1 * 4 + 0]; dst.array[7] = 0f
-        dst.array[5] = s * array[1 * 4 + 1]
-        dst.array[6] = s * array[1 * 4 + 2]
+        dst.array[4] = s * array[4]; dst.array[7] = 0f
+        dst.array[5] = s * array[5]
+        dst.array[6] = s * array[6]
 
-        dst.array[8] = s * array[2 * 4 + 0]; dst.array[11] = 0f
-        dst.array[9] = s * array[2 * 4 + 1]
-        dst.array[10] = s * array[2 * 4 + 2]
+        dst.array[8] = s * array[8]; dst.array[11] = 0f
+        dst.array[9] = s * array[9]
+        dst.array[10] = s * array[10]
 
         return dst
     }
