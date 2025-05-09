@@ -1,20 +1,5 @@
 
-1. Reorganize the files Mat3f, Mat4f, Quatf, Vec2f, Vec3f, Vec4f, to be ordered like this:
-<secondary constructors>
-<companion object>
-    <constants>
-    <static builders>
-    <static operators>
-</companion object>
-<`operator fun` functions>
-<properties>
-<functions with 0 parameters>
-<functions with 1 parameter>
-<functions with 2 parameters>
-<functions with 3 or more parameters>
-<toString>
-<equals>
-<hashcode>
+
 
 2. Remove references to javascript / typescript
 3. Remove hanging comments that seem like arbitrarily placed notes

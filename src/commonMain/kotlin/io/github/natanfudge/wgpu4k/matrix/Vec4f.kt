@@ -349,7 +349,6 @@ class Vec4f(
 
     /**
      * Transforms `this` by the 4x4 matrix [m].
-     * Note: Assumes Mat4 provides an indexer `get(index: Int)` that maps to column-major order like the TS version.
      * (m[0]=m00, m[1]=m10, m[2]=m20, m[3]=m30, m[4]=m01, m[5]=m11, ...)
      */
     fun transformMat4(m: Mat4f, dst: Vec4f = Vec4f()): Vec4f {

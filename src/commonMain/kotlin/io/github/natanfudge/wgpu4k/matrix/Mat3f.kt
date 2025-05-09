@@ -23,8 +23,6 @@ import kotlin.math.sqrt
  * 3  7  11  (15)
  *
  * Where () are unused for Mat3 but might be present in the 12-element array.
- * The provided JS code uses indices 0-2, 4-6, 8-10, which corresponds to the
- * first 3 rows and first 3 columns of a 4x4 matrix.
  *
  * Do not depend on the values in the padding cells, as the behavior of those may change in the future.
  */
@@ -51,7 +49,6 @@ import kotlin.math.sqrt
         this[8] = v6
         this[9] = v7
         this[10] = v8
-        // The JS code explicitly sets these to 0, aligning with a 4x4 layout where the 4th column is not used for 3x3
         this[3] = 0f
         this[7] = 0f
         this[11] = 0f
@@ -119,7 +116,7 @@ import kotlin.math.sqrt
         /**
          * Creates a Mat3 rotation matrix from [q].
          */
-        fun fromQuat(q: Quatf, dst: Mat3f = Mat3f()): Mat3f { // Assuming QuatArg is FloatArray
+        fun fromQuat(q: Quatf, dst: Mat3f = Mat3f()): Mat3f {
             val x = q.x;
             val y = q.y;
             val z = q.z;

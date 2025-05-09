@@ -6,7 +6,7 @@ import kotlin.math.*
 import kotlin.random.Random
 
 /**
- * Represents a mutable 2D Vector with instance methods mimicking the JS API structure,
+ * Represents a mutable 2D Vector with instance methods,
  * including optional 'dst' parameter support.
  */
 class Vec2f(var x: Float , var y: Float) {

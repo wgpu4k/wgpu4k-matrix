@@ -112,9 +112,9 @@ data class Quatf(
             val trace = m00 + m11 + m22
 
             if (trace > 0.0f) {
-                val root = sqrt(trace + 1.0f) // 2w
+                val root = sqrt(trace + 1.0f)
                 dst.w = 0.5f * root
-                val invRoot = 0.5f / root // 1/(4w)
+                val invRoot = 0.5f / root
                 dst.x = (m21 - m12) * invRoot
                 dst.y = (m02 - m20) * invRoot
                 dst.z = (m10 - m01) * invRoot
@@ -420,20 +420,18 @@ data class Quatf(
      * Returns identity if length is near zero.
      */
     fun normalize(dst: Quatf = Quatf()): Quatf {
-// Extract components from the input array 'v'
         val v0 = this.x
         val v1 = this.y
         val v2 = this.z
         val v3 = this.w
 
-// Calculate the magnitude (length) of the quaternion
-// Ensure components are treated as floating-point numbers (e.g., Float) for sqrt
+        // Calculate the magnitude (length) of the quaternion
         val len = sqrt(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3)
 
-// Define a small tolerance for the length check
+        // Define a small tolerance for the length check
         val epsilon = 0.00001f
 
-// Check if the length is large enough to avoid division by zero/near-zero
+        // Check if the length is large enough to avoid division by zero/near-zero
         if (len > epsilon) {
             // Normalize the quaternion components
             val invLen = 1.0f / len // Calculate inverse length once for efficiency
@@ -449,7 +447,6 @@ data class Quatf(
             dst.w = 1.0f // Identity quaternion has w = 1
         }
 
-// Return the resulting normalized or identity quaternion
         return dst
 
     }
@@ -465,10 +462,10 @@ data class Quatf(
         val angle = acos(clampedW) * 2.0f
         val s = sin(angle * 0.5f)
         if (abs(s) > EPSILON) { // Check absolute value of s
-            val invS = 1.0f / s // Calculate inverse once
-            axis.x = this.x * invS // Already Float
-            axis.y = this.y * invS // Already Float
-            axis.z = this.z * invS // Already Float
+            val invS = 1.0f / s
+            axis.x = this.x * invS
+            axis.y = this.y * invS
+            axis.z = this.z * invS
         } else {
             // If s is close to zero, angle is close to 0 or PI*2, axis is arbitrary but should be unit length
             axis.x = 1.0f
