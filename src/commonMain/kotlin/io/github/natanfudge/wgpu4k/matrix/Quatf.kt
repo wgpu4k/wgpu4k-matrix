@@ -264,7 +264,7 @@ data class Quatf(
                 // Vectors are opposite, need an arbitrary axis orthogonal to aUnit
                 // Cross product order matters: axis = a x defaultAxis
                 xUnitVec3.cross(aUnit, tempVec3) // tempVec3 = xUnitVec3 x aUnit
-                if (tempVec3.lenSq() < 0.000001f) { // Use instance method lenSq()
+                if (tempVec3.lenSq < 0.000001f) { // Use instance method lenSq()
                     yUnitVec3.cross(aUnit, tempVec3) // tempVec3 = yUnitVec3 x aUnit
                 }
                 tempVec3.normalize(tempVec3) // Use instance method

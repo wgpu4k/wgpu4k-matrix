@@ -389,28 +389,28 @@ class Vec2Tests {
     @Test
     fun `should compute length`() {
         val expected = sqrt(2f * 2f + 3f * 3f)
-        val value = Vec2f(2f, 3f).length()
+        val value = Vec2f(2f, 3f).length
         assertFloatEqualsApproximately(expected, value, defaultTolerance)
     }
 
     @Test
     fun `should compute length squared`() {
         val expected = 2f * 2f + 3f * 3f
-        val value = Vec2f(2f, 3f).lengthSq()
+        val value = Vec2f(2f, 3f).lengthSq
         assertFloatEqualsApproximately(expected, value, defaultTolerance)
     }
 
     @Test
     fun `should compute len`() {
         val expected = sqrt(2f * 2f + 3f * 3f)
-        val value = Vec2f(2f, 3f).len()
+        val value = Vec2f(2f, 3f).len
         assertFloatEqualsApproximately(expected, value, defaultTolerance)
     }
 
     @Test
     fun `should compute lenSq`() {
         val expected = 2f * 2f + 3f * 3f
-        val value = Vec2f(2f, 3f).lenSq()
+        val value = Vec2f(2f, 3f).lenSq
         assertFloatEqualsApproximately(expected, value, defaultTolerance)
     }
 
@@ -532,19 +532,19 @@ class Vec2Tests {
         for (i in 0..99) {
             // No dst
             val v1 = Vec2f.random()
-            assertFloatEqualsApproximately(1f, v1.length(), defaultTolerance, "Random length not 1")
+            assertFloatEqualsApproximately(1f, v1.length, defaultTolerance, "Random length not 1")
             // Scale 2, no dst
             val v2 = Vec2f.random(scale = 2f)
-            assertFloatEqualsApproximately(2f, v2.length(), defaultTolerance, "Random(2) length not 2")
+            assertFloatEqualsApproximately(2f, v2.length, defaultTolerance, "Random(2) length not 2")
             // Scale 0.5, no dst
             val vp5 = Vec2f.random(scale = 0.5f)
-            assertFloatEqualsApproximately(0.5f, vp5.length(), defaultTolerance, "Random(0.5) length not 0.5")
+            assertFloatEqualsApproximately(0.5f, vp5.length, defaultTolerance, "Random(0.5) length not 0.5")
 
             // With dst
             val dest = Vec2f()
             val v3 = Vec2f.random(scale = 3f, dst = dest)
             assertSame(dest, v3)
-            assertFloatEqualsApproximately(3f, v3.length(), defaultTolerance, "Random(3, dst) length not 3")
+            assertFloatEqualsApproximately(3f, v3.length, defaultTolerance, "Random(3, dst) length not 3")
         }
     }
 
@@ -662,7 +662,7 @@ class Vec2Tests {
     fun `set the length of a provided direction vector`() {
         val vInitial = Vec2f(1f, 1f)
         val len = 14.6f
-        val lengthInitial = vInitial.length()
+        val lengthInitial = vInitial.length
         val expectedX = vInitial.x / lengthInitial * len
         val expectedY = vInitial.y / lengthInitial * len
         val expected = Vec2f(expectedX, expectedY) // Approx [10.3237f, 10.3237f]
@@ -689,7 +689,7 @@ class Vec2Tests {
     fun `should shorten the vector`() {
         val vInitial = Vec2f(10.323759f, 10.323759f) // Length approx 14.6
         val maxLen = 4.0f
-        val lengthInitial = vInitial.length()
+        val lengthInitial = vInitial.length
         val expectedX = vInitial.x / lengthInitial * maxLen
         val expectedY = vInitial.y / lengthInitial * maxLen
         val expected = Vec2f(expectedX, expectedY) // Approx [2.828f, 2.828f]

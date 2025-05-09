@@ -452,28 +452,28 @@ class Vec3Tests {
     @Test
     fun `should compute length`() {
         val expected = sqrt(1f * 1f + 2f * 2f + 3f * 3f)
-        val value = Vec3f(1f, 2f, 3f).length()
+        val value = Vec3f(1f, 2f, 3f).length
         assertEquals(expected, value)
     }
 
     @Test
     fun `should compute length squared`() {
         val expected = 1f * 1f + 2f * 2f + 3f * 3f
-        val value = Vec3f(1f, 2f, 3f).lengthSq()
+        val value = Vec3f(1f, 2f, 3f).lengthSq
         assertEquals(expected, value)
     }
 
     @Test
     fun `should compute len`() { // Alias test
         val expected = sqrt(1f * 1f + 2f * 2f + 3f * 3f)
-        val value = Vec3f(1f, 2f, 3f).len()
+        val value = Vec3f(1f, 2f, 3f).len
         assertEquals(expected, value)
     }
 
     @Test
     fun `should compute lenSq`() { // Alias test
         val expected = 1f * 1f + 2f * 2f + 3f * 3f
-        val value = Vec3f(1f, 2f, 3f).lenSq()
+        val value = Vec3f(1f, 2f, 3f).lenSq
         assertEquals(expected, value)
     }
 
@@ -640,20 +640,20 @@ class Vec3Tests {
     fun `should random`() { // Tests Vec3.Companion.random
         for (i in 0..99) {
             val v1 = Vec3f.random()
-            assertEqualsApproximately(1f, v1.length(), tolerance = EPSILON)
+            assertEqualsApproximately(1f, v1.length, tolerance = EPSILON)
 
             val v2 = Vec3f.random(2f)
-            assertEqualsApproximately(2f, v2.length(), tolerance = EPSILON)
+            assertEqualsApproximately(2f, v2.length, tolerance = EPSILON)
 
             val vp5 = Vec3f.random(0.5f)
-            assertEqualsApproximately(0.5f, vp5.length(), tolerance = EPSILON)
+            assertEqualsApproximately(0.5f, vp5.length, tolerance = EPSILON)
 
             val vd = Vec3f()
             val vn = Vec3f.random(3f, vd)
             assertSame(vd, vn)
             // JS test had: assertEqualApproximately(vec3.length(3, vd), 3); - This looks wrong.
             // It should be checking the length of vd *after* the random call.
-            assertEqualsApproximately(3f, vd.length(), tolerance = EPSILON)
+            assertEqualsApproximately(3f, vd.length, tolerance = EPSILON)
         }
     }
 

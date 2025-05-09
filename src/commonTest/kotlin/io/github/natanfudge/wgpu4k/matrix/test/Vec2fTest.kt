@@ -337,16 +337,16 @@ class Vec2fOperatorTest {
     @Test
     fun testLengthAndLengthSq() {
         val v1 = Vec2f(3f, 4f) // Pythagorean triple
-        assertEquals(25f, v1.lengthSq(), "LengthSq positive")
-        assertEquals(5f, v1.length(), "Length positive")
+        assertEquals(25f, v1.lengthSq, "LengthSq positive")
+        assertEquals(5f, v1.length, "Length positive")
 
         val v2 = Vec2f(-5f, -12f) // Pythagorean triple
-        assertEquals(169f, v2.lengthSq(), "LengthSq negative")
-        assertEquals(13f, v2.length(), "Length negative")
+        assertEquals(169f, v2.lengthSq, "LengthSq negative")
+        assertEquals(13f, v2.length, "Length negative")
 
         val v3 = Vec2f(0f, 0f)
-        assertEquals(0f, v3.lengthSq(), "LengthSq zero")
-        assertEquals(0f, v3.length(), "Length zero")
+        assertEquals(0f, v3.lengthSq, "LengthSq zero")
+        assertEquals(0f, v3.length, "Length zero")
     }
 
     @Test
@@ -371,17 +371,17 @@ class Vec2fOperatorTest {
         val v1 = Vec2f(3f, 4f)
         val norm1 = v1.normalize()
         assertVec2fEqualsApproximately(Vec2f(0.6f, 0.8f), norm1, "Normalize positive")
-        assertEquals(1f, norm1.length(), EPSILON, "Normalized length positive")
+        assertEquals(1f, norm1.length, EPSILON, "Normalized length positive")
 
         val v2 = Vec2f(-5f, 0f)
         val norm2 = v2.normalize()
         assertVec2fEqualsApproximately(Vec2f(-1f, 0f), norm2, "Normalize negative axis")
-        assertEquals(1f, norm2.length(), EPSILON, "Normalized length negative axis")
+        assertEquals(1f, norm2.length, EPSILON, "Normalized length negative axis")
 
         val v3 = Vec2f(0f, 0f)
         val norm3 = v3.normalize()
         assertVec2fEqualsApproximately(Vec2f(0f, 0f), norm3, "Normalize zero vector")
-        assertEquals(0f, norm3.length(), EPSILON, "Normalized length zero vector")
+        assertEquals(0f, norm3.length, EPSILON, "Normalized length zero vector")
     }
 
     @Test
@@ -461,7 +461,7 @@ class Vec2fOperatorTest {
         val v2 = Vec2f(5f, 12f) // Length 13
         val truncated2 = v2.truncate(5f)
         assertVec2fEqualsApproximately(Vec2f(5f / 13f * 5f, 12f / 13f * 5f), truncated2, "Truncate outside maxLen")
-        assertEquals(5f, truncated2.length(), EPSILON, "Truncated length")
+        assertEquals(5f, truncated2.length, EPSILON, "Truncated length")
 
 
         val v3 = Vec2f(0f, 0f)
@@ -506,16 +506,16 @@ class Vec2fOperatorTest {
     fun testRandom() {
         val scale = 5f
         val v1 = Vec2f.random(scale)
-        assertEquals(scale, v1.length(), EPSILON, "Random vector length")
+        assertEquals(scale, v1.length, EPSILON, "Random vector length")
 
         val v2 = Vec2f.random() // Default scale 1
-        assertEquals(1f, v2.length(), EPSILON, "Random vector default length")
+        assertEquals(1f, v2.length, EPSILON, "Random vector default length")
 
         // Test dst parameter
         val dst = Vec2f()
         val v3 = Vec2f.random(10f, dst)
         assertSame(dst, v3, "Random uses dst instance")
-        assertEquals(10f, dst.length(), EPSILON, "Random dst length")
+        assertEquals(10f, dst.length, EPSILON, "Random dst length")
     }
 
     @Test

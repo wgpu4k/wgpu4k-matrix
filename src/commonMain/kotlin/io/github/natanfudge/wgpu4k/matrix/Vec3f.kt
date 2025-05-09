@@ -148,7 +148,29 @@ class Vec3f(
     inline operator fun unaryMinus() = negate()
 
     // <properties>
-    // No specific properties apart from x, y, z which are primary constructor params
+    /**
+     * Computes the length (magnitude) of `this` vector.
+     */
+    val length: Float
+        get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+
+    /**
+     * Computes the length (magnitude) of `this` vector (alias for [length]).
+     */
+    val len: Float
+        get() = length
+
+    /**
+     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
+     */
+    val lengthSq: Float
+        get() = this.x * this.x + this.y * this.y + this.z * this.z
+
+    /**
+     * Computes the square of the length of `this` vector (alias for [lengthSq]).
+     */
+    val lenSq: Float
+        get() = lengthSq
 
     // <functions with 0 parameters>
     /**
@@ -213,39 +235,12 @@ class Vec3f(
         return inverse(dst)
     }
 
-    /**
-     * Computes the length (magnitude) of `this` vector.
-     */
-    fun length(): Float {
-        return sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
-    }
-
-    /**
-     * Computes the length (magnitude) of `this` vector (alias for [length]).
-     */
-    fun len(): Float {
-        return length()
-    }
-
-    /**
-     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
-     */
-    fun lengthSq(): Float {
-        return this.x * this.x + this.y * this.y + this.z * this.z
-    }
-
-    /**
-     * Computes the square of the length of `this` vector (alias for [lengthSq]).
-     */
-    fun lenSq(): Float {
-        return lengthSq()
-    }
 
     /**
      * Normalizes `this` vector (scales it to unit length).
      */
     fun normalize(dst: Vec3f = Vec3f()): Vec3f {
-        val l = this.length()
+        val l = this.length
         if (l > EPSILON) {
             dst.x = this.x / l
             dst.y = this.y / l
@@ -311,8 +306,8 @@ class Vec3f(
      * Computes the angle in radians between `this` and [b].
      */
     fun angle(b: Vec3f): Float {
-        val mag1 = this.length() // Use instance length method
-        val mag2 = b.length()
+        val mag1 = this.length // Use instance length property
+        val mag2 = b.length
         val mag = mag1 * mag2
         val cosine = if (mag != 0f) this.dot(b) / mag else 0f // Use instance dot method
         // Clamp cosine to avoid floating point errors leading to NaN in acos
@@ -565,7 +560,7 @@ class Vec3f(
      * Truncates `this` vector if its length exceeds [maxLen].
      */
     fun truncate(maxLen: Float, dst: Vec3f = Vec3f()): Vec3f {
-        val currentLength = this.length()
+        val currentLength = this.length
         if (currentLength > maxLen) {
             return this.setLength(maxLen, dst)
         }

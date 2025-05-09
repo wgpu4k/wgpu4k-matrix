@@ -287,22 +287,22 @@ class Vec3fTest {
     @Test
     fun testLengthAndLen() {
         val a = Vec3f(3f, 4f, 0f) // Pythagorean triple 3-4-5
-        assertEquals(5f, a.length(), VEC_TEST_EPSILON)
-        assertEquals(5f, a.len(), VEC_TEST_EPSILON, message = "Len alias")
+        assertEquals(5f, a.length, VEC_TEST_EPSILON)
+        assertEquals(5f, a.len, VEC_TEST_EPSILON, message = "Len alias")
 
         val b = Vec3f(1f, 2f, 3f)
-        assertEquals(sqrt(1f*1f + 2f*2f + 3f*3f), b.length(), VEC_TEST_EPSILON) // sqrt(1+4+9) = sqrt(14)
-        assertEquals(sqrt(14f), b.length(), VEC_TEST_EPSILON)
+        assertEquals(sqrt(1f*1f + 2f*2f + 3f*3f), b.length, VEC_TEST_EPSILON) // sqrt(1+4+9) = sqrt(14)
+        assertEquals(sqrt(14f), b.length, VEC_TEST_EPSILON)
     }
 
     @Test
     fun testLengthSqAndLenSq() {
         val a = Vec3f(3f, 4f, 0f)
-        assertEquals(25f, a.lengthSq(), VEC_TEST_EPSILON)
-        assertEquals(25f, a.lenSq(), VEC_TEST_EPSILON, message = "LenSq alias")
+        assertEquals(25f, a.lengthSq, VEC_TEST_EPSILON)
+        assertEquals(25f, a.lenSq, VEC_TEST_EPSILON, message = "LenSq alias")
 
         val b = Vec3f(1f, 2f, 3f)
-        assertEquals(14f, b.lengthSq(), VEC_TEST_EPSILON)
+        assertEquals(14f, b.lengthSq, VEC_TEST_EPSILON)
     }
 
     @Test
@@ -326,12 +326,12 @@ class Vec3fTest {
         val a = Vec3f(3f, 4f, 0f)
         val normA = a.normalize()
         assertVec3EqualsApproximately(Vec3f(3f / 5f, 4f / 5f, 0f), normA)
-        assertEquals(1f, normA.length(), VEC_TEST_EPSILON, message = "Normalized length should be 1")
+        assertEquals(1f, normA.length, VEC_TEST_EPSILON, message = "Normalized length should be 1")
 
         val dst = Vec3f()
         a.normalize(dst)
         assertVec3EqualsApproximately(Vec3f(0.6f, 0.8f, 0f), dst)
-        assertEquals(1f, dst.length(), VEC_TEST_EPSILON)
+        assertEquals(1f, dst.length, VEC_TEST_EPSILON)
 
         val zero = Vec3f(0f, 0f, 0f)
         val normZero = zero.normalize()
@@ -568,7 +568,7 @@ class Vec3fTest {
         assertTrue(r1.x >= -1f && r1.x <= 1f)
         assertTrue(r1.y >= -1f && r1.y <= 1f)
         assertTrue(r1.z >= -1f && r1.z <= 1f)
-        assertTrue(r1.length() <= sqrt(3f)) // Max length if x,y,z are all 1 or -1
+        assertTrue(r1.length <= sqrt(3f)) // Max length if x,y,z are all 1 or -1
 
         val r2 = Vec3f.random(5f)
         assertTrue(r2.x >= -5f && r2.x <= 5f)

@@ -54,7 +54,25 @@ class Vec2f(var x: Float , var y: Float) {
     inline operator fun unaryMinus() = negate()
 
     // <properties>
-    // No specific properties apart from x, y which are primary constructor params
+    /**
+     * Computes the length (magnitude) of `this` vector.
+     */
+    val length: Float
+        get() = sqrt(this.lengthSq)
+
+    /** Computes the length (magnitude) of `this` vector (alias for [length]). */
+    val len: Float
+        get() = length
+
+    /**
+     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
+     */
+    val lengthSq: Float
+        get() = x * x + y * y
+
+    /** Computes the square of the length of `this` vector (alias for [lengthSq]). */
+    val lenSq: Float
+        get() = lengthSq
 
     // <functions with 0 parameters>
     /**
@@ -109,31 +127,12 @@ class Vec2f(var x: Float , var y: Float) {
     /** Computes the component-wise inverse (1/x) of `this` vector (alias for [inverse]). */
     fun invert(dst: Vec2f = Vec2f()): Vec2f = inverse(dst)
 
-    /**
-     * Computes the length (magnitude) of `this` vector.
-     */
-    fun length(): Float {
-        return sqrt(this.lengthSq()) // Call lengthSq instance method
-    }
-
-    /** Computes the length (magnitude) of `this` vector (alias for [length]). */
-    fun len(): Float = length()
-
-    /**
-     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
-     */
-    fun lengthSq(): Float {
-        return x * x + y * y
-    }
-
-    /** Computes the square of the length of `this` vector (alias for [lengthSq]). */
-    fun lenSq(): Float = lengthSq()
 
     /**
      * Normalizes `this` vector (scales it to unit length).
      */
     fun normalize(dst: Vec2f = Vec2f()): Vec2f {
-        val l = this.length() // Use instance length method
+        val l = this.length // Use instance length property
         if (l > EPSILON) {
             val invLen = 1f / l
             dst.x = this.x * invLen
@@ -190,8 +189,8 @@ class Vec2f(var x: Float , var y: Float) {
      * If `this` or [other] is the zero vector, will return PI/2
      */
     fun angle(other: Vec2f): Float {
-        // length() method now refers to 'this.length()'
-        val mag = this.length() * other.length() // Need to call length method on other too
+        // length property now refers to 'this.length'
+        val mag = this.length * other.length // Need to access length property on other too
         val dotProd = this.dot(other) // Use dot method
         val cosine = if (mag != 0f) dotProd / mag else 0f
         return acos(cosine.coerceIn(-1f, 1f))
@@ -353,7 +352,7 @@ class Vec2f(var x: Float , var y: Float) {
      * Truncates `this` vector if its length exceeds [maxLen].
      */
     fun truncate(maxLen: Float, dst: Vec2f = Vec2f()): Vec2f {
-        val lSq = this.lengthSq() // Use instance lengthSq
+        val lSq = this.lengthSq // Use instance lengthSq property
         if (lSq > maxLen * maxLen) {
             // If too long, calculate the correctly scaled vector using setLength
             // We want the result in target, so pass target as dst to setLength
