@@ -16,116 +16,7 @@ import kotlin.math.*
  */
 class Mat4f private constructor(val array: FloatArray) {
 
-    inline var m00
-        get() = this[0];
-        set(value) {
-            array[0] = value
-        }
-    inline var m01
-        get() = this[4];
-        set(value) {
-            array[4] = value
-        }
-    inline var m02
-        get() = this[8];
-        set(value) {
-            array[8] = value
-        }
-    inline var m03
-        get() = this[12];
-        set(value) {
-            array[12] = value
-        }
-    inline var m10
-        get() = this[1];
-        set(value) {
-            array[1] = value
-        }
-    inline var m11
-        get() = this[5];
-        set(value) {
-            array[5] = value
-        }
-    inline var m12
-        get() = this[9];
-        set(value) {
-            array[9] = value
-        }
-    inline var m13
-        get() = this[13];
-        set(value) {
-            array[13] = value
-        }
-    inline var m20
-        get() = this[2];
-        set(value) {
-            array[2] = value
-        }
-    inline var m21
-        get() = this[6];
-        set(value) {
-            array[6] = value
-        }
-    inline var m22
-        get() = this[10];
-        set(value) {
-            array[10] = value
-        }
-    inline var m23
-        get() = this[14];
-        set(value) {
-            array[14] = value
-        }
-    inline var m30
-        get() = this[3];
-        set(value) {
-            array[3] = value
-        }
-    inline var m31
-        get() = this[7];
-        set(value) {
-            array[7] = value
-        }
-    inline var m32
-        get() = this[11];
-        set(value) {
-            array[11] = value
-        }
-    inline var m33
-        get() = this[15];
-        set(value) {
-            array[15] = value
-        }
-
-    init {
-        if (array.size != 16) {
-            throw IllegalArgumentException("Mat4 requires a 16-element FloatArray for storage.")
-        }
-    }
-
-    inline operator fun plus(other: Mat4f) = add(other)
-    inline operator fun minus(other: Mat4f) = diff(other)
-    inline operator fun times(scalar: Float) = multiplyScalar(scalar)
-    inline operator fun times(matrix: Mat4f) = multiply(matrix)
-    inline operator fun div(scalar: Float) = div(scalar, Mat4f())
-    inline operator fun unaryMinus() = negate()
-    inline operator fun get(index: Int): Float {
-        return this.array[index]
-    }
-
-    inline operator fun set(index: Int, value: Float) {
-        this.array[index] = value
-    }
-
-    inline operator fun get(row: Int, col: Int): Float {
-        return this.array[col * 4 + row] // Column-major order
-    }
-
-    inline operator fun set(row: Int, col: Int, value: Float) {
-        this.array[col * 4 + row] = value // Column-major order
-    }
-
-
+    // <secondary constructors>
     /**
      * Creates a new Mat4 with the given values ([v0] to [v15]) in column-major order.
      */
@@ -143,20 +34,13 @@ class Mat4f private constructor(val array: FloatArray) {
 
     constructor() : this(FloatArray(16))
 
-    override fun toString(): String {
-        return """
-            [${m00.ns},${m01.ns},${m02.ns},${m03.ns}]
-            [${m10.ns},${m11.ns},${m12.ns},${m13.ns}]
-            [${m20.ns},${m21.ns},${m22.ns},${m23.ns}]
-            [${m30.ns},${m31.ns},${m32.ns},${m33.ns}]
-        """.trimIndent()
-    }
-
-
+    // <companion object>
     companion object {
+        // <constants>
         // 16 * 4 bytes
         const val SIZE_BYTES = 64u
 
+        // <static builders>
         fun rowMajor(
             a00: Float, a01: Float, a02: Float, a03: Float,
             a10: Float, a11: Float, a12: Float, a13: Float,
@@ -168,12 +52,6 @@ class Mat4f private constructor(val array: FloatArray) {
             a02, a12, a22, a32,
             a03, a13, a23, a33
         )
-
-        /**
-         * Creates a Mat4 from the given [values].
-         * You should generally not use this constructor as it assumes the array is already in the correct format.
-         */
-        operator fun invoke(vararg values: Float) = Mat4f(floatArrayOf(*values))
 
         /**
          * Creates a Mat4 from a 16-element FloatArray [values].
@@ -493,8 +371,128 @@ class Mat4f private constructor(val array: FloatArray) {
                 array[15] = 1f
             }
         }
+
+        // <static operators>
+        /**
+         * Creates a Mat4 from the given [values].
+         * You should generally not use this constructor as it assumes the array is already in the correct format.
+         */
+        operator fun invoke(vararg values: Float) = Mat4f(floatArrayOf(*values))
     }
 
+    // <`operator fun` functions>
+    inline operator fun plus(other: Mat4f) = add(other)
+    inline operator fun minus(other: Mat4f) = diff(other)
+    inline operator fun times(scalar: Float) = multiplyScalar(scalar)
+    inline operator fun times(matrix: Mat4f) = multiply(matrix)
+    inline operator fun div(scalar: Float) = div(scalar, Mat4f())
+    inline operator fun unaryMinus() = negate()
+    inline operator fun get(index: Int): Float {
+        return this.array[index]
+    }
+
+    inline operator fun set(index: Int, value: Float) {
+        this.array[index] = value
+    }
+
+    inline operator fun get(row: Int, col: Int): Float {
+        return this.array[col * 4 + row] // Column-major order
+    }
+
+    inline operator fun set(row: Int, col: Int, value: Float) {
+        this.array[col * 4 + row] = value // Column-major order
+    }
+
+    // <properties>
+    inline var m00
+        get() = this[0];
+        set(value) {
+            array[0] = value
+        }
+    inline var m01
+        get() = this[4];
+        set(value) {
+            array[4] = value
+        }
+    inline var m02
+        get() = this[8];
+        set(value) {
+            array[8] = value
+        }
+    inline var m03
+        get() = this[12];
+        set(value) {
+            array[12] = value
+        }
+    inline var m10
+        get() = this[1];
+        set(value) {
+            array[1] = value
+        }
+    inline var m11
+        get() = this[5];
+        set(value) {
+            array[5] = value
+        }
+    inline var m12
+        get() = this[9];
+        set(value) {
+            array[9] = value
+        }
+    inline var m13
+        get() = this[13];
+        set(value) {
+            array[13] = value
+        }
+    inline var m20
+        get() = this[2];
+        set(value) {
+            array[2] = value
+        }
+    inline var m21
+        get() = this[6];
+        set(value) {
+            array[6] = value
+        }
+    inline var m22
+        get() = this[10];
+        set(value) {
+            array[10] = value
+        }
+    inline var m23
+        get() = this[14];
+        set(value) {
+            array[14] = value
+        }
+    inline var m30
+        get() = this[3];
+        set(value) {
+            array[3] = value
+        }
+    inline var m31
+        get() = this[7];
+        set(value) {
+            array[7] = value
+        }
+    inline var m32
+        get() = this[11];
+        set(value) {
+            array[11] = value
+        }
+    inline var m33
+        get() = this[15];
+        set(value) {
+            array[15] = value
+        }
+
+    // <init block>
+    init {
+        if (array.size != 16) {
+            throw IllegalArgumentException("Mat4 requires a 16-element FloatArray for storage.")
+        }
+    }
+
+    // <functions with 0 parameters>
     /**
      * Sets this matrix to the identity matrix
      */
@@ -502,6 +500,53 @@ class Mat4f private constructor(val array: FloatArray) {
         identity(this)
     }
 
+    /**
+     * Computes the determinant of `this`.
+     */
+    fun determinant(): Float {
+        val m00 = array[0]
+        val m01 = array[1]
+        val m02 = array[2]
+        val m03 = array[3]
+        val m10 = array[4]
+        val m11 = array[5]
+        val m12 = array[6]
+        val m13 = array[7]
+        val m20 = array[8]
+        val m21 = array[9]
+        val m22 = array[10]
+        val m23 = array[11]
+        val m30 = array[12]
+        val m31 = array[13]
+        val m32 = array[14]
+        val m33 = array[15]
+
+        val tmp0 = m22 * m33
+        val tmp1 = m32 * m23
+        val tmp2 = m12 * m33
+        val tmp3 = m32 * m13
+        val tmp4 = m12 * m23
+        val tmp5 = m22 * m13
+        val tmp6 = m02 * m33
+        val tmp7 = m32 * m03
+        val tmp8 = m02 * m23
+        val tmp9 = m22 * m03
+        val tmp10 = m02 * m13
+        val tmp11 = m12 * m03
+
+        val t0 = (tmp0 * m11 + tmp3 * m21 + tmp4 * m31) -
+                (tmp1 * m11 + tmp2 * m21 + tmp5 * m31)
+        val t1 = (tmp1 * m01 + tmp6 * m21 + tmp9 * m31) -
+                (tmp0 * m01 + tmp7 * m21 + tmp8 * m31)
+        val t2 = (tmp2 * m01 + tmp7 * m11 + tmp10 * m31) -
+                (tmp3 * m01 + tmp6 * m11 + tmp11 * m31)
+        val t3 = (tmp5 * m01 + tmp8 * m11 + tmp11 * m21) -
+                (tmp4 * m01 + tmp9 * m11 + tmp10 * m21)
+
+        return m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3
+    }
+
+    // <functions with 1 parameter>
     /**
      * Gets a copy of the internal FloatArray representation of the matrix.
      * Modifying the returned array will not affect the original matrix.
@@ -520,22 +565,6 @@ class Mat4f private constructor(val array: FloatArray) {
      */
     fun set(arr: FloatArray) {
         arr.copyInto(this.array)
-    }
-
-
-    /**
-     * Sets the values of `this` from [v0] to [v15], in column-major order.
-     */
-    fun set(
-        v0: Float, v1: Float, v2: Float, v3: Float,
-        v4: Float, v5: Float, v6: Float, v7: Float,
-        v8: Float, v9: Float, v10: Float, v11: Float,
-        v12: Float, v13: Float, v14: Float, v15: Float,
-    ): Mat4f = this.apply {
-        array[0] = v0; array[1] = v1; array[2] = v2; array[3] = v3
-        array[4] = v4; array[5] = v5; array[6] = v6; array[7] = v7
-        array[8] = v8; array[9] = v9; array[10] = v10; array[11] = v11
-        array[12] = v12; array[13] = v13; array[14] = v14; array[15] = v15
     }
 
     /**
@@ -825,65 +854,6 @@ class Mat4f private constructor(val array: FloatArray) {
     fun invert(dst: Mat4f = Mat4f()): Mat4f = inverse(dst)
 
     /**
-     * Computes the determinant of `this`.
-     */
-    fun determinant(): Float {
-        val m00 = array[0]
-        val m01 = array[1]
-        val m02 = array[2]
-        val m03 = array[3]
-        val m10 = array[4]
-        val m11 = array[5]
-        val m12 = array[6]
-        val m13 = array[7]
-        val m20 = array[8]
-        val m21 = array[9]
-        val m22 = array[10]
-        val m23 = array[11]
-        val m30 = array[12]
-        val m31 = array[13]
-        val m32 = array[14]
-        val m33 = array[15]
-
-        val tmp0 = m22 * m33
-        val tmp1 = m32 * m23
-        val tmp2 = m12 * m33
-        val tmp3 = m32 * m13
-        val tmp4 = m12 * m23
-        val tmp5 = m22 * m13
-        val tmp6 = m02 * m33
-        val tmp7 = m32 * m03
-        val tmp8 = m02 * m23
-        val tmp9 = m22 * m03
-        val tmp10 = m02 * m13
-        val tmp11 = m12 * m03
-
-        val t0 = (tmp0 * m11 + tmp3 * m21 + tmp4 * m31) -
-                (tmp1 * m11 + tmp2 * m21 + tmp5 * m31)
-        val t1 = (tmp1 * m01 + tmp6 * m21 + tmp9 * m31) -
-                (tmp0 * m01 + tmp7 * m21 + tmp8 * m31)
-        val t2 = (tmp2 * m01 + tmp7 * m11 + tmp10 * m31) -
-                (tmp3 * m01 + tmp6 * m11 + tmp11 * m31)
-        val t3 = (tmp5 * m01 + tmp8 * m11 + tmp11 * m21) -
-                (tmp4 * m01 + tmp9 * m11 + tmp10 * m21)
-
-        return m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3
-    }
-
-    /**
-     * Creates a matrix copy of `this` with the translation component set to [v].
-     */
-    fun setTranslation(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val newDst = if (dst === this) this else copy(dst)
-
-        newDst.array[12] = v.x
-        newDst.array[13] = v.y
-        newDst.array[14] = v.z
-
-        return newDst
-    }
-
-    /**
      * Gets the translation component of `this`.
      */
     fun getTranslation(dst: Vec3f = Vec3f.create()): Vec3f {
@@ -891,31 +861,6 @@ class Mat4f private constructor(val array: FloatArray) {
         dst.y = array[13]
         dst.z = array[14]
         return dst
-    }
-
-    /**
-     * Gets the specified [axis] (0=x, 1=y, 2=z) of `this` as a Vec3.
-     */
-    fun getAxis(axis: Int, dst: Vec3f = Vec3f.create()): Vec3f {
-        val off = axis * 4
-        dst.x = array[off + 0]
-        dst.y = array[off + 1]
-        dst.z = array[off + 2]
-        return dst
-    }
-
-    /**
-     * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y, 2=z) set to [v].
-     */
-    fun setAxis(v: Vec3f, axis: Int, dst: Mat4f = Mat4f()): Mat4f {
-        val newDst = if (dst === this) this else copy(dst)
-
-        val off = axis * 4
-        newDst.array[off + 0] = v.x
-        newDst.array[off + 1] = v.y
-        newDst.array[off + 2] = v.z
-
-        return newDst
     }
 
     /**
@@ -1123,35 +1068,6 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
-     * Post-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
-     * `dst = this * axisRotation(axis, angleInRadians)`
-     *
-     * Order of operations on a transformed vector:
-     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
-     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
-     */
-    fun axisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
-        val x = axis.x
-        val y = axis.y
-        val z = axis.z
-
-        val n = sqrt(x * x + y * y + z * z)
-        if (n < EPSILON) {
-            return copy(dst)
-        }
-
-        val axisX = x / n
-        val axisY = y / n
-        val axisZ = z / n
-
-        val m = Mat4f.axisRotation(Vec3f(axisX, axisY, axisZ), angleInRadians)
-
-        return multiply(m, dst)
-    }
-
-    fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
-
-    /**
      * Post-multiplies this 4x4 matrix by a 3D scaling matrix created from [v] (for X, Y, and Z axes) and writes the result into [dst].
      * `dst = this * scaling(v)`
      *
@@ -1318,7 +1234,7 @@ class Mat4f private constructor(val array: FloatArray) {
             dst.array[9] = array[9]; dst.array[11] = array[11]
             dst.array[13] = array[13]; dst.array[15] = array[15]
         }
-        
+
         dst.array[0] = c * a0 + s * a2
         dst.array[2] = -s * a0 + c * a2
 
@@ -1371,23 +1287,6 @@ class Mat4f private constructor(val array: FloatArray) {
         return dst
     }
 
-
-    /**
-     * Pre-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
-     * `dst = axisRotation(axis, angleInRadians) * this`
-     *
-     * Order of operations on a transformed vector:
-     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
-     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
-     */
-    fun preAxisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
-        // For complex transformations like axis-angle, it's often clearer and less error-prone
-        // to use the existing multiply with a temporary matrix, similar to how post-multiply is handled.
-        val rotationMatrix = Mat4f() // Consider a pool or companion object temp if performance critical
-        Mat4f.axisRotation(axis, angleInRadians, rotationMatrix)
-        return rotationMatrix.multiply(this, dst)
-    }
-
     /**
      * Pre-multiplies this 4x4 matrix by a 3D scaling matrix created from [v] (for X, Y, and Z axes) and writes the result into [dst].
      * `dst = scaling(v) * this`
@@ -1422,6 +1321,52 @@ class Mat4f private constructor(val array: FloatArray) {
         return dst
     }
 
+    // <functions with 2 parameters>
+    /**
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
+     * `dst = this * axisRotation(axis, angleInRadians)`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     */
+    fun axisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val x = axis.x
+        val y = axis.y
+        val z = axis.z
+
+        val n = sqrt(x * x + y * y + z * z)
+        if (n < EPSILON) {
+            return copy(dst)
+        }
+
+        val axisX = x / n
+        val axisY = y / n
+        val axisZ = z / n
+
+        val m = Mat4f.axisRotation(Vec3f(axisX, axisY, axisZ), angleInRadians)
+
+        return multiply(m, dst)
+    }
+
+    fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
+
+    /**
+     * Pre-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
+     * `dst = axisRotation(axis, angleInRadians) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     */
+    fun preAxisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        // For complex transformations like axis-angle, it's often clearer and less error-prone
+        // to use the existing multiply with a temporary matrix, similar to how post-multiply is handled.
+        val rotationMatrix = Mat4f() // Consider a pool or companion object temp if performance critical
+        Mat4f.axisRotation(axis, angleInRadians, rotationMatrix)
+        return rotationMatrix.multiply(this, dst)
+    }
+
     /**
      * Checks if `this` is approximately equal to [other].
      */
@@ -1445,6 +1390,71 @@ class Mat4f private constructor(val array: FloatArray) {
     }
 
     /**
+     * Creates a matrix copy of `this` with the translation component set to [v].
+     */
+    fun setTranslation(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+        val newDst = if (dst === this) this else copy(dst)
+
+        newDst.array[12] = v.x
+        newDst.array[13] = v.y
+        newDst.array[14] = v.z
+
+        return newDst
+    }
+
+    /**
+     * Gets the specified [axis] (0=x, 1=y, 2=z) of `this` as a Vec3.
+     */
+    fun getAxis(axis: Int, dst: Vec3f = Vec3f.create()): Vec3f {
+        val off = axis * 4
+        dst.x = array[off + 0]
+        dst.y = array[off + 1]
+        dst.z = array[off + 2]
+        return dst
+    }
+
+    /**
+     * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y, 2=z) set to [v].
+     */
+    fun setAxis(v: Vec3f, axis: Int, dst: Mat4f = Mat4f()): Mat4f {
+        val newDst = if (dst === this) this else copy(dst)
+
+        val off = axis * 4
+        newDst.array[off + 0] = v.x
+        newDst.array[off + 1] = v.y
+        newDst.array[off + 2] = v.z
+
+        return newDst
+    }
+
+    // <functions with 3 or more parameters>
+    /**
+     * Sets the values of `this` from [v0] to [v15], in column-major order.
+     */
+    fun set(
+        v0: Float, v1: Float, v2: Float, v3: Float,
+        v4: Float, v5: Float, v6: Float, v7: Float,
+        v8: Float, v9: Float, v10: Float, v11: Float,
+        v12: Float, v13: Float, v14: Float, v15: Float,
+    ): Mat4f = this.apply {
+        array[0] = v0; array[1] = v1; array[2] = v2; array[3] = v3
+        array[4] = v4; array[5] = v5; array[6] = v6; array[7] = v7
+        array[8] = v8; array[9] = v9; array[10] = v10; array[11] = v11
+        array[12] = v12; array[13] = v13; array[14] = v14; array[15] = v15
+    }
+
+    // <toString>
+    override fun toString(): String {
+        return """
+            [${m00.ns},${m01.ns},${m02.ns},${m03.ns}]
+            [${m10.ns},${m11.ns},${m12.ns},${m13.ns}]
+            [${m20.ns},${m21.ns},${m22.ns},${m23.ns}]
+            [${m30.ns},${m31.ns},${m32.ns},${m33.ns}]
+        """.trimIndent()
+    }
+
+    // <equals>
+    /**
      * Checks if `this` is exactly equal to [other].
      */
     override fun equals(other: Any?): Boolean {
@@ -1467,6 +1477,7 @@ class Mat4f private constructor(val array: FloatArray) {
                 array[15] == other.array[15]
     }
 
+    // <hashcode>
     override fun hashCode(): Int {
         return array.contentHashCode()
     }

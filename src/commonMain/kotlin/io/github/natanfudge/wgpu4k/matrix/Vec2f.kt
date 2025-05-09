@@ -10,37 +10,58 @@ import kotlin.random.Random
  * including optional 'dst' parameter support.
  */
 class Vec2f(var x: Float , var y: Float) {
+    // <secondary constructors>
     constructor(): this(0f,0f)
-    override fun toString(): String = "(${x.ns},${y.ns})"
 
+    // <companion object>
+    companion object {
+        // <constants>
+        // 2 * 4 bytes
+        const val SIZE_BYTES = 8u
+
+        // <static builders>
+        /** Creates a new Vec2 instance. */
+        fun create(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)
+
+        /** Creates a new Vec2 instance. (Alias for create) */
+        fun fromValues(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)
+
+        /** Creates a random unit vector scaled by [scale]. */
+        fun random(scale: Float = 1f, dst: Vec2f = Vec2f()): Vec2f {
+            val angle = Random.nextFloat() * 2f * FloatPi
+            dst.x = cos(angle) * scale
+            dst.y = sin(angle) * scale
+            return dst
+        }
+
+        /**
+         * Either creates a new zero vector, or sets [dst] to 0,0.
+         * */
+        fun zero(dst: Vec2f = Vec2f()): Vec2f {
+            dst.x = 0f
+            dst.y = 0f
+            return dst
+        }
+        // <static operators>
+        // No static operators in Vec2f
+    }
+
+    // <`operator fun` functions>
     inline operator fun plus(other: Vec2f) = add(other)
     inline operator fun minus(other: Vec2f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
 
-    /**
-     * Creates a copy of `this`.
-     */
-    fun copy(dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = this.x
-        dst.y = this.y
-        return dst
-    }
+    // <properties>
+    // No specific properties apart from x, y which are primary constructor params
+
+    // <functions with 0 parameters>
     /**
      * Sets this vector to the zero vec2
      */
     fun setZero() {
         zero(this)
-    }
-
-    /**
-     * Sets the components of `this` to [x] and [y].
-     */
-    fun set(x: Float, y: Float): Vec2f {
-        this.x = x
-        this.y = y
-        return this
     }
 
     fun absoluteValue(dst: Vec2f = Vec2f()): Vec2f {
@@ -77,11 +98,81 @@ class Vec2f(var x: Float , var y: Float) {
     }
 
     /**
-     * Clamps each component of `this` between [min] and [max].
+     * Computes the component-wise inverse (1/x) of `this` vector.
      */
-    fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = this.x.coerceIn(min, max)
-        dst.y = this.y.coerceIn(min, max)
+    fun inverse(dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = 1f / this.x
+        dst.y = 1f / this.y
+        return dst
+    }
+
+    /** Computes the component-wise inverse (1/x) of `this` vector (alias for [inverse]). */
+    fun invert(dst: Vec2f = Vec2f()): Vec2f = inverse(dst)
+
+    /**
+     * Computes the length (magnitude) of `this` vector.
+     */
+    fun length(): Float {
+        return sqrt(this.lengthSq()) // Call lengthSq instance method
+    }
+
+    /** Computes the length (magnitude) of `this` vector (alias for [length]). */
+    fun len(): Float = length()
+
+    /**
+     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
+     */
+    fun lengthSq(): Float {
+        return x * x + y * y
+    }
+
+    /** Computes the square of the length of `this` vector (alias for [lengthSq]). */
+    fun lenSq(): Float = lengthSq()
+
+    /**
+     * Normalizes `this` vector (scales it to unit length).
+     */
+    fun normalize(dst: Vec2f = Vec2f()): Vec2f {
+        val l = this.length() // Use instance length method
+        if (l > EPSILON) {
+            val invLen = 1f / l
+            dst.x = this.x * invLen
+            dst.y = this.y * invLen
+        } else {
+            dst.x = 0f
+            dst.y = 0f
+        }
+        return dst
+    }
+
+    /**
+     * Negates `this` vector (multiplies components by -1).
+     */
+    fun negate(dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = -this.x
+        dst.y = -this.y
+        return dst
+    }
+
+    /**
+     * Copies the components of `this` vector.
+     */
+    fun copyTo(dst: Vec2f = Vec2f()): Vec2f { // Renamed from 'copy' to avoid clash
+        dst.x = this.x
+        dst.y = this.y
+        return dst
+    }
+
+    /** Copies the components of `this` vector (alias for [copyTo]). */
+    fun clone(dst: Vec2f = Vec2f()): Vec2f = copyTo(dst)
+
+    // <functions with 1 parameter>
+    /**
+     * Creates a copy of `this`.
+     */
+    fun copy(dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x
+        dst.y = this.y
         return dst
     }
 
@@ -91,15 +182,6 @@ class Vec2f(var x: Float , var y: Float) {
     fun add(other: Vec2f, dst: Vec2f = Vec2f()): Vec2f {
         dst.x = this.x + other.x
         dst.y = this.y + other.y
-        return dst
-    }
-
-    /**
-     * Adds [other] scaled by [scale] to `this`.
-     */
-    fun addScaled(other: Vec2f, scale: Float, dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = this.x + other.x * scale
-        dst.y = this.y + other.y * scale
         return dst
     }
 
@@ -127,33 +209,6 @@ class Vec2f(var x: Float , var y: Float) {
     /** Subtracts [other] from `this` vector (`this` - [other]) (alias for [subtract]). */
     fun sub(other: Vec2f, dst: Vec2f = Vec2f()): Vec2f = subtract(other, dst)
 
-    /**
-     * Checks if `this` vector is approximately equal to [other].
-     */
-    fun equalsApproximately(other: Vec2f, tolerance: Float = EPSILON): Boolean {
-        return abs(this.x - other.x) < tolerance &&
-                abs(this.y - other.y) < tolerance
-    }
-
-    /**
-     * Linearly interpolates between `this` vector and [other] using coefficient [t].
-     * Result = `this` + [t] * ([other] - `this`).
-     */
-    fun lerp(other: Vec2f, t: Float, dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = this.x + t * (other.x - this.x)
-        dst.y = this.y + t * (other.y - this.y)
-        return dst
-    }
-
-    /**
-     * Performs component-wise linear interpolation between `this` vector and [other] using coefficient vector [t].
-     * Result = `this` + [t] * ([other] - `this`).
-     */
-    fun lerpV(other: Vec2f, t: Vec2f, dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = this.x + t.x * (other.x - this.x)
-        dst.y = this.y + t.y * (other.y - this.y)
-        return dst
-    }
 
     /**
      * Computes the component-wise maximum of `this` vector and [other].
@@ -195,18 +250,6 @@ class Vec2f(var x: Float , var y: Float) {
     }
 
     /**
-     * Computes the component-wise inverse (1/x) of `this` vector.
-     */
-    fun inverse(dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = 1f / this.x
-        dst.y = 1f / this.y
-        return dst
-    }
-
-    /** Computes the component-wise inverse (1/x) of `this` vector (alias for [inverse]). */
-    fun invert(dst: Vec2f = Vec2f()): Vec2f = inverse(dst)
-
-    /**
      * Computes the 2D cross product (returns the Z component) of `this` vector and [other].
      * The result is stored in a 3-element FloatArray [0, 0, z].
      */
@@ -226,25 +269,6 @@ class Vec2f(var x: Float , var y: Float) {
         return this.x * other.x + this.y * other.y
     }
 
-    /**
-     * Computes the length (magnitude) of `this` vector.
-     */
-    fun length(): Float {
-        return sqrt(this.lengthSq()) // Call lengthSq instance method
-    }
-
-    /** Computes the length (magnitude) of `this` vector (alias for [length]). */
-    fun len(): Float = length()
-
-    /**
-     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
-     */
-    fun lengthSq(): Float {
-        return x * x + y * y
-    }
-
-    /** Computes the square of the length of `this` vector (alias for [lengthSq]). */
-    fun lenSq(): Float = lengthSq()
 
     /**
      * Computes the distance between `this` point and [other].
@@ -267,43 +291,6 @@ class Vec2f(var x: Float , var y: Float) {
 
     /** Computes the square of the distance between `this` point and [other] (alias for [distanceSq]). */
     fun distSq(other: Vec2f): Float = distanceSq(other)
-
-    /**
-     * Normalizes `this` vector (scales it to unit length).
-     */
-    fun normalize(dst: Vec2f = Vec2f()): Vec2f {
-        val l = this.length() // Use instance length method
-        if (l > EPSILON) {
-            val invLen = 1f / l
-            dst.x = this.x * invLen
-            dst.y = this.y * invLen
-        } else {
-            dst.x = 0f
-            dst.y = 0f
-        }
-        return dst
-    }
-
-    /**
-     * Negates `this` vector (multiplies components by -1).
-     */
-    fun negate(dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = -this.x
-        dst.y = -this.y
-        return dst
-    }
-
-    /**
-     * Copies the components of `this` vector.
-     */
-    fun copyTo(dst: Vec2f = Vec2f()): Vec2f { // Renamed from 'copy' to avoid clash
-        dst.x = this.x
-        dst.y = this.y
-        return dst
-    }
-
-    /** Copies the components of `this` vector (alias for [copyTo]). */
-    fun clone(dst: Vec2f = Vec2f()): Vec2f = copyTo(dst)
 
     /**
      * Multiplies `this` vector by [other] component-wise.
@@ -352,21 +339,6 @@ class Vec2f(var x: Float , var y: Float) {
     }
 
     /**
-     * Rotates `this` vector (point) around the [origin] by [rad] radians.
-     */
-    fun rotate(origin: Vec2f, rad: Float, dst: Vec2f = Vec2f()): Vec2f {
-        // Translate point to the origin relative to 'origin'
-        val p0 = this.x - origin.x
-        val p1 = this.y - origin.y
-        val sinC = sin(rad)
-        val cosC = cos(rad)
-        // Perform rotation and translate back
-        dst.x = p0 * cosC - p1 * sinC + origin.x
-        dst.y = p0 * sinC + p1 * cosC + origin.y
-        return dst
-    }
-
-    /**
      * Sets the length of `this` vector to [len].
      */
     fun setLength(len: Float, dst: Vec2f = Vec2f()): Vec2f {
@@ -403,41 +375,92 @@ class Vec2f(var x: Float , var y: Float) {
         return dst
     }
 
+    // <functions with 2 parameters>
+    /**
+     * Sets the components of `this` to [x] and [y].
+     */
+    fun set(x: Float, y: Float): Vec2f {
+        this.x = x
+        this.y = y
+        return this
+    }
+
+    /**
+     * Clamps each component of `this` between [min] and [max].
+     */
+    fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x.coerceIn(min, max)
+        dst.y = this.y.coerceIn(min, max)
+        return dst
+    }
+
+    /**
+     * Adds [other] scaled by [scale] to `this`.
+     */
+    fun addScaled(other: Vec2f, scale: Float, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x + other.x * scale
+        dst.y = this.y + other.y * scale
+        return dst
+    }
+
+    /**
+     * Checks if `this` vector is approximately equal to [other].
+     */
+    fun equalsApproximately(other: Vec2f, tolerance: Float = EPSILON): Boolean {
+        return abs(this.x - other.x) < tolerance &&
+                abs(this.y - other.y) < tolerance
+    }
+
+    /**
+     * Linearly interpolates between `this` vector and [other] using coefficient [t].
+     * Result = `this` + [t] * ([other] - `this`).
+     */
+    fun lerp(other: Vec2f, t: Float, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x + t * (other.x - this.x)
+        dst.y = this.y + t * (other.y - this.y)
+        return dst
+    }
+
+    /**
+     * Performs component-wise linear interpolation between `this` vector and [other] using coefficient vector [t].
+     * Result = `this` + [t] * ([other] - `this`).
+     */
+    fun lerpV(other: Vec2f, t: Vec2f, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = this.x + t.x * (other.x - this.x)
+        dst.y = this.y + t.y * (other.y - this.y)
+        return dst
+    }
+
+    /**
+     * Rotates `this` vector (point) around the [origin] by [rad] radians.
+     */
+    fun rotate(origin: Vec2f, rad: Float, dst: Vec2f = Vec2f()): Vec2f {
+        // Translate point to the origin relative to 'origin'
+        val p0 = this.x - origin.x
+        val p1 = this.y - origin.y
+        val sinC = sin(rad)
+        val cosC = cos(rad)
+        // Perform rotation and translate back
+        dst.x = p0 * cosC - p1 * sinC + origin.x
+        dst.y = p0 * sinC + p1 * cosC + origin.y
+        return dst
+    }
+
+    // <functions with 3 or more parameters>
+    // No functions with 3 or more parameters in Vec2f
+
+    // <toString>
+    override fun toString(): String = "(${x.ns},${y.ns})"
+
+    // <equals>
     override fun equals(other: Any?): Boolean {
         return other is Vec2f && other.x == x && other.y == y
     }
 
+    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()
         return result
-    }
-
-    companion object {
-        // 2 * 4 bytes
-        const val SIZE_BYTES = 8u
-
-        /** Creates a new Vec2 instance. */
-        fun create(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)
-
-        /** Creates a new Vec2 instance. (Alias for create) */
-        fun fromValues(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)
-
-        /** Creates a random unit vector scaled by [scale]. */
-        fun random(scale: Float = 1f, dst: Vec2f = Vec2f()): Vec2f {
-            val angle = Random.nextFloat() * 2f * FloatPi
-            dst.x = cos(angle) * scale
-            dst.y = sin(angle) * scale
-            return dst
-        }
-
-        /**
-         * Either creates a new zero vector, or sets [dst] to 0,0.
-         * */
-        fun zero(dst: Vec2f = Vec2f()): Vec2f {
-            dst.x = 0f
-            dst.y = 0f
-            return dst
-        }
     }
 }

@@ -13,19 +13,16 @@ class Vec4f(
     var z: Float ,
     var w: Float,
 ) {
+    // <secondary constructors>
     constructor() : this(0f,0f,0f,0f)
-    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
 
-    inline operator fun plus(other: Vec4f) = add(other)
-    inline operator fun minus(other: Vec4f) = subtract(other)
-    inline operator fun times(scalar: Float) = mulScalar(scalar)
-    inline operator fun div(scalar: Float) = divScalar(scalar)
-    inline operator fun unaryMinus() = negate()
-
+    // <companion object>
     companion object {
+        // <constants>
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
 
+        // <static builders>
         /**
          * Creates a vec4 with initial values [x], [y], [z], and [w].
          */
@@ -39,24 +36,48 @@ class Vec4f(
         fun fromValues(x: Float = 0.0f, y: Float = 0.0f, z: Float = 0.0f, w: Float = 0.0f): Vec4f {
             return Vec4f(x, y, z, w)
         }
+        // <static operators>
+        // No static operators in Vec4f
     }
 
+    // <`operator fun` functions>
+    inline operator fun plus(other: Vec4f) = add(other)
+    inline operator fun minus(other: Vec4f) = subtract(other)
+    inline operator fun times(scalar: Float) = mulScalar(scalar)
+    inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun unaryMinus() = negate()
+
+    // <properties>
+    /**
+     * Computes the length of `this`.
+     */
+    val length: Float
+        get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
+
+    /**
+     * Computes the length of `this`. (Alias for length)
+     */
+    val len: Float
+        get() = length
+
+    /**
+     * Computes the square of the length of `this`.
+     */
+    val lengthSq: Float
+        get() = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
+
+    /**
+     * Computes the square of the length of `this`. (Alias for lengthSq)
+     */
+    val lenSq: Float
+        get() = lengthSq
+
+    // <functions with 0 parameters>
     /**
      * Sets this vector to the zero vec4
      */
     fun setZero() {
         zero(this)
-    }
-
-    /**
-     * Sets the components of `this` to [x], [y], [z], and [w].
-     */
-    fun set(x: Float, y: Float, z: Float, w: Float): Vec4f {
-        this.x = x
-        this.y = y
-        this.z = z
-        this.w = w
-        return this
     }
 
     /**
@@ -93,16 +114,84 @@ class Vec4f(
     }
 
     /**
-     * Clamp each element of `this` between [min] and [max].
+     * Computes the component-wise inverse (1/x) of `this`.
      */
-    fun clamp(min: Float = 0.0f, max: Float = 1.0f, dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = max(min, min(max, this.x))
-        dst.y = max(min, min(max, this.y))
-        dst.z = max(min, min(max, this.z))
-        dst.w = max(min, min(max, this.w))
+    fun inverse(dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = 1.0f / this.x
+        dst.y = 1.0f / this.y
+        dst.z = 1.0f / this.z
+        dst.w = 1.0f / this.w
         return dst
     }
 
+    /**
+     * Computes the component-wise inverse (1/x) of `this`. (Alias for inverse)
+     */
+    fun invert(dst: Vec4f = Vec4f()): Vec4f = inverse(dst)
+
+    /**
+     * Normalizes `this` (divides by its length).
+     * Returns a zero vector if the length is close to zero.
+     */
+    fun normalize(dst: Vec4f = Vec4f()): Vec4f {
+        val l = this.length
+        if (l > EPSILON) {
+            dst.x = this.x / l
+            dst.y = this.y / l
+            dst.z = this.z / l
+            dst.w = this.w / l
+        } else {
+            dst.x = 0.0f
+            dst.y = 0.0f
+            dst.z = 0.0f
+            dst.w = 0.0f
+        }
+        return dst
+    }
+
+    /**
+     * Negates `this`.
+     */
+    fun negate(dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = -this.x
+        dst.y = -this.y
+        dst.z = -this.z
+        dst.w = -this.w
+        return dst
+    }
+
+    /**
+     * Creates a copy of `this`.
+     */
+    fun copy(dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = this.x
+        dst.y = this.y
+        dst.z = this.z
+        dst.w = this.w
+        return dst
+    }
+
+    /**
+     * Creates a copy of `this`. (Alias for copy)
+     */
+    fun clone(dst: Vec4f = Vec4f()): Vec4f = copy(dst)
+
+    /**
+     * Sets the components of `this` to zero.
+     */
+    fun zero(dst: Vec4f = Vec4f()): Vec4f {
+        // Note: This behavior differs from the original if dst is not provided.
+        // The original modified `this`. This version modifies the new default dst.
+        // If the original behavior is desired, this needs adjustment.
+        // For now, applying the requested pattern strictly.
+        dst.x = 0.0f
+        dst.y = 0.0f
+        dst.z = 0.0f
+        dst.w = 0.0f
+        return dst
+    }
+
+    // <functions with 1 parameter>
     /**
      * Adds [other] to `this`.
      */
@@ -111,17 +200,6 @@ class Vec4f(
         dst.y = this.y + other.y
         dst.z = this.z + other.z
         dst.w = this.w + other.w
-        return dst
-    }
-
-    /**
-     * Adds [other] scaled by [scale] to `this`.
-     */
-    fun addScaled(other: Vec4f, scale: Float, dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = this.x + other.x * scale
-        dst.y = this.y + other.y * scale
-        dst.z = this.z + other.z * scale
-        dst.w = this.w + other.w * scale
         return dst
     }
 
@@ -142,47 +220,11 @@ class Vec4f(
     fun sub(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f = subtract(other, dst)
 
     /**
-     * Checks if `this` is approximately equal to [other] within [epsilon].
-     */
-    fun equalsApproximately(other: Vec4f, epsilon: Float = EPSILON): Boolean {
-        return abs(this.x - other.x) < epsilon &&
-                abs(this.y - other.y) < epsilon &&
-                abs(this.z - other.z) < epsilon &&
-                abs(this.w - other.w) < epsilon
-    }
-
-    /**
      * Checks if `this` is exactly equal to [other].
      * Note: Prefer equalsApproximately for floating-point comparisons.
      */
     fun equals(other: Vec4f): Boolean {
         return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
-    }
-    // Note: The data class provides an equals method, but this explicit one matches the TS API name.
-    // The data class equals will be used for standard equality checks (e.g., in collections).
-
-    /**
-     * Performs linear interpolation between `this` and [other] using coefficient [t].
-     * Calculates `this` + [t] * ([other] - `this`).
-     */
-    fun lerp(other: Vec4f, t: Float, dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = this.x + t * (other.x - this.x)
-        dst.y = this.y + t * (other.y - this.y)
-        dst.z = this.z + t * (other.z - this.z)
-        dst.w = this.w + t * (other.w - this.w)
-        return dst
-    }
-
-    /**
-     * Performs linear interpolation between `this` and [other] using coefficient vector [t].
-     * Calculates `this` + [t] * ([other] - `this`) component-wise.
-     */
-    fun lerpV(other: Vec4f, t: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = this.x + t.x * (other.x - this.x)
-        dst.y = this.y + t.y * (other.y - this.y)
-        dst.z = this.z + t.z * (other.z - this.z)
-        dst.w = this.w + t.w * (other.w - this.w)
-        return dst
     }
 
     /**
@@ -235,51 +277,11 @@ class Vec4f(
     }
 
     /**
-     * Computes the component-wise inverse (1/x) of `this`.
-     */
-    fun inverse(dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = 1.0f / this.x
-        dst.y = 1.0f / this.y
-        dst.z = 1.0f / this.z
-        dst.w = 1.0f / this.w
-        return dst
-    }
-
-    /**
-     * Computes the component-wise inverse (1/x) of `this`. (Alias for inverse)
-     */
-    fun invert(dst: Vec4f = Vec4f()): Vec4f = inverse(dst)
-
-    /**
      * Computes the dot product of `this` and [other].
      */
     fun dot(other: Vec4f): Float {
         return (this.x * other.x) + (this.y * other.y) + (this.z * other.z) + (this.w * other.w)
     }
-
-    /**
-     * Computes the length of `this`.
-     */
-    val length: Float
-        get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
-
-    /**
-     * Computes the length of `this`. (Alias for length)
-     */
-    val len: Float
-        get() = length
-
-    /**
-     * Computes the square of the length of `this`.
-     */
-    val lengthSq: Float
-        get() = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
-
-    /**
-     * Computes the square of the length of `this`. (Alias for lengthSq)
-     */
-    val lenSq: Float
-        get() = lengthSq
 
     /**
      * Computes the distance between `this` and [other].
@@ -314,55 +316,6 @@ class Vec4f(
     fun distSq(other: Vec4f): Float = distanceSq(other)
 
     /**
-     * Normalizes `this` (divides by its length).
-     * Returns a zero vector if the length is close to zero.
-     */
-    fun normalize(dst: Vec4f = Vec4f()): Vec4f {
-        val l = this.length
-        if (l > EPSILON) {
-            dst.x = this.x / l
-            dst.y = this.y / l
-            dst.z = this.z / l
-            dst.w = this.w / l
-        } else {
-            dst.x = 0.0f
-            dst.y = 0.0f
-            dst.z = 0.0f
-            dst.w = 0.0f
-        }
-        return dst
-    }
-
-    /**
-     * Negates `this`.
-     */
-    fun negate(dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = -this.x
-        dst.y = -this.y
-        dst.z = -this.z
-        dst.w = -this.w
-        return dst
-    }
-
-    /**
-     * Creates a copy of `this`.
-     */
-    fun copy(dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = this.x
-        dst.y = this.y
-        dst.z = this.z
-        dst.w = this.w
-        return dst
-    }
-    // Note: The data class provides a copy() method which is more idiomatic for creating copies.
-    // This method is provided for API compatibility and the optional dst parameter.
-
-    /**
-     * Creates a copy of `this`. (Alias for copy)
-     */
-    fun clone(dst: Vec4f = Vec4f()): Vec4f = copy(dst)
-
-    /**
      * Multiplies `this` by [other] component-wise.
      */
     fun multiply(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
@@ -393,21 +346,6 @@ class Vec4f(
      * Divides `this` by [other] component-wise. (Alias for divide)
      */
     fun div(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f = divide(other, dst)
-
-    /**
-     * Sets the components of `this` to zero.
-     */
-    fun zero(dst: Vec4f = Vec4f()): Vec4f {
-        // Note: This behavior differs from the original if dst is not provided.
-        // The original modified `this`. This version modifies the new default dst.
-        // If the original behavior is desired, this needs adjustment.
-        // For now, applying the requested pattern strictly.
-        dst.x = 0.0f
-        dst.y = 0.0f
-        dst.z = 0.0f
-        dst.w = 0.0f
-        return dst
-    }
 
     /**
      * Transforms `this` by the 4x4 matrix [m].
@@ -454,6 +392,79 @@ class Vec4f(
         return this.lerp(other, 0.5f, dst)
     }
 
+    // <functions with 2 parameters>
+    /**
+     * Clamp each element of `this` between [min] and [max].
+     */
+    fun clamp(min: Float = 0.0f, max: Float = 1.0f, dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = max(min, min(max, this.x))
+        dst.y = max(min, min(max, this.y))
+        dst.z = max(min, min(max, this.z))
+        dst.w = max(min, min(max, this.w))
+        return dst
+    }
+
+    /**
+     * Adds [other] scaled by [scale] to `this`.
+     */
+    fun addScaled(other: Vec4f, scale: Float, dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = this.x + other.x * scale
+        dst.y = this.y + other.y * scale
+        dst.z = this.z + other.z * scale
+        dst.w = this.w + other.w * scale
+        return dst
+    }
+
+    /**
+     * Checks if `this` is approximately equal to [other] within [epsilon].
+     */
+    fun equalsApproximately(other: Vec4f, epsilon: Float = EPSILON): Boolean {
+        return abs(this.x - other.x) < epsilon &&
+                abs(this.y - other.y) < epsilon &&
+                abs(this.z - other.z) < epsilon &&
+                abs(this.w - other.w) < epsilon
+    }
+
+    /**
+     * Performs linear interpolation between `this` and [other] using coefficient [t].
+     * Calculates `this` + [t] * ([other] - `this`).
+     */
+    fun lerp(other: Vec4f, t: Float, dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = this.x + t * (other.x - this.x)
+        dst.y = this.y + t * (other.y - this.y)
+        dst.z = this.z + t * (other.z - this.z)
+        dst.w = this.w + t * (other.w - this.w)
+        return dst
+    }
+
+    /**
+     * Performs linear interpolation between `this` and [other] using coefficient vector [t].
+     * Calculates `this` + [t] * ([other] - `this`) component-wise.
+     */
+    fun lerpV(other: Vec4f, t: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = this.x + t.x * (other.x - this.x)
+        dst.y = this.y + t.y * (other.y - this.y)
+        dst.z = this.z + t.z * (other.z - this.z)
+        dst.w = this.w + t.w * (other.w - this.w)
+        return dst
+    }
+
+    // <functions with 3 or more parameters>
+    /**
+     * Sets the components of `this` to [x], [y], [z], and [w].
+     */
+    fun set(x: Float, y: Float, z: Float, w: Float): Vec4f {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.w = w
+        return this
+    }
+
+    // <toString>
+    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
+
+    // <equals>
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec4f) return false
@@ -466,6 +477,7 @@ class Vec4f(
         return true
     }
 
+    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()

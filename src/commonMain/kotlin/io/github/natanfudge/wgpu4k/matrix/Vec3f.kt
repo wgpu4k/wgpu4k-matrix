@@ -15,10 +15,108 @@ class Vec3f(
     var y: Float,
     var z: Float,
 ) {
-
+    // <secondary constructors>
     constructor() : this(0f, 0f, 0f)
 
+    // <companion object>
+    companion object {
+        // <constants>
+        // 3 * 4 bytes
+        const val SIZE_BYTES = 12u
 
+        // <static builders>
+        /**
+         * Creates a vec3 with initial values [x], [y], and [z].
+         */
+        fun create(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3f {
+            return Vec3f(x, y, z)
+        }
+
+        /**
+         * Creates a vec3 with initial values [x], [y], and [z] (alias for [create]).
+         */
+        fun fromValues(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3f {
+            return create(x, y, z)
+        }
+
+        /**
+         * Sets the components of [dst] to [x], [y], and [z].
+         */
+        fun set(x: Float, y: Float, z: Float, dst: Vec3f = Vec3f()): Vec3f {
+            dst.x = x
+            dst.y = y
+            dst.z = z
+            return dst
+        }
+
+        /**
+         * Creates a random vector within a sphere of radius [scale].
+         */
+        fun random(scale: Float = 1f, dst: Vec3f = Vec3f()): Vec3f {
+            val angle = Random.nextFloat() * 2f * FloatPi
+            val z = Random.nextFloat() * 2f - 1f
+            val zScale = sqrt(1f - z * z) * scale
+            dst.x = cos(angle) * zScale
+            dst.y = sin(angle) * zScale
+            dst.z = z * scale
+            return dst
+        }
+
+        /**
+         * Creates a zero vector (components are 0).
+         */
+        fun zero(dst: Vec3f = Vec3f()): Vec3f {
+            dst.x = 0f
+            dst.y = 0f
+            dst.z = 0f
+            return dst
+        }
+
+        /**
+         * Gets the translation component of the 4x4 matrix [m].
+         */
+        fun getTranslation(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
+            dst.x = m[12]
+            dst.y = m[13]
+            dst.z = m[14]
+            return dst
+        }
+
+        /**
+         * Gets the specified [axis] (0=x, 1=y, 2=z) of the 4x4 matrix [m].
+         */
+        fun getAxis(m: Mat4f, axis: Int, dst: Vec3f = Vec3f()): Vec3f {
+            val off = axis * 4
+            dst.x = m[off + 0]
+            dst.y = m[off + 1]
+            dst.z = m[off + 2]
+            return dst
+        }
+
+        /**
+         * Gets the scaling component of the 4x4 matrix [m].
+         */
+        fun getScaling(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
+            val xColX = m[0];
+            val xColY = m[1];
+            val xColZ = m[2]
+            val yColX = m[4];
+            val yColY = m[5];
+            val yColZ = m[6]
+            val zColX = m[8];
+            val zColY = m[9];
+            val zColZ = m[10]
+
+            dst.x = sqrt(xColX * xColX + xColY * xColY + xColZ * xColZ)
+            dst.y = sqrt(yColX * yColX + yColY * yColY + yColZ * yColZ)
+            dst.z = sqrt(zColX * zColX + zColY * zColY + zColZ * zColZ)
+            return dst
+        }
+        // <static operators>
+        // No static operators in Vec3f
+    }
+
+    // <`operator fun` functions>
     /**
      * Allows accessing components using array syntax (e.g., vec[0]).
      */
@@ -48,8 +146,11 @@ class Vec3f(
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
-    // --- Instance Methods (where `this` is the first parameter 'v' or 'a') ---
 
+    // <properties>
+    // No specific properties apart from x, y, z which are primary constructor params
+
+    // <functions with 0 parameters>
     /**
      * Sets this vector to the zero vec3
      */
@@ -96,15 +197,106 @@ class Vec3f(
     }
 
     /**
-     * Clamps each component of `this` between [min] and [max].
+     * Computes the component-wise inverse (1/x) of `this` vector.
      */
-    fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = min(max, max(min, this.x))
-        dst.y = min(max, max(min, this.y))
-        dst.z = min(max, max(min, this.z))
+    fun inverse(dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = 1f / this.x
+        dst.y = 1f / this.y
+        dst.z = 1f / this.z
         return dst
     }
 
+    /**
+     * Computes the component-wise inverse (1/x) of `this` vector (alias for [inverse]).
+     */
+    fun invert(dst: Vec3f = Vec3f()): Vec3f {
+        return inverse(dst)
+    }
+
+    /**
+     * Computes the length (magnitude) of `this` vector.
+     */
+    fun length(): Float {
+        return sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+    }
+
+    /**
+     * Computes the length (magnitude) of `this` vector (alias for [length]).
+     */
+    fun len(): Float {
+        return length()
+    }
+
+    /**
+     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
+     */
+    fun lengthSq(): Float {
+        return this.x * this.x + this.y * this.y + this.z * this.z
+    }
+
+    /**
+     * Computes the square of the length of `this` vector (alias for [lengthSq]).
+     */
+    fun lenSq(): Float {
+        return lengthSq()
+    }
+
+    /**
+     * Normalizes `this` vector (scales it to unit length).
+     */
+    fun normalize(dst: Vec3f = Vec3f()): Vec3f {
+        val l = this.length()
+        if (l > EPSILON) {
+            dst.x = this.x / l
+            dst.y = this.y / l
+            dst.z = this.z / l
+        } else {
+            dst.x = 0f
+            dst.y = 0f
+            dst.z = 0f
+        }
+        return dst
+    }
+
+    /**
+     * Negates `this` vector (multiplies components by -1).
+     */
+    fun negate(dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = -this.x
+        dst.y = -this.y
+        dst.z = -this.z
+        return dst
+    }
+
+    /**
+     * Copies the components of `this`.
+     */
+    fun copy(dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x
+        dst.y = this.y
+        dst.z = this.z
+        return dst
+    }
+
+    /**
+     * Copies the components of `this` (alias for [copy]).
+     */
+    fun clone(dst: Vec3f = Vec3f()): Vec3f {
+        return copy(dst)
+    }
+
+    /**
+     * Sets the components of `this` vector to 0.
+     * @return `this`
+     */
+    fun zero(): Vec3f {
+        this.x = 0f
+        this.y = 0f
+        this.z = 0f
+        return this
+    }
+
+    // <functions with 1 parameter>
     /**
      * Adds [b] to `this`.
      */
@@ -112,16 +304,6 @@ class Vec3f(
         dst.x = this.x + b.x
         dst.y = this.y + b.y
         dst.z = this.z + b.z
-        return dst
-    }
-
-    /**
-     * Adds [b] scaled by [scale] to `this`.
-     */
-    fun addScaled(b: Vec3f, scale: Float, dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = this.x + b.x * scale
-        dst.y = this.y + b.y * scale
-        dst.z = this.z + b.z * scale
         return dst
     }
 
@@ -153,36 +335,6 @@ class Vec3f(
      */
     fun sub(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
         return subtract(b, dst)
-    }
-
-    /**
-     * Checks if `this` and [b] are approximately equal.
-     */
-    fun equalsApproximately(b: Vec3f, tolerance: Float = EPSILON): Boolean {
-        return abs(this.x - b.x) < tolerance &&
-                abs(this.y - b.y) < tolerance &&
-                abs(this.z - b.z) < tolerance
-    }
-
-
-    /**
-     * Linearly interpolates between `this` and [b] using coefficient [t].
-     */
-    fun lerp(b: Vec3f, t: Float, dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = this.x + t * (b.x - this.x)
-        dst.y = this.y + t * (b.y - this.y)
-        dst.z = this.z + t * (b.z - this.z)
-        return dst
-    }
-
-    /**
-     * Performs component-wise linear interpolation between `this` and [b] using coefficient vector [t].
-     */
-    fun lerpV(b: Vec3f, t: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = this.x + t.x * (b.x - this.x)
-        dst.y = this.y + t.y * (b.y - this.y)
-        dst.z = this.z + t.z * (b.z - this.z)
-        return dst
     }
 
     /**
@@ -233,23 +385,6 @@ class Vec3f(
     }
 
     /**
-     * Computes the component-wise inverse (1/x) of `this` vector.
-     */
-    fun inverse(dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = 1f / this.x
-        dst.y = 1f / this.y
-        dst.z = 1f / this.z
-        return dst
-    }
-
-    /**
-     * Computes the component-wise inverse (1/x) of `this` vector (alias for [inverse]).
-     */
-    fun invert(dst: Vec3f = Vec3f()): Vec3f {
-        return inverse(dst)
-    }
-
-    /**
      * Computes the cross product of `this` and [b].
      */
     fun cross(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
@@ -272,34 +407,6 @@ class Vec3f(
      */
     fun dot(b: Vec3f): Float {
         return (this.x * b.x) + (this.y * b.y) + (this.z * b.z)
-    }
-
-    /**
-     * Computes the length (magnitude) of `this` vector.
-     */
-    fun length(): Float {
-        return sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
-    }
-
-    /**
-     * Computes the length (magnitude) of `this` vector (alias for [length]).
-     */
-    fun len(): Float {
-        return length()
-    }
-
-    /**
-     * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
-     */
-    fun lengthSq(): Float {
-        return this.x * this.x + this.y * this.y + this.z * this.z
-    }
-
-    /**
-     * Computes the square of the length of `this` vector (alias for [lengthSq]).
-     */
-    fun lenSq(): Float {
-        return lengthSq()
     }
 
     /**
@@ -334,50 +441,6 @@ class Vec3f(
      */
     fun distSq(b: Vec3f): Float {
         return distanceSq(b)
-    }
-
-    /**
-     * Normalizes `this` vector (scales it to unit length).
-     */
-    fun normalize(dst: Vec3f = Vec3f()): Vec3f {
-        val l = this.length()
-        if (l > EPSILON) {
-            dst.x = this.x / l
-            dst.y = this.y / l
-            dst.z = this.z / l
-        } else {
-            dst.x = 0f
-            dst.y = 0f
-            dst.z = 0f
-        }
-        return dst
-    }
-
-    /**
-     * Negates `this` vector (multiplies components by -1).
-     */
-    fun negate(dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = -this.x
-        dst.y = -this.y
-        dst.z = -this.z
-        return dst
-    }
-
-    /**
-     * Copies the components of `this`.
-     */
-    fun copy(dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = this.x
-        dst.y = this.y
-        dst.z = this.z
-        return dst
-    }
-
-    /**
-     * Copies the components of `this` (alias for [copy]).
-     */
-    fun clone(dst: Vec3f = Vec3f()): Vec3f {
-        return copy(dst)
     }
 
     /**
@@ -491,6 +554,82 @@ class Vec3f(
     }
 
     /**
+     * Sets the length of `this` vector to [len].
+     */
+    fun setLength(len: Float, dst: Vec3f = Vec3f()): Vec3f {
+        this.normalize(dst) // Normalizes into dst
+        return dst.mulScalar(len, dst) // Scales dst in place
+    }
+
+    /**
+     * Truncates `this` vector if its length exceeds [maxLen].
+     */
+    fun truncate(maxLen: Float, dst: Vec3f = Vec3f()): Vec3f {
+        val currentLength = this.length()
+        if (currentLength > maxLen) {
+            return this.setLength(maxLen, dst)
+        }
+        return this.copy(dst)
+    }
+
+    /**
+     * Calculates the midpoint between `this` vector and [b].
+     */
+    fun midpoint(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
+        return this.lerp(b, 0.5f, dst)
+    }
+
+    // <functions with 2 parameters>
+    /**
+     * Clamps each component of `this` between [min] and [max].
+     */
+    fun clamp(min: Float = 0f, max: Float = 1f, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = min(max, max(min, this.x))
+        dst.y = min(max, max(min, this.y))
+        dst.z = min(max, max(min, this.z))
+        return dst
+    }
+
+    /**
+     * Adds [b] scaled by [scale] to `this`.
+     */
+    fun addScaled(b: Vec3f, scale: Float, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x + b.x * scale
+        dst.y = this.y + b.y * scale
+        dst.z = this.z + b.z * scale
+        return dst
+    }
+
+    /**
+     * Checks if `this` and [b] are approximately equal.
+     */
+    fun equalsApproximately(b: Vec3f, tolerance: Float = EPSILON): Boolean {
+        return abs(this.x - b.x) < tolerance &&
+                abs(this.y - b.y) < tolerance &&
+                abs(this.z - b.z) < tolerance
+    }
+
+    /**
+     * Linearly interpolates between `this` and [b] using coefficient [t].
+     */
+    fun lerp(b: Vec3f, t: Float, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x + t * (b.x - this.x)
+        dst.y = this.y + t * (b.y - this.y)
+        dst.z = this.z + t * (b.z - this.z)
+        return dst
+    }
+
+    /**
+     * Performs component-wise linear interpolation between `this` and [b] using coefficient vector [t].
+     */
+    fun lerpV(b: Vec3f, t: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x + t.x * (b.x - this.x)
+        dst.y = this.y + t.y * (b.y - this.y)
+        dst.z = this.z + t.z * (b.z - this.z)
+        return dst
+    }
+
+    /**
      * Rotates `this` vector around the X axis relative to the point [b] by [rad] radians.
      */
     fun rotateX(b: Vec3f, rad: Float, dst: Vec3f = Vec3f()): Vec3f {
@@ -559,32 +698,7 @@ class Vec3f(
         return dst
     }
 
-    /**
-     * Sets the length of `this` vector to [len].
-     */
-    fun setLength(len: Float, dst: Vec3f = Vec3f()): Vec3f {
-        this.normalize(dst) // Normalizes into dst
-        return dst.mulScalar(len, dst) // Scales dst in place
-    }
-
-    /**
-     * Truncates `this` vector if its length exceeds [maxLen].
-     */
-    fun truncate(maxLen: Float, dst: Vec3f = Vec3f()): Vec3f {
-        val currentLength = this.length()
-        if (currentLength > maxLen) {
-            return this.setLength(maxLen, dst)
-        }
-        return this.copy(dst)
-    }
-
-    /**
-     * Calculates the midpoint between `this` vector and [b].
-     */
-    fun midpoint(b: Vec3f, dst: Vec3f = Vec3f()): Vec3f {
-        return this.lerp(b, 0.5f, dst)
-    }
-
+    // <functions with 3 or more parameters>
     /**
      * Sets the components of `this` to [x], [y], and [z].
      * @return `this`
@@ -596,112 +710,10 @@ class Vec3f(
         return this
     }
 
-    /**
-     * Sets the components of `this` vector to 0.
-     * @return `this`
-     */
-    fun zero(): Vec3f {
-        this.x = 0f
-        this.y = 0f
-        this.z = 0f
-        return this
-    }
-
-    // --- Companion Object for static-like methods ---
-    companion object {
-        // 3 * 4 bytes
-        const val SIZE_BYTES = 12u
-
-        /**
-         * Creates a vec3 with initial values [x], [y], and [z].
-         */
-        fun create(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3f {
-            return Vec3f(x, y, z)
-        }
-
-        /**
-         * Creates a vec3 with initial values [x], [y], and [z] (alias for [create]).
-         */
-        fun fromValues(x: Float = 0f, y: Float = 0f, z: Float = 0f): Vec3f {
-            return create(x, y, z)
-        }
-
-        /**
-         * Sets the components of [dst] to [x], [y], and [z].
-         */
-        fun set(x: Float, y: Float, z: Float, dst: Vec3f = Vec3f()): Vec3f {
-            dst.x = x
-            dst.y = y
-            dst.z = z
-            return dst
-        }
-
-        /**
-         * Creates a random vector within a sphere of radius [scale].
-         */
-        fun random(scale: Float = 1f, dst: Vec3f = Vec3f()): Vec3f {
-            val angle = Random.nextFloat() * 2f * FloatPi
-            val z = Random.nextFloat() * 2f - 1f
-            val zScale = sqrt(1f - z * z) * scale
-            dst.x = cos(angle) * zScale
-            dst.y = sin(angle) * zScale
-            dst.z = z * scale
-            return dst
-        }
-
-        /**
-         * Creates a zero vector (components are 0).
-         */
-        fun zero(dst: Vec3f = Vec3f()): Vec3f {
-            dst.x = 0f
-            dst.y = 0f
-            dst.z = 0f
-            return dst
-        }
-
-        /**
-         * Gets the translation component of the 4x4 matrix [m].
-         */
-        fun getTranslation(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
-            dst.x = m[12]
-            dst.y = m[13]
-            dst.z = m[14]
-            return dst
-        }
-
-        /**
-         * Gets the specified [axis] (0=x, 1=y, 2=z) of the 4x4 matrix [m].
-         */
-        fun getAxis(m: Mat4f, axis: Int, dst: Vec3f = Vec3f()): Vec3f {
-            val off = axis * 4
-            dst.x = m[off + 0]
-            dst.y = m[off + 1]
-            dst.z = m[off + 2]
-            return dst
-        }
-
-        /**
-         * Gets the scaling component of the 4x4 matrix [m].
-         */
-        fun getScaling(m: Mat4f, dst: Vec3f = Vec3f()): Vec3f {
-            val xColX = m[0];
-            val xColY = m[1];
-            val xColZ = m[2]
-            val yColX = m[4];
-            val yColY = m[5];
-            val yColZ = m[6]
-            val zColX = m[8];
-            val zColY = m[9];
-            val zColZ = m[10]
-
-            dst.x = sqrt(xColX * xColX + xColY * xColY + xColZ * xColZ)
-            dst.y = sqrt(yColX * yColX + yColY * yColY + yColZ * yColZ)
-            dst.z = sqrt(zColX * zColX + zColY * zColY + zColZ * zColZ)
-            return dst
-        }
-    }
-
+    // <toString>
     override fun toString(): String = "(${x.ns},${y.ns},${z.ns})"
+
+    // <equals>
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec3f) return false
@@ -713,6 +725,7 @@ class Vec3f(
         return true
     }
 
+    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()

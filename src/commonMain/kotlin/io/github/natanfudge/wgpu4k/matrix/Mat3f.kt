@@ -29,83 +29,8 @@ import kotlin.math.sqrt
  * Do not depend on the values in the padding cells, as the behavior of those may change in the future.
  */
 /*@JvmInline value*/ class Mat3f private constructor(val array: FloatArray) {
-    inline var m00
-        get() = this[0];
-        set(value) {
-            this[0] = value
-        }
-    inline var m01
-        get() = this[4];
-        set(value) {
-            this[4] = value
-        }
-    inline var m02
-        get() = this[8];
-        set(value) {
-            this[8] = value
-        }
-    inline var m10
-        get() = this[1];
-        set(value) {
-            this[1] = value
-        }
-    inline var m11
-        get() = this[5];
-        set(value) {
-            this[5] = value
-        }
-    inline var m12
-        get() = this[9];
-        set(value) {
-            this[9] = value
-        }
-    inline var m20
-        get() = this[2];
-        set(value) {
-            this[2] = value
-        }
-    inline var m21
-        get() = this[6];
-        set(value) {
-            this[6] = value
-        }
-    inline var m22
-        get() = this[10];
-        set(value) {
-            this[10] = value
-        }
 
-    init {
-        if (array.size != 12) {
-            throw IllegalArgumentException("Mat3 requires a 12-element FloatArray for storage.")
-        }
-    }
-
-    inline operator fun plus(other: Mat3f) = add(other)
-    inline operator fun minus(other: Mat3f) = diff(other)
-    inline operator fun times(scalar: Float) = multiplyScalar(scalar)
-    inline operator fun times(matrix: Mat3f) = multiply(matrix)
-    inline operator fun div(scalar: Float) = div(scalar, Mat3f())
-    inline operator fun unaryMinus() = negate()
-
-
-    inline operator fun get(index: Int): Float {
-        return this.array[index]
-    }
-
-
-    inline operator fun get(row: Int, col: Int): Float {
-        return this.array[col * 4 + row] // Column-major order
-    }
-
-    inline operator fun set(row: Int, col: Int, value: Float) {
-        this.array[col * 4 + row] = value // Column-major order
-    }
-
-    inline operator fun set(index: Int, value: Float) {
-        this.array[index] = value
-    }
-
+    // <secondary constructors>
     constructor() : this(FloatArray(12))
 
     /**
@@ -132,19 +57,18 @@ import kotlin.math.sqrt
         this[11] = 0f
     })
 
-
-    override fun toString(): String {
-        return """
-            [${m00.ns},${m01.ns},${m02.ns}]
-            [${m10.ns},${m11.ns},${m12.ns}]
-            [${m20.ns},${m21.ns},${m22.ns}]
-        """.trimIndent()
-    }
-
+    // <companion object>
     companion object {
+        /**
+         * Creates a Mat3 from the given [values].
+         * You should generally not use this constructor as it assumes indices 3, 7, and 11 are all 0s for padding reasons.
+         */
+        operator fun invoke(vararg values: Float) = Mat3f(floatArrayOf(*values))
+        // <constants>
         // 12 * 4 bytes
         const val SIZE_BYTES = 48u
 
+        // <static builders>
         /**
          * Constructs a [Mat3f] in row-major order.
          */
@@ -158,12 +82,6 @@ import kotlin.math.sqrt
             v2, v5, v8
         )
 
-
-        /**
-         * Creates a Mat3 from the given [values].
-         * You should generally not use this constructor as it assumes indices 3, 7 and 11 are all 0s for padding reasons.
-         */
-        operator fun invoke(vararg values: Float) = Mat3f(floatArrayOf(*values))
 
         /**
          * Creates a Mat3 from a 12-element FloatArray [values].
@@ -329,8 +247,90 @@ import kotlin.math.sqrt
                 array[8] = 0f; array[9] = 0f; array[10] = s; array[11] = 0f
             }
         }
+
     }
 
+    // <`operator fun` functions>
+    inline operator fun plus(other: Mat3f) = add(other)
+    inline operator fun minus(other: Mat3f) = diff(other)
+    inline operator fun times(scalar: Float) = multiplyScalar(scalar)
+    inline operator fun times(matrix: Mat3f) = multiply(matrix)
+    inline operator fun div(scalar: Float) = div(scalar, Mat3f())
+    inline operator fun unaryMinus() = negate()
+
+
+    inline operator fun get(index: Int): Float {
+        return this.array[index]
+    }
+
+
+    inline operator fun get(row: Int, col: Int): Float {
+        return this.array[col * 4 + row] // Column-major order
+    }
+
+    inline operator fun set(row: Int, col: Int, value: Float) {
+        this.array[col * 4 + row] = value // Column-major order
+    }
+
+    inline operator fun set(index: Int, value: Float) {
+        this.array[index] = value
+    }
+
+    // <properties>
+    inline var m00
+        get() = this[0];
+        set(value) {
+            this[0] = value
+        }
+    inline var m01
+        get() = this[4];
+        set(value) {
+            this[4] = value
+        }
+    inline var m02
+        get() = this[8];
+        set(value) {
+            this[8] = value
+        }
+    inline var m10
+        get() = this[1];
+        set(value) {
+            this[1] = value
+        }
+    inline var m11
+        get() = this[5];
+        set(value) {
+            this[5] = value
+        }
+    inline var m12
+        get() = this[9];
+        set(value) {
+            this[9] = value
+        }
+    inline var m20
+        get() = this[2];
+        set(value) {
+            this[2] = value
+        }
+    inline var m21
+        get() = this[6];
+        set(value) {
+            this[6] = value
+        }
+    inline var m22
+        get() = this[10];
+        set(value) {
+            this[10] = value
+        }
+
+    // <init block>
+    init {
+        if (array.size != 12) {
+            throw IllegalArgumentException("Mat3 requires a 12-element FloatArray for storage.")
+        }
+    }
+
+    // <functions with 0 parameters>
     /**
      * Sets this matrix to the identity matrix
      */
@@ -345,18 +345,25 @@ import kotlin.math.sqrt
     fun toFloatArray(): FloatArray = array.copyOf() // Return a copy for safety
 
     /**
-     * Sets the values of `this` from [v0] to [v8], in column-major order.
+     * Computes the determinant of `this`.
      */
-    fun set(
-        v0: Float, v1: Float, v2: Float,
-        v3: Float, v4: Float, v5: Float,
-        v6: Float, v7: Float, v8: Float,
-    ): Mat3f = this.apply {
-        array[0] = v0; array[1] = v1; array[2] = v2; array[3] = 0f;
-        array[4] = v3; array[5] = v4; array[6] = v5; array[7] = 0f;
-        array[8] = v6; array[9] = v7; array[10] = v8; array[11] = 0f;
+    fun determinant(): Float {
+        val m00 = array[0 * 4 + 0]
+        val m01 = array[0 * 4 + 1]
+        val m02 = array[0 * 4 + 2]
+        val m10 = array[1 * 4 + 0]
+        val m11 = array[1 * 4 + 1]
+        val m12 = array[1 * 4 + 2]
+        val m20 = array[2 * 4 + 0]
+        val m21 = array[2 * 4 + 1]
+        val m22 = array[2 * 4 + 2]
+
+        return m00 * (m11 * m22 - m21 * m12) -
+                m10 * (m01 * m22 - m21 * m02) +
+                m20 * (m01 * m12 - m11 * m02)
     }
 
+    // <functions with 1 parameter>
     /**
      * Negates `this`.
      */
@@ -430,56 +437,6 @@ import kotlin.math.sqrt
      * Copies `this` (alias for [copy]).
      */
     inline fun clone(dst: Mat3f = Mat3f()): Mat3f = copy(dst)
-
-    /**
-     * Checks if `this` is approximately equal to [other].
-     */
-    fun equalsApproximately(other: Mat3f, tolerance: Float = EPSILON): Boolean {
-        return abs(array[0] - other.array[0]) < tolerance &&
-                abs(array[1] - other.array[1]) < tolerance &&
-                abs(array[2] - other.array[2]) < tolerance &&
-                abs(array[4] - other.array[4]) < tolerance &&
-                abs(array[5] - other.array[5]) < tolerance &&
-                abs(array[6] - other.array[6]) < tolerance &&
-                abs(array[8] - other.array[8]) < tolerance &&
-                abs(array[9] - other.array[9]) < tolerance &&
-                abs(array[10] - other.array[10]) < tolerance
-    }
-
-    /**
-     * Checks if `this` is exactly equal to [other].
-     */
-    override fun equals(other: Any?): Boolean {
-        return other is Mat3f &&
-                array[0] == other.array[0] &&
-                array[1] == other.array[1] &&
-                array[2] == other.array[2] &&
-                array[4] == other.array[4] &&
-                array[5] == other.array[5] &&
-                array[6] == other.array[6] &&
-                array[8] == other.array[8] &&
-                array[9] == other.array[9] &&
-                array[10] == other.array[10]
-    }
-
-    /**
-     * Computes the hash code for `this`.
-     */
-    override fun hashCode(): Int {
-        var result = array.contentHashCode()
-        // We only consider the relevant 9 elements for equality/hash code
-        result = 31 * result + array[0].hashCode()
-        result = 31 * result + array[1].hashCode()
-        result = 31 * result + array[2].hashCode()
-        result = 31 * result + array[4].hashCode()
-        result = 31 * result + array[5].hashCode()
-        result = 31 * result + array[6].hashCode()
-        result = 31 * result + array[8].hashCode()
-        result = 31 * result + array[9].hashCode()
-        result = 31 * result + array[10].hashCode()
-        return result
-    }
-
 
     /**
      * Creates a 3-by-3 identity matrix.
@@ -568,25 +525,6 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Computes the determinant of `this`.
-     */
-    fun determinant(): Float {
-        val m00 = array[0 * 4 + 0]
-        val m01 = array[0 * 4 + 1]
-        val m02 = array[0 * 4 + 2]
-        val m10 = array[1 * 4 + 0]
-        val m11 = array[1 * 4 + 1]
-        val m12 = array[1 * 4 + 2]
-        val m20 = array[2 * 4 + 0]
-        val m21 = array[2 * 4 + 1]
-        val m22 = array[2 * 4 + 2]
-
-        return m00 * (m11 * m22 - m21 * m12) -
-                m10 * (m01 * m22 - m21 * m02) +
-                m20 * (m01 * m12 - m11 * m02)
-    }
-
-    /**
      * Computes the inverse of `this` (alias for [inverse]).
      * Returns identity if the matrix is not invertible.
      */
@@ -634,55 +572,12 @@ import kotlin.math.sqrt
     inline fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
 
     /**
-     * Sets the translation component of `dst` to [v].
-     * Better named "withTranslation" but that's the JS name.
-     */
-    fun setTranslation(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-        if (this !== dst) {
-            dst.array[0] = array[0];
-            dst.array[1] = array[1];
-            dst.array[2] = array[2];
-            dst.array[4] = array[4];
-            dst.array[5] = array[5];
-            dst.array[6] = array[6];
-        }
-        dst.array[8] = v.x;
-        dst.array[9] = v.y;
-        dst.array[10] = 1f; // Ensure the bottom-right is 1 for translation
-        return dst
-    }
-
-    /**
      * Gets the translation component of `this`.
      */
     fun getTranslation(dst: Vec2f = Vec2f.create()): Vec2f {
         dst.x = array[8]
         dst.y = array[9]
         return dst
-    }
-
-    /**
-     * Gets the specified [axis] (0=x, 1=y) of `this` as a Vec2.
-     */
-    fun getAxis(axis: Int, dst: Vec2f = Vec2f.create()): Vec2f {
-        if (axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
-        val off = axis * 4
-        dst.x = array[off + 0]
-        dst.y = array[off + 1]
-        return dst
-    }
-
-    /**
-     * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y) set to [v].
-     */
-    fun setAxis(v: Vec2f, axis: Int, dst: Mat3f = Mat3f()): Mat3f {
-        if (axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
-        val newDst = if (dst === this) this else copy(dst)
-
-        val off = axis * 4
-        newDst.array[off + 0] = v.x
-        newDst.array[off + 1] = v.y
-        return newDst
     }
 
     /**
@@ -1240,5 +1135,123 @@ import kotlin.math.sqrt
         dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
         return dst
     }
-}
 
+
+    // <functions with 2 parameters>
+    /**
+     * Checks if `this` is approximately equal to [other].
+     */
+    fun equalsApproximately(other: Mat3f, tolerance: Float = EPSILON): Boolean {
+        return abs(array[0] - other.array[0]) < tolerance &&
+                abs(array[1] - other.array[1]) < tolerance &&
+                abs(array[2] - other.array[2]) < tolerance &&
+                abs(array[4] - other.array[4]) < tolerance &&
+                abs(array[5] - other.array[5]) < tolerance &&
+                abs(array[6] - other.array[6]) < tolerance &&
+                abs(array[8] - other.array[8]) < tolerance &&
+                abs(array[9] - other.array[9]) < tolerance &&
+                abs(array[10] - other.array[10]) < tolerance
+    }
+
+    /**
+     * Sets the translation component of `dst` to [v].
+     * Better named "withTranslation" but that's the JS name.
+     */
+    fun setTranslation(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
+        if (this !== dst) {
+            dst.array[0] = array[0];
+            dst.array[1] = array[1];
+            dst.array[2] = array[2];
+            dst.array[4] = array[4];
+            dst.array[5] = array[5];
+            dst.array[6] = array[6];
+        }
+        dst.array[8] = v.x;
+        dst.array[9] = v.y;
+        dst.array[10] = 1f; // Ensure the bottom-right is 1 for translation
+        return dst
+    }
+
+    /**
+     * Gets the specified [axis] (0=x, 1=y) of `this` as a Vec2.
+     */
+    fun getAxis(axis: Int, dst: Vec2f = Vec2f.create()): Vec2f {
+        if (axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
+        val off = axis * 4
+        dst.x = array[off + 0]
+        dst.y = array[off + 1]
+        return dst
+    }
+
+    /**
+     * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y) set to [v].
+     */
+    fun setAxis(v: Vec2f, axis: Int, dst: Mat3f = Mat3f()): Mat3f {
+        if (axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
+        val newDst = if (dst === this) this else copy(dst)
+
+        val off = axis * 4
+        newDst.array[off + 0] = v.x
+        newDst.array[off + 1] = v.y
+        return newDst
+    }
+
+    // <functions with 3 or more parameters>
+    /**
+     * Sets the values of `this` from [v0] to [v8], in column-major order.
+     */
+    fun set(
+        v0: Float, v1: Float, v2: Float,
+        v3: Float, v4: Float, v5: Float,
+        v6: Float, v7: Float, v8: Float,
+    ): Mat3f = this.apply {
+        array[0] = v0; array[1] = v1; array[2] = v2; array[3] = 0f;
+        array[4] = v3; array[5] = v4; array[6] = v5; array[7] = 0f;
+        array[8] = v6; array[9] = v7; array[10] = v8; array[11] = 0f;
+    }
+
+    // <toString>
+    override fun toString(): String {
+        return """
+            [${m00.ns},${m01.ns},${m02.ns}]
+            [${m10.ns},${m11.ns},${m12.ns}]
+            [${m20.ns},${m21.ns},${m22.ns}]
+        """.trimIndent()
+    }
+
+    // <equals>
+    /**
+     * Checks if `this` is exactly equal to [other].
+     */
+    override fun equals(other: Any?): Boolean {
+        return other is Mat3f &&
+                array[0] == other.array[0] &&
+                array[1] == other.array[1] &&
+                array[2] == other.array[2] &&
+                array[4] == other.array[4] &&
+                array[5] == other.array[5] &&
+                array[6] == other.array[6] &&
+                array[8] == other.array[8] &&
+                array[9] == other.array[9] &&
+                array[10] == other.array[10]
+    }
+
+    // <hashcode>
+    /**
+     * Computes the hash code for `this`.
+     */
+    override fun hashCode(): Int {
+        var result = array.contentHashCode()
+        // We only consider the relevant 9 elements for equality/hash code
+        result = 31 * result + array[0].hashCode()
+        result = 31 * result + array[1].hashCode()
+        result = 31 * result + array[2].hashCode()
+        result = 31 * result + array[4].hashCode()
+        result = 31 * result + array[5].hashCode()
+        result = 31 * result + array[6].hashCode()
+        result = 31 * result + array[8].hashCode()
+        result = 31 * result + array[9].hashCode()
+        result = 31 * result + array[10].hashCode()
+        return result
+    }
+}

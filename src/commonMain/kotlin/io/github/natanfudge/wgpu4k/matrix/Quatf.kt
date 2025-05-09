@@ -21,21 +21,25 @@ data class Quatf(
     var z: Float,
     var w: Float,
 ) {
+    // <secondary constructors>
     constructor() : this(0f, 0f, 0f, 1f)
 
-    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
-    inline operator fun plus(other: Quatf) = add(other)
-    inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
-    inline operator fun times(scalar: Float) = mulScalar(scalar)
-    inline operator fun times(other: Quatf) = multiply(other)
-    inline operator fun div(scalar: Float) = divScalar(scalar)
-    inline operator fun unaryMinus() = negate()
-
+    // <companion object>
     companion object {
+        // <constants>
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
 
+        // Static temporary variables to avoid allocation in methods like rotationTo
+        // Note: Be cautious with static mutable state in concurrent environments if applicable.
+        private val tempVec3 = Vec3f()
+        private val xUnitVec3 = Vec3f(1f, 0f, 0f)
+        private val yUnitVec3 = Vec3f(0f, 1f, 0f)
+        private val tempQuat1 = Quatf()
+        private val tempQuat2 = Quatf()
 
+
+        // <static builders>
         /**
          * Creates a Quat with initial values [x], [y], [z], [w].
          * Defaults to the identity quaternion (0, 0, 0, 1).
@@ -248,11 +252,6 @@ data class Quatf(
             return dst
         }
 
-        // Static temporary variables to avoid allocation in methods like rotationTo
-        // Note: Be cautious with static mutable state in concurrent environments if applicable.
-        private val tempVec3 = Vec3f()
-        private val xUnitVec3 = Vec3f(1f, 0f, 0f)
-        private val yUnitVec3 = Vec3f(0f, 1f, 0f)
 
         /**
          * Computes a quaternion representing the shortest rotation from unit vector [aUnit] to unit vector [bUnit].
@@ -289,8 +288,6 @@ data class Quatf(
             }
         }
 
-        private val tempQuat1 = Quatf()
-        private val tempQuat2 = Quatf()
 
         /**
          * Performs a spherical linear interpolation with two control points (Squad) using keyframes [a], [b], [c], [d]
@@ -312,8 +309,46 @@ data class Quatf(
             tempQuat1.slerp(tempQuat2, 2.0f * t * (1.0f - t), dst)
             return dst
         }
+        // <static operators>
+        // No static operators in Quatf
     }
 
+    // <`operator fun` functions>
+    inline operator fun plus(other: Quatf) = add(other)
+    inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
+    inline operator fun times(scalar: Float) = mulScalar(scalar)
+    inline operator fun times(other: Quatf) = multiply(other)
+    inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun unaryMinus() = negate()
+
+    // <properties>
+    /**
+     * Computes the length (magnitude) of `this` quaternion.
+     */
+    val length: Float
+        get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
+
+    /**
+     * Computes the length (magnitude) of `this` quaternion (alias for [length]).
+     */
+    val len: Float
+        get() = length
+
+    /**
+     * Computes the square of the length of `this` quaternion.
+     * Faster than [length] if only comparing magnitudes.
+     */
+    val lengthSq: Float
+        get() = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
+
+    /**
+     * Computes the square of the length of `this` quaternion (alias for [lengthSq]).
+     */
+    val lenSq: Float
+        get() = lengthSq
+
+
+    // <functions with 0 parameters>
     /**
      * Sets this quaternion to the identity quaternion
      */
@@ -321,17 +356,102 @@ data class Quatf(
         identity(this)
     }
 
+    /**
+     * Computes the inverse of `this` quaternion.
+     * For unit quaternions, [conjugate] is equivalent and faster.
+     */
+    fun inverse(dst: Quatf = Quatf()): Quatf {
+        val x = this.x
+        val y = this.y
+        val z = this.z
+        val w = this.w
+        val dot = x * x + y * y + z * z + w * w
+        val invDot = if (dot != 0.0f) 1.0f / dot else 0.0f // Avoid division by zero
+
+        dst.x = -x * invDot
+        dst.y = -y * invDot
+        dst.z = -z * invDot
+        dst.w = w * invDot
+
+        return dst
+    }
 
     /**
-     * Sets the components of `this` to [x], [y], [z], [w].
-     * @return `this`
+     * Computes the conjugate of `this` quaternion.
+     * If the quaternion is normalized, conjugate is the same as [inverse].
      */
-    fun set(x: Float, y: Float, z: Float, w: Float): Quatf {
-        this.x = x
-        this.y = y
-        this.z = z
-        this.w = w
-        return this
+    fun conjugate(dst: Quatf = Quatf()): Quatf {
+        dst.x = -this.x
+        dst.y = -this.y
+        dst.z = -this.z
+        dst.w = this.w
+        return dst
+    }
+
+    /**
+     * Copies the values from `this` quaternion.
+     */
+    fun copy(dst: Quatf = Quatf()): Quatf {
+        dst.x = this.x
+        dst.y = this.y
+        dst.z = this.z
+        dst.w = this.w
+        return dst
+    }
+
+    /**
+     * Copies `this` quaternion (alias for [copy]).
+     */
+    fun clone(dst: Quatf = Quatf()): Quatf = copy(dst)
+
+    /**
+     * Negates `this` quaternion (negates all components).
+     */
+    fun negate(dst: Quatf = Quatf()): Quatf {
+        dst.x = -this.x
+        dst.y = -this.y
+        dst.z = -this.z
+        dst.w = -this.w
+        return dst
+    }
+
+    /**
+     * Normalizes `this` quaternion (divides its components by its length).
+     * Returns identity if length is near zero.
+     */
+    fun normalize(dst: Quatf = Quatf()): Quatf {
+// Extract components from the input array 'v'
+        val v0 = this.x
+        val v1 = this.y
+        val v2 = this.z
+        val v3 = this.w
+
+// Calculate the magnitude (length) of the quaternion
+// Ensure components are treated as floating-point numbers (e.g., Float) for sqrt
+        val len = sqrt(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3)
+
+// Define a small tolerance for the length check
+        val epsilon = 0.00001f
+
+// Check if the length is large enough to avoid division by zero/near-zero
+        if (len > epsilon) {
+            // Normalize the quaternion components
+            val invLen = 1.0f / len // Calculate inverse length once for efficiency
+            dst.x = v0 * invLen
+            dst.y = v1 * invLen
+            dst.z = v2 * invLen
+            dst.w = v3 * invLen
+        } else {
+            // If the length is too small, return the identity quaternion
+            dst.x = 0.0f
+            dst.y = 0.0f
+            dst.z = 0.0f
+            dst.w = 1.0f // Identity quaternion has w = 1
+        }
+
+// Return the resulting normalized or identity quaternion
+        return dst
+
     }
 
     /**
@@ -358,6 +478,7 @@ data class Quatf(
         return Pair(angle, axis)
     }
 
+    // <functions with 1 parameter>
     /**
      * Computes the angle in radians between `this` quaternion and [other].
      */
@@ -457,104 +578,6 @@ data class Quatf(
     }
 
     /**
-     * Spherically linearly interpolates between `this` quaternion and [other] by [t].
-     * Handles shortest path interpolation.
-     */
-    fun slerp(other: Quatf, t: Float, dst: Quatf = Quatf()): Quatf {
-        val ax = this.x
-        val ay = this.y
-        val az = this.z
-        val aw = this.w
-        var bx = other.x
-        var by = other.y
-        var bz = other.z
-        var bw = other.w
-
-        var cosOmega = ax * bx + ay * by + az * bz + aw * bw
-
-//        val doubleResult = ax.toDouble() * bx.toDouble()  + ay.toDouble()  * by.toDouble()  + az.toDouble()  * bz.toDouble()  + aw.toDouble()  * bw.toDouble()
-
-        // Adjust signs if necessary to take the shortest path
-        if (cosOmega < 0.0f) {
-            cosOmega = -cosOmega
-            bx = -bx
-            by = -by
-            bz = -bz
-            bw = -bw
-        }
-
-        var scale0: Float
-        var scale1: Float
-
-        if (1.0f - cosOmega > EPSILON) {
-            // Standard case (slerp)
-            val omega = acos(cosOmega)
-            val sinOmega = sin(omega)
-            scale0 = sin((1.0f - t) * omega) / sinOmega
-            scale1 = sin(t * omega) / sinOmega
-        } else {
-            // Quaternions are very close - use linear interpolation (lerp)
-            scale0 = 1.0f - t
-            scale1 = t
-        }
-
-        dst.x = scale0 * ax + scale1 * bx
-        dst.y = scale0 * ay + scale1 * by
-        dst.z = scale0 * az + scale1 * bz
-        dst.w = scale0 * aw + scale1 * bw
-
-        return dst
-    }
-
-    /**
-     * Computes the inverse of `this` quaternion.
-     * For unit quaternions, [conjugate] is equivalent and faster.
-     */
-    fun inverse(dst: Quatf = Quatf()): Quatf {
-        val x = this.x
-        val y = this.y
-        val z = this.z
-        val w = this.w
-        val dot = x * x + y * y + z * z + w * w
-        val invDot = if (dot != 0.0f) 1.0f / dot else 0.0f // Avoid division by zero
-
-        dst.x = -x * invDot
-        dst.y = -y * invDot
-        dst.z = -z * invDot
-        dst.w = w * invDot
-
-        return dst
-    }
-
-    /**
-     * Computes the conjugate of `this` quaternion.
-     * If the quaternion is normalized, conjugate is the same as [inverse].
-     */
-    fun conjugate(dst: Quatf = Quatf()): Quatf {
-        dst.x = -this.x
-        dst.y = -this.y
-        dst.z = -this.z
-        dst.w = this.w
-        return dst
-    }
-
-    /**
-     * Copies the values from `this` quaternion.
-     */
-    fun copy(dst: Quatf = Quatf()): Quatf {
-        dst.x = this.x
-        dst.y = this.y
-        dst.z = this.z
-        dst.w = this.w
-        return dst
-    }
-
-    /**
-     * Copies `this` quaternion (alias for [copy]).
-     */
-    fun clone(dst: Quatf = Quatf()): Quatf = copy(dst)
-
-    /**
      * Adds [other] to `this` quaternion.
      */
     fun add(other: Quatf, dst: Quatf = Quatf()): Quatf {
@@ -610,21 +633,69 @@ data class Quatf(
     }
 
     /**
-     * Negates `this` quaternion (negates all components).
-     */
-    fun negate(dst: Quatf = Quatf()): Quatf {
-        dst.x = -this.x
-        dst.y = -this.y
-        dst.z = -this.z
-        dst.w = -this.w
-        return dst
-    }
-
-    /**
      * Computes the dot product of `this` quaternion and [other].
      */
     fun dot(other: Quatf): Float {
         return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w
+    }
+
+    /**
+     * Checks if `this` quaternion is exactly equal to [other].
+     * Use with caution for floating-point numbers; prefer [equalsApproximately].
+     */
+    fun equals(other: Quatf): Boolean {
+        return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
+    }
+
+    // <functions with 2 parameters>
+    /**
+     * Spherically linearly interpolates between `this` quaternion and [other] by [t].
+     * Handles shortest path interpolation.
+     */
+    fun slerp(other: Quatf, t: Float, dst: Quatf = Quatf()): Quatf {
+        val ax = this.x
+        val ay = this.y
+        val az = this.z
+        val aw = this.w
+        var bx = other.x
+        var by = other.y
+        var bz = other.z
+        var bw = other.w
+
+        var cosOmega = ax * bx + ay * by + az * bz + aw * bw
+
+//        val doubleResult = ax.toDouble() * bx.toDouble()  + ay.toDouble()  * by.toDouble()  + az.toDouble()  * bz.toDouble()  + aw.toDouble()  * bw.toDouble()
+
+        // Adjust signs if necessary to take the shortest path
+        if (cosOmega < 0.0f) {
+            cosOmega = -cosOmega
+            bx = -bx
+            by = -by
+            bz = -bz
+            bw = -bw
+        }
+
+        var scale0: Float
+        var scale1: Float
+
+        if (1.0f - cosOmega > EPSILON) {
+            // Standard case (slerp)
+            val omega = acos(cosOmega)
+            val sinOmega = sin(omega)
+            scale0 = sin((1.0f - t) * omega) / sinOmega
+            scale1 = sin(t * omega) / sinOmega
+        } else {
+            // Quaternions are very close - use linear interpolation (lerp)
+            scale0 = 1.0f - t
+            scale1 = t
+        }
+
+        dst.x = scale0 * ax + scale1 * bx
+        dst.y = scale0 * ay + scale1 * by
+        dst.z = scale0 * az + scale1 * bz
+        dst.w = scale0 * aw + scale1 * bw
+
+        return dst
     }
 
     /**
@@ -640,70 +711,6 @@ data class Quatf(
     }
 
     /**
-     * Computes the length (magnitude) of `this` quaternion.
-     */
-    val length: Float
-        get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
-
-    /**
-     * Computes the length (magnitude) of `this` quaternion (alias for [length]).
-     */
-    val len: Float
-        get() = length
-
-    /**
-     * Computes the square of the length of `this` quaternion.
-     * Faster than [length] if only comparing magnitudes.
-     */
-    val lengthSq: Float
-        get() = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
-
-    /**
-     * Computes the square of the length of `this` quaternion (alias for [lengthSq]).
-     */
-    val lenSq: Float
-        get() = lengthSq
-
-    /**
-     * Normalizes `this` quaternion (divides its components by its length).
-     * Returns identity if length is near zero.
-     */
-    fun normalize(dst: Quatf = Quatf()): Quatf {
-// Extract components from the input array 'v'
-        val v0 = this.x
-        val v1 = this.y
-        val v2 = this.z
-        val v3 = this.w
-
-// Calculate the magnitude (length) of the quaternion
-// Ensure components are treated as floating-point numbers (e.g., Float) for sqrt
-        val len = sqrt(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3)
-
-// Define a small tolerance for the length check
-        val epsilon = 0.00001f
-
-// Check if the length is large enough to avoid division by zero/near-zero
-        if (len > epsilon) {
-            // Normalize the quaternion components
-            val invLen = 1.0f / len // Calculate inverse length once for efficiency
-            dst.x = v0 * invLen
-            dst.y = v1 * invLen
-            dst.z = v2 * invLen
-            dst.w = v3 * invLen
-        } else {
-            // If the length is too small, return the identity quaternion
-            dst.x = 0.0f
-            dst.y = 0.0f
-            dst.z = 0.0f
-            dst.w = 1.0f // Identity quaternion has w = 1
-        }
-
-// Return the resulting normalized or identity quaternion
-        return dst
-
-    }
-
-    /**
      * Checks if `this` quaternion is approximately equal to [other] within the given [epsilon].
      */
     fun equalsApproximately(other: Quatf, epsilon: Float = EPSILON): Boolean {
@@ -713,14 +720,23 @@ data class Quatf(
                 abs(this.w - other.w) < epsilon
     }
 
+    // <functions with 3 or more parameters>
     /**
-     * Checks if `this` quaternion is exactly equal to [other].
-     * Use with caution for floating-point numbers; prefer [equalsApproximately].
+     * Sets the components of `this` to [x], [y], [z], [w].
+     * @return `this`
      */
-    fun equals(other: Quatf): Boolean {
-        return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
+    fun set(x: Float, y: Float, z: Float, w: Float): Quatf {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.w = w
+        return this
     }
 
+    // <toString>
+    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
+
+    // <equals>
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Quatf) return false
@@ -733,6 +749,7 @@ data class Quatf(
         return true
     }
 
+    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()
