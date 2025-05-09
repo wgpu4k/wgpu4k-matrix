@@ -690,7 +690,9 @@ import kotlin.math.sqrt
      * Post-multiplies this 3x3 matrix by a 2D translation matrix created from [v] and writes the result into [dst].
      * `dst = this * translation(v)`
      *
-     * If you multiply a [Vec2f] with the resulting matrix (`dst * vec`), the translation applies *after* the original matrix's (`this`) transform.
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
     fun translate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
         val v0 = v.x
@@ -726,7 +728,9 @@ import kotlin.math.sqrt
      * Post-multiplies this 3x3 matrix by a 2D rotation matrix (around the Z-axis) created from [angleInRadians] and writes the result into [dst].
      * `dst = this * rotationZ(angleInRadians)`
      *
-     * If you multiply a [Vec2f] (or a [Vec3f] with z=0) with the resulting matrix (`dst * vec`), the rotation applies *after* the original matrix's (`this`) transform.
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The rotation defined by [angleInRadians] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      * This is equivalent to `rotateZ`. For 2D transformations, this rotates points in the XY plane.
      */
     fun rotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
@@ -915,9 +919,11 @@ import kotlin.math.sqrt
 
     /**
      * Post-multiplies this 3x3 matrix by a 3D uniform scaling matrix created from [s] (for X, Y, and Z axes) and writes the result into [dst].
-     * `dst = this * scaling(s, s, s)`
+     * `dst = this * uniformScaling3D(s)`
      *
-     * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the uniform scaling on X, Y, and Z axes applies *after* the original matrix's (`this`) transform.
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The uniform scaling defined by [s] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The uniform scaling defined by [s] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
     fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
         dst.array[0] = s * array[0 * 4 + 0]; dst.array[3] = 0f
@@ -936,8 +942,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a translation by [v] to `this`.
-     * Equivalent to `dst = translation(v) * this`.
+     * Pre-multiplies this 3x3 matrix by a 2D translation matrix created from [v] and writes the result into [dst].
+     * `dst = translation(v) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The translation defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preTranslate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -964,8 +974,13 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a rotation by [angleInRadians] to `this`.
-     * Equivalent to `dst = rotation(angleInRadians) * this`.
+     * Pre-multiplies this 3x3 matrix by a 2D rotation matrix (around the Z-axis) created from [angleInRadians] and writes the result into [dst].
+     * `dst = rotationZ(angleInRadians) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The rotation defined by [angleInRadians] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * This is equivalent to `preRotateZ`. For 2D transformations, this rotates points in the XY plane.
      */
     fun preRotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -992,8 +1007,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a rotation around the X-axis by [angleInRadians] to `this`.
-     * Equivalent to `dst = rotationX(angleInRadians) * this`.
+     * Pre-multiplies this 3x3 matrix by a 3D rotation matrix around the X-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = rotationX(angleInRadians) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The X-axis rotation defined by [angleInRadians] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The X-axis rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preRotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -1020,8 +1039,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a rotation around the Y-axis by [angleInRadians] to `this`.
-     * Equivalent to `dst = rotationY(angleInRadians) * this`.
+     * Pre-multiplies this 3x3 matrix by a 3D rotation matrix around the Y-axis created from [angleInRadians] and writes the result into [dst].
+     * `dst = rotationY(angleInRadians) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The Y-axis rotation defined by [angleInRadians] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The Y-axis rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preRotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -1048,15 +1071,24 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a rotation around the Z-axis by [angleInRadians] to `this`.
-     * Equivalent to `dst = rotationZ(angleInRadians) * this`.
+     * Pre-multiplies this 3x3 matrix by a 2D rotation matrix (around the Z-axis) created from [angleInRadians] and writes the result into [dst].
+     * `dst = rotationZ(angleInRadians) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The Z-axis rotation defined by [angleInRadians] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The Z-axis rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * This is an alias for [preRotate].
      */
     inline fun preRotateZ(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f = preRotate(angleInRadians, dst)
 
 
     /**
-     * Prepends a scale by [v] to `this`.
-     * Equivalent to `dst = scaling(v) * this`.
+     * Pre-multiplies this 3x3 matrix by a 2D scaling matrix created from [v] (for X and Y axes) and writes the result into [dst].
+     * `dst = scaling(v) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The scaling defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preScale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -1083,8 +1115,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a 3D scale by [v] to `this`.
-     * Equivalent to `dst = scaling3D(v) * this`.
+     * Pre-multiplies this 3x3 matrix by a 3D scaling matrix created from [v] (for X, Y, and Z axes) and writes the result into [dst].
+     * `dst = scaling3D(v) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The scaling defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preScale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -1112,8 +1148,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a uniform scale by [s] to `this`.
-     * Equivalent to `dst = uniformScaling(s) * this`.
+     * Pre-multiplies this 3x3 matrix by a 2D uniform scaling matrix created from [s] (for X and Y axes) and writes the result into [dst].
+     * `dst = uniformScaling(s) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The uniform scaling defined by [s] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The uniform scaling defined by [s] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preUniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
@@ -1137,8 +1177,12 @@ import kotlin.math.sqrt
     }
 
     /**
-     * Prepends a uniform 3D scale by [s] to `this`.
-     * Equivalent to `dst = uniformScaling3D(s) * this`.
+     * Pre-multiplies this 3x3 matrix by a 3D uniform scaling matrix created from [s] (for X, Y, and Z axes) and writes the result into [dst].
+     * `dst = uniformScaling3D(s) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The uniform scaling defined by [s] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The uniform scaling defined by [s] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preUniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
         val m00 = array[0]; val m01 = array[4]; val m02 = array[8]

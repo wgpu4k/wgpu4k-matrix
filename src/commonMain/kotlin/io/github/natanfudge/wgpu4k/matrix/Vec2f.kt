@@ -18,7 +18,6 @@ data class Vec2f(var x: Float , var y: Float) {
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
-    // --- Instance Methods (Operating on `this`, supporting 'dst') ---
 
     /**
      * Sets this vector to the zero vec2
@@ -396,7 +395,6 @@ data class Vec2f(var x: Float , var y: Float) {
         return dst
     }
 
-    // --- Companion Object for Static Factories and Constants ---
     companion object {
         // 2 * 4 bytes
         const val SIZE_BYTES = 8u

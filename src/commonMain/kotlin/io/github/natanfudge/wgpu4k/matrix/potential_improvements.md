@@ -1,4 +1,6 @@
-3. probably add premultiplication functions so it will be less nonsensical
+3. Add premulplication for mat4f
+For the kdocs of mat4f, calrify for post multiplication that if you do M * v the transform applies before `this`, and 
+if you do v * M the transform applies after `this`, and vice versa for premultiplication
 
 1. Reorganize the files Mat3f, Mat4f, Quatf, Vec2f, Vec3f, Vec4f, to be ordered like this:
 <secondary constructors>
@@ -15,8 +17,7 @@
 
 2. Remove references to javascript / typescript
 3. Remove hanging comments that seem like arbitrarily placed notes
-4. 
-
-8. Check for conversion artifacts , references to the JS impl, llm notes, out-of-place comments, weird code, inconsistencies, consistent function ordering
+4. In cases arithmetic is used unnecessarily, like `array[1 * 4 + 1]`, compact the final number, to get like `array[5]`
+5. Find weird or inconsistent code across Mat3f, Mat4f, Quatf, Vec2f, Vec3f, Vec4f
 7. Add dokka once dokkaV2 stabilizes
 8. Later - inline classes
