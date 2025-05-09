@@ -8,11 +8,12 @@ import kotlin.math.*
  * Represents a 4-dimensional vector.
  */
 data class Vec4f(
-    var x: Float = 0.0f,
-    var y: Float = 0.0f,
-    var z: Float = 0.0f,
-    var w: Float = 0.0f,
+    var x: Float,
+    var y: Float ,
+    var z: Float ,
+    var w: Float,
 ) {
+    constructor() : this(0f,0f,0f,0f)
     override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
 
     inline operator fun plus(other: Vec4f) = add(other)

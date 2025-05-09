@@ -9,7 +9,8 @@ import kotlin.random.Random
  * Represents a mutable 2D Vector with instance methods mimicking the JS API structure,
  * including optional 'dst' parameter support.
  */
-data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
+data class Vec2f(var x: Float , var y: Float) {
+    constructor(): this(0f,0f)
     override fun toString(): String = "(${x.ns},${y.ns})"
 
     inline operator fun plus(other: Vec2f) = add(other)
@@ -337,7 +338,6 @@ data class Vec2f(var x: Float = 0f, var y: Float = 0f) {
      * Transforms `this` vector (point, w=1) by the 3x3 matrix [m].
      */
     fun transformMat3(m: Mat3f, dst: Vec2f = Vec2f()): Vec2f {
-
         dst.x = m[0] * x + m[4] * y + m[8];
         dst.y = m[1] * x + m[5] * y + m[9];
 

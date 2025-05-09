@@ -12,7 +12,6 @@ import kotlin.math.*
 
 // Custom assertion for Vec2 approximate equality using kotlin.test
 fun assertVec2EqualsApproximately(expected: Vec2f, actual: Vec2f, tolerance: Float = EPSILON, message: String? = null) {
-
     val dx = abs(expected.x - actual.x)
     val dy = abs(expected.y - actual.y)
     val msg = message ?: "expected: <$expected> but was: <$actual>"

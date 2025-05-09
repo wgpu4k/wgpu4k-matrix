@@ -11,12 +11,13 @@ import kotlin.random.Random
  * Represents a 3-component vector using individual x, y, z fields.
  */
 class Vec3f(
-    var x: Float = 0f,
-    var y: Float = 0f,
-    var z: Float = 0f,
+    var x: Float,
+    var y: Float,
+    var z: Float,
 ) {
 
-    // Constructors are now handled by default parameters in the primary constructor.
+    constructor() : this(0f, 0f, 0f)
+
 
     /**
      * Allows accessing components using array syntax (e.g., vec[0]).
@@ -610,6 +611,7 @@ class Vec3f(
     companion object {
         // 3 * 4 bytes
         const val SIZE_BYTES = 12u
+
         /**
          * Creates a vec3 with initial values [x], [y], and [z].
          */

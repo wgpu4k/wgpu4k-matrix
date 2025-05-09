@@ -1280,5 +1280,218 @@ class Mat3fTest {
         assertMat3Equals(id, idResult, "Instance identity on identity matrix")
         assertNotSame(id, idResult, "Instance identity on identity should create new instance if no dst")
     }
+@Test
+    fun testPreTranslate() {
+        val mInitial = Mat3f.rotation(PI.toFloat() / 2f) // Rotate 90 deg around Z
+        // mInitial (row-major representation):
+        // [0, 1, 0]
+        // [-1,0, 0]
+        // [0, 0, 1]
+        val v = Vec2f(10f, 20f)
+
+        // Expected: translationMatrix(v) * mInitial
+        val translationMatrix = Mat3f.translation(v)
+        val expected = translationMatrix.multiply(mInitial)
+
+        val preTranslatedM = mInitial.preTranslate(v)
+        assertMat3EqualsApproximately(expected, preTranslatedM, "PreTranslate without destination")
+        assertNotSame(mInitial, preTranslatedM, "PreTranslate without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preTranslate(v, dst)
+        assertMat3EqualsApproximately(expected, dst, "PreTranslate with destination")
+        assertSame(dst, result, "PreTranslate with destination should return destination")
+
+        // Edge case: translate by zero
+        val mId = Mat3f.identity()
+        val preTranslatedByIdentity = mId.preTranslate(Vec2f(0f,0f))
+        assertMat3EqualsApproximately(mId, preTranslatedByIdentity, "PreTranslate by zero vector")
+    }
+
+    @Test
+    fun testPreRotate() { // Also tests preRotateZ
+        val mInitial = Mat3f.translation(Vec2f(5f, 5f))
+        // mInitial (row-major representation):
+        // [1, 0, 0]
+        // [0, 1, 0]
+        // [5, 5, 1]
+        val angle = PI.toFloat() / 4f // 45 degrees
+
+        // Expected: rotationMatrix(angle) * mInitial
+        val rotationMatrix = Mat3f.rotation(angle)
+        val expected = rotationMatrix.multiply(mInitial)
+
+        val preRotatedM = mInitial.preRotate(angle)
+        assertMat3EqualsApproximately(expected, preRotatedM, tolerance = 1e-6f, message = "PreRotate without destination")
+        assertNotSame(mInitial, preRotatedM, "PreRotate without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preRotate(angle, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreRotate with destination")
+        assertSame(dst, result, "PreRotate with destination should return destination")
+
+        // Test preRotateZ alias
+        val preRotatedZ_M = mInitial.preRotateZ(angle)
+        assertMat3EqualsApproximately(expected, preRotatedZ_M, tolerance = 1e-6f, message = "PreRotateZ alias")
+
+
+        // Edge case: rotate by zero
+        val mId = Mat3f.identity()
+        val preRotatedByIdentity = mId.preRotate(0f)
+        assertMat3EqualsApproximately(mId, preRotatedByIdentity, "PreRotate by zero angle")
+    }
+
+    @Test
+    fun testPreRotateX() {
+        val mInitial = Mat3f.translation(Vec2f(1f, 2f)) // A simple 2D translation matrix
+        // mInitial (row-major representation):
+        // [1, 0, 0]
+        // [0, 1, 0]
+        // [1, 2, 1]
+        val angle = PI.toFloat() / 3f // 60 degrees
+
+        // Expected: rotationXMatrix(angle) * mInitial
+        val rotationXMatrix = Mat3f.rotationX(angle)
+        val expected = rotationXMatrix.multiply(mInitial)
+
+        val preRotatedM = mInitial.preRotateX(angle)
+        assertMat3EqualsApproximately(expected, preRotatedM, tolerance = 1e-6f, message = "PreRotateX without destination")
+        assertNotSame(mInitial, preRotatedM, "PreRotateX without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preRotateX(angle, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreRotateX with destination")
+        assertSame(dst, result, "PreRotateX with destination should return destination")
+
+        // Edge case: rotate by zero
+        val mId = Mat3f.identity()
+        val preRotatedByIdentity = mId.preRotateX(0f)
+        assertMat3EqualsApproximately(mId, preRotatedByIdentity, "PreRotateX by zero angle")
+    }
+
+    @Test
+    fun testPreRotateY() {
+        val mInitial = Mat3f.translation(Vec2f(3f, 4f))
+        // mInitial (row-major representation):
+        // [1, 0, 0]
+        // [0, 1, 0]
+        // [3, 4, 1]
+        val angle = -PI.toFloat() / 6f // -30 degrees
+
+        // Expected: rotationYMatrix(angle) * mInitial
+        val rotationYMatrix = Mat3f.rotationY(angle)
+        val expected = rotationYMatrix.multiply(mInitial)
+
+        val preRotatedM = mInitial.preRotateY(angle)
+        assertMat3EqualsApproximately(expected, preRotatedM, tolerance = 1e-6f, message = "PreRotateY without destination")
+        assertNotSame(mInitial, preRotatedM, "PreRotateY without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preRotateY(angle, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreRotateY with destination")
+        assertSame(dst, result, "PreRotateY with destination should return destination")
+
+        // Edge case: rotate by zero
+        val mId = Mat3f.identity()
+        val preRotatedByIdentity = mId.preRotateY(0f)
+        assertMat3EqualsApproximately(mId, preRotatedByIdentity, "PreRotateY by zero angle")
+    }
+
+
+    @Test
+    fun testPreScale() {
+        val mInitial = Mat3f.rotation(PI.toFloat() / 3f) // Rotate 60 deg
+        val v = Vec2f(2f, 0.5f)
+
+        // Expected: scalingMatrix(v) * mInitial
+        val scalingMatrix = Mat3f.scaling(v)
+        val expected = scalingMatrix.multiply(mInitial)
+
+        val preScaledM = mInitial.preScale(v)
+        assertMat3EqualsApproximately(expected, preScaledM, tolerance = 1e-6f, message = "PreScale without destination")
+        assertNotSame(mInitial, preScaledM, "PreScale without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preScale(v, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreScale with destination")
+        assertSame(dst, result, "PreScale with destination should return destination")
+
+        // Edge case: scale by (1,1)
+        val mId = Mat3f.identity()
+        val preScaledByIdentity = mId.preScale(Vec2f(1f,1f))
+        assertMat3EqualsApproximately(mId, preScaledByIdentity, "PreScale by (1,1)")
+    }
+
+    @Test
+    fun testPreScale3D() {
+        val mInitial = Mat3f.rotationX(PI.toFloat() / 4f) // Rotate 45 deg around X
+        val v = Vec3f(3f, 0.2f, -1f)
+
+        // Expected: scaling3DMatrix(v) * mInitial
+        val scaling3DMatrix = Mat3f.scaling3D(v)
+        val expected = scaling3DMatrix.multiply(mInitial)
+
+        val preScaledM = mInitial.preScale3D(v)
+        assertMat3EqualsApproximately(expected, preScaledM, tolerance = 1e-6f, message = "PreScale3D without destination")
+        assertNotSame(mInitial, preScaledM, "PreScale3D without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preScale3D(v, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreScale3D with destination")
+        assertSame(dst, result, "PreScale3D with destination should return destination")
+
+        // Edge case: scale by (1,1,1)
+        val mId = Mat3f.identity()
+        val preScaledByIdentity = mId.preScale3D(Vec3f(1f,1f,1f))
+        assertMat3EqualsApproximately(mId, preScaledByIdentity, "PreScale3D by (1,1,1)")
+    }
+
+    @Test
+    fun testPreUniformScale() {
+        val mInitial = Mat3f.translation(Vec2f(10f, -5f))
+        val s = 1.5f
+
+        // Expected: uniformScalingMatrix(s) * mInitial
+        val uniformScalingMatrix = Mat3f.uniformScaling(s)
+        val expected = uniformScalingMatrix.multiply(mInitial)
+
+        val preScaledM = mInitial.preUniformScale(s)
+        assertMat3EqualsApproximately(expected, preScaledM, tolerance = 1e-6f, message = "PreUniformScale without destination")
+        assertNotSame(mInitial, preScaledM, "PreUniformScale without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preUniformScale(s, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreUniformScale with destination")
+        assertSame(dst, result, "PreUniformScale with destination should return destination")
+
+        // Edge case: scale by 1
+        val mId = Mat3f.identity()
+        val preScaledByIdentity = mId.preUniformScale(1f)
+        assertMat3EqualsApproximately(mId, preScaledByIdentity, "PreUniformScale by 1")
+    }
+
+    @Test
+    fun testPreUniformScale3D() {
+        val mInitial = Mat3f.rotationY(PI.toFloat() / 2f) // Rotate 90 deg around Y
+        val s = 0.75f
+
+        // Expected: uniformScaling3DMatrix(s) * mInitial
+        val uniformScaling3DMatrix = Mat3f.uniformScaling3D(s)
+        val expected = uniformScaling3DMatrix.multiply(mInitial)
+
+        val preScaledM = mInitial.preUniformScale3D(s)
+        assertMat3EqualsApproximately(expected, preScaledM, tolerance = 1e-6f, message = "PreUniformScale3D without destination")
+        assertNotSame(mInitial, preScaledM, "PreUniformScale3D without destination should create new instance")
+
+        val dst = Mat3f.identity()
+        val result = mInitial.preUniformScale3D(s, dst)
+        assertMat3EqualsApproximately(expected, dst, tolerance = 1e-6f, message = "PreUniformScale3D with destination")
+        assertSame(dst, result, "PreUniformScale3D with destination should return destination")
+
+        // Edge case: scale by 1
+        val mId = Mat3f.identity()
+        val preScaledByIdentity = mId.preUniformScale3D(1f)
+        assertMat3EqualsApproximately(mId, preScaledByIdentity, "PreUniformScale3D by 1")
+    }
 }
 

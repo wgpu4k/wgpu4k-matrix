@@ -438,10 +438,6 @@ class Vec2fOperatorTest {
         assertEquals(4f, divResult.y, "Divide by zero y")
     }
 
-    // transformMat4, transformMat3, rotate require Mat4f, Mat3f - skip for now unless matrices are added
-    // @Test fun testTransformMat4() { ... }
-    // @Test fun testTransformMat3() { ... }
-    // @Test fun testRotate() { ... }
 
     @Test
     fun testSetLength() {
@@ -532,6 +528,5 @@ class Vec2fOperatorTest {
         assertVec2fEqualsApproximately(Vec2f(0f, 0f), dst, "Zero sets dst to zero")
     }
 }
-// --- Additional Function Tests ---
 
 

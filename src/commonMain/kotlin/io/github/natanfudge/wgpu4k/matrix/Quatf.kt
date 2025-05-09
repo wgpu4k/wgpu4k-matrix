@@ -16,12 +16,14 @@ typealias RotationOrder = String // Use String for simplicity, matching TS value
  * @property w The w component (real part).
  */
 data class Quatf(
-    var x: Float = 0.0f,
-    var y: Float = 0.0f,
-    var z: Float = 0.0f,
-    var w: Float = 1.0f, // Default to identity quaternion
+    var x: Float,
+    var y: Float,
+    var z: Float,
+    var w: Float, // Default to identity quaternion
 ) {
-override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
+    constructor() : this(0f, 0f, 0f, 1f)
+
+    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
     inline operator fun plus(other: Quatf) = add(other)
     inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
     inline operator fun times(scalar: Float) = mulScalar(scalar)
@@ -79,7 +81,6 @@ override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
          * The created quaternion is not normalized.
          */
         fun fromMat(m: Any, dst: Quatf = Quatf()): Quatf {
-
             // Check if it's Mat3 or Mat4 based on expected property/method or size if it's an array-like structure
             // This requires knowing the Mat3/Mat4 implementation. Assuming indexer `[]` access for now.
             // Expect Float from matrix indexers
@@ -151,8 +152,34 @@ override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
         }
 
         /**
-         * Creates a quaternion from the given Euler angles ([xAngleInRadians], [yAngleInRadians], [zAngleInRadians])
-         * applied in the specified [order] (e.g., "xyz", "zyx").
+         * Constructs a quaternion from Euler angles with a specified application order.
+         *
+         * This method interprets the three input angles as intrinsic rotations about the
+         * local axes of the object (not world axes).  Given angles (x, y, z), and an
+         * order string such as "xyz" or "zyx", the rotations are applied in the
+         * sequence of letters from right to left: the quaternion multiplication is
+         * computed as `q = q_order[2] ⊗ q_order[1] ⊗ q_order[0]`
+         *
+         * For example, with order = "zyx":
+         *  1. Rotate by xAngle about the X-axis (q<sub>x</sub>)
+         *  2. Rotate by yAngle about the Y-axis (q<sub>y</sub>)
+         *  3. Rotate by zAngle about the Z-axis (q<sub>z</sub>)
+         *
+         * Then the final quaternion is:
+         *  q = q<sub>z</sub> ⊗ q<sub>y</sub> ⊗ q<sub>x</sub>
+         *
+         * Note:
+         *  - Angles are in radians.
+         *  - All sine/cosine computations use half-angles internally.
+         *  - The returned quaternion represents the combined rotation.
+         *
+         * @param xAngleInRadians Rotation about the X-axis, in radians.
+         * @param yAngleInRadians Rotation about the Y-axis, in radians.
+         * @param zAngleInRadians Rotation about the Z-axis, in radians.
+         * @param order         Three-character string specifying axis application order.
+         *                      Supported values: "xyz", "xzy", "yxz", "yzx", "zxy", "zyx".
+         * @param dst           Destination quaternion to hold the result (optional).
+         * @return              A quaternion representing the composite rotation.
          */
         fun fromEuler(
             xAngleInRadians: Float,
@@ -183,7 +210,7 @@ override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
 
                 "xzy" -> {
                     dst.x = sx * cy * cz - cx * sy * sz
-                    dst.y = cx * sy * cz - sx * cy * sz // Error in TS? Should be cx * sy * cz + sx * cy * sz? Sticking to TS impl.
+                    dst.y = cx * sy * cz - sx * cy * sz
                     dst.z = cx * cy * sz + sx * sy * cz
                     dst.w = cx * cy * cz + sx * sy * sz
                 }
@@ -642,7 +669,6 @@ override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
      * Returns identity if length is near zero.
      */
     fun normalize(dst: Quatf = Quatf()): Quatf {
-
 // Extract components from the input array 'v'
         val v0 = this.x
         val v1 = this.y

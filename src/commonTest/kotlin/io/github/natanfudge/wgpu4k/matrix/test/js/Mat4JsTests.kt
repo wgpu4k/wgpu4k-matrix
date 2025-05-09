@@ -57,21 +57,7 @@ class Mat4Test {
 
 
 
-    @Test
-    fun testCreate() {
-        val tests = listOf(
-            Mat4f.fromFloatArray(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to emptyList<Float>(),
-            Mat4f.fromFloatArray(floatArrayOf(1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)) to listOf(1f)
-        )
-        for ((expected, args) in tests) {
-            val actual = when (args.size) {
-                0 -> Mat4f()
-                1 -> Mat4f(v0 = args[0])
-                else -> throw IllegalArgumentException("Too many arguments for Mat4 create test")
-            }
-            assertMat4EqualApproximately(actual, expected)
-        }
-    }
+
 
     @Test
     fun testNegate() {

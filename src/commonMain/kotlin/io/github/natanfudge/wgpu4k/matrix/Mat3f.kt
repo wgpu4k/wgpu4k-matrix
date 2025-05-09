@@ -70,16 +70,16 @@ import kotlin.math.sqrt
         this.array[index] = value
     }
 
-    constructor(): this(FloatArray(12))
+    constructor() : this(FloatArray(12))
 
     /**
      * Creates a new Mat3 with the given values ([v0] to [v8]) in **column-major** order.
      * See [rowMajor] for constructing a matrix in row-major order (WebGPU uses column-major so we will convert it)
      */
     constructor(
-        v0: Float, v1: Float , v2: Float ,
-        v3: Float , v4: Float , v5: Float ,
-        v6: Float, v7: Float , v8: Float,
+        v0: Float, v1: Float, v2: Float,
+        v3: Float, v4: Float, v5: Float,
+        v6: Float, v7: Float, v8: Float,
     ) : this(FloatArray(12).apply {
         this[0] = v0
         this[1] = v1
@@ -108,6 +108,7 @@ import kotlin.math.sqrt
     companion object {
         // 12 * 4 bytes
         const val SIZE_BYTES = 48u
+
         /**
          * Constructs a [Mat3f] in row-major order.
          */
@@ -448,7 +449,6 @@ import kotlin.math.sqrt
      * Creates a 3-by-3 identity matrix.
      */
     fun identity(dst: Mat3f = Mat3f()): Mat3f {
-
         dst.array[0] = 1f; dst.array[1] = 0f; dst.array[2] = 0f;
         dst.array[4] = 0f; dst.array[5] = 1f; dst.array[6] = 0f;
         dst.array[8] = 0f; dst.array[9] = 0f; dst.array[10] = 1f;
@@ -497,7 +497,6 @@ import kotlin.math.sqrt
      * Returns identity if the matrix is not invertible.
      */
     fun inverse(dst: Mat3f = Mat3f()): Mat3f {
-
         val m00 = array[0 * 4 + 0]
         val m01 = array[0 * 4 + 1]
         val m02 = array[0 * 4 + 2]
@@ -561,7 +560,6 @@ import kotlin.math.sqrt
      * Multiplies `this` by [other] (`this` * [other]).
      */
     fun multiply(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f {
-
         val a00 = array[0]
         val a01 = array[1]
         val a02 = array[2]
@@ -604,7 +602,6 @@ import kotlin.math.sqrt
      * Better named "withTranslation" but that's the JS name.
      */
     fun setTranslation(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-
         if (this !== dst) {
             dst.array[0] = array[0];
             dst.array[1] = array[1];
@@ -632,7 +629,7 @@ import kotlin.math.sqrt
      * Gets the specified [axis] (0=x, 1=y) of `this` as a Vec2.
      */
     fun getAxis(axis: Int, dst: Vec2f = Vec2f.create()): Vec2f {
-        if(axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
+        if (axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
         val off = axis * 4
         dst.x = array[off + 0]
         dst.y = array[off + 1]
@@ -643,7 +640,7 @@ import kotlin.math.sqrt
      * Creates a matrix copy of `this` with the specified [axis] (0=x, 1=y) set to [v].
      */
     fun setAxis(v: Vec2f, axis: Int, dst: Mat3f = Mat3f()): Mat3f {
-        if(axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
+        if (axis != 0 && axis != 1) throw IllegalArgumentException("Mat3f only has axis 0 and 1")
         val newDst = if (dst === this) this else copy(dst)
 
         val off = axis * 4
@@ -672,7 +669,6 @@ import kotlin.math.sqrt
      * Gets the absolute value of how much this matrix scales 3D vectors in the X,Y,Z dimensions.
      */
     fun get3DScaling(dst: Vec3f = Vec3f.create()): Vec3f {
-
         val xx = this[0]
         val xy = this[1]
         val xz = this[2]
@@ -734,7 +730,6 @@ import kotlin.math.sqrt
      * This is equivalent to `rotateZ`. For 2D transformations, this rotates points in the XY plane.
      */
     fun rotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-
         val m00 = array[0 * 4 + 0]
         val m01 = array[0 * 4 + 1]
         val m02 = array[0 * 4 + 2]
@@ -769,7 +764,6 @@ import kotlin.math.sqrt
      * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the rotation around the X-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-
         val m10 = array[4]
         val m11 = array[5]
         val m12 = array[6]
@@ -803,7 +797,6 @@ import kotlin.math.sqrt
      * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the rotation around the Y-axis applies *after* the original matrix's (`this`) transform.
      */
     fun rotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-
         val m00 = array[0 * 4 + 0]
         val m01 = array[0 * 4 + 1]
         val m02 = array[0 * 4 + 2]
@@ -847,7 +840,6 @@ import kotlin.math.sqrt
      * the scaling on X and Y axes applies *after* the original matrix's (`this`) transform.
      */
     fun scale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-
         val v0 = v.x
         val v1 = v.y
 
@@ -876,7 +868,6 @@ import kotlin.math.sqrt
      * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the scaling on X, Y, and Z axes applies *after* the original matrix's (`this`) transform.
      */
     fun scale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
-
         val v0 = v[0]
         val v1 = v[1]
         val v2 = v[2]
@@ -905,7 +896,6 @@ import kotlin.math.sqrt
      * the uniform scaling on X and Y axes applies *after* the original matrix's (`this`) transform.
      */
     fun uniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-
         dst.array[0] = s * array[0 * 4 + 0]; dst.array[3] = 0f
         dst.array[1] = s * array[0 * 4 + 1]
         dst.array[2] = s * array[0 * 4 + 2]
@@ -930,7 +920,6 @@ import kotlin.math.sqrt
      * If you multiply a [Vec3f] with the resulting matrix (`dst * vec`), the uniform scaling on X, Y, and Z axes applies *after* the original matrix's (`this`) transform.
      */
     fun uniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-
         dst.array[0] = s * array[0 * 4 + 0]; dst.array[3] = 0f
         dst.array[1] = s * array[0 * 4 + 1]
         dst.array[2] = s * array[0 * 4 + 2]
@@ -943,6 +932,232 @@ import kotlin.math.sqrt
         dst.array[9] = s * array[2 * 4 + 1]
         dst.array[10] = s * array[2 * 4 + 2]
 
+        return dst
+    }
+
+    /**
+     * Prepends a translation by [v] to `this`.
+     * Equivalent to `dst = translation(v) * this`.
+     */
+    fun preTranslate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        val vx = v.x
+        val vy = v.y
+
+        dst.array[0] = m00 + vx * m20
+        dst.array[1] = m10 + vy * m20
+        dst.array[2] = m20
+
+        dst.array[4] = m01 + vx * m21
+        dst.array[5] = m11 + vy * m21
+        dst.array[6] = m21
+
+        dst.array[8] = m02 + vx * m22
+        dst.array[9] = m12 + vy * m22
+        dst.array[10] = m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a rotation by [angleInRadians] to `this`.
+     * Equivalent to `dst = rotation(angleInRadians) * this`.
+     */
+    fun preRotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+
+        dst.array[0] = c * m00 - s * m10
+        dst.array[1] = s * m00 + c * m10
+        dst.array[2] = m20
+
+        dst.array[4] = c * m01 - s * m11
+        dst.array[5] = s * m01 + c * m11
+        dst.array[6] = m21
+
+        dst.array[8] = c * m02 - s * m12
+        dst.array[9] = s * m02 + c * m12
+        dst.array[10] = m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a rotation around the X-axis by [angleInRadians] to `this`.
+     * Equivalent to `dst = rotationX(angleInRadians) * this`.
+     */
+    fun preRotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+
+        dst.array[0] = m00
+        dst.array[1] = c * m10 - s * m20
+        dst.array[2] = s * m10 + c * m20
+
+        dst.array[4] = m01
+        dst.array[5] = c * m11 - s * m21
+        dst.array[6] = s * m11 + c * m21
+
+        dst.array[8] = m02
+        dst.array[9] = c * m12 - s * m22
+        dst.array[10] = s * m12 + c * m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a rotation around the Y-axis by [angleInRadians] to `this`.
+     * Equivalent to `dst = rotationY(angleInRadians) * this`.
+     */
+    fun preRotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+
+        dst.array[0] = c * m00 + s * m20
+        dst.array[1] = m10
+        dst.array[2] = -s * m00 + c * m20
+
+        dst.array[4] = c * m01 + s * m21
+        dst.array[5] = m11
+        dst.array[6] = -s * m01 + c * m21
+
+        dst.array[8] = c * m02 + s * m22
+        dst.array[9] = m12
+        dst.array[10] = -s * m02 + c * m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a rotation around the Z-axis by [angleInRadians] to `this`.
+     * Equivalent to `dst = rotationZ(angleInRadians) * this`.
+     */
+    inline fun preRotateZ(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f = preRotate(angleInRadians, dst)
+
+
+    /**
+     * Prepends a scale by [v] to `this`.
+     * Equivalent to `dst = scaling(v) * this`.
+     */
+    fun preScale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        val sx = v.x
+        val sy = v.y
+
+        dst.array[0] = sx * m00
+        dst.array[1] = sy * m10
+        dst.array[2] = m20
+
+        dst.array[4] = sx * m01
+        dst.array[5] = sy * m11
+        dst.array[6] = m21
+
+        dst.array[8] = sx * m02
+        dst.array[9] = sy * m12
+        dst.array[10] = m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a 3D scale by [v] to `this`.
+     * Equivalent to `dst = scaling3D(v) * this`.
+     */
+    fun preScale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        val sx = v.x
+        val sy = v.y
+        val sz = v.z
+
+        dst.array[0] = sx * m00
+        dst.array[1] = sy * m10
+        dst.array[2] = sz * m20
+
+        dst.array[4] = sx * m01
+        dst.array[5] = sy * m11
+        dst.array[6] = sz * m21
+
+        dst.array[8] = sx * m02
+        dst.array[9] = sy * m12
+        dst.array[10] = sz * m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a uniform scale by [s] to `this`.
+     * Equivalent to `dst = uniformScaling(s) * this`.
+     */
+    fun preUniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        dst.array[0] = s * m00
+        dst.array[1] = s * m10
+        dst.array[2] = m20 // Z component of the third column is not scaled by 2D uniform scale
+
+        dst.array[4] = s * m01
+        dst.array[5] = s * m11
+        dst.array[6] = m21 // Z component of the third column is not scaled by 2D uniform scale
+
+        dst.array[8] = s * m02
+        dst.array[9] = s * m12
+        dst.array[10] = m22 // Z component of the third column is not scaled by 2D uniform scale
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
+        return dst
+    }
+
+    /**
+     * Prepends a uniform 3D scale by [s] to `this`.
+     * Equivalent to `dst = uniformScaling3D(s) * this`.
+     */
+    fun preUniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
+        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
+        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
+        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+
+        dst.array[0] = s * m00
+        dst.array[1] = s * m10
+        dst.array[2] = s * m20
+
+        dst.array[4] = s * m01
+        dst.array[5] = s * m11
+        dst.array[6] = s * m21
+
+        dst.array[8] = s * m02
+        dst.array[9] = s * m12
+        dst.array[10] = s * m22
+
+        dst.array[3] = 0f; dst.array[7] = 0f; dst.array[11] = 0f
         return dst
     }
 }
