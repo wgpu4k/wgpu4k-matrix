@@ -1264,19 +1264,19 @@ class Mat3fTest {
         val m = Mat3f.rowMajor(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)
         val expected = Mat3f.identity()
 
-        val result = m.identity() // Test without destination
+        val result = Mat3f.identity() // Test without destination
         assertMat3Equals(expected, result, "Instance identity without destination")
         assertNotSame(m, result, "Instance identity without destination should create new instance")
 
 
         val dst = Mat3f.identity()
-        val resultDst = m.identity(dst) // Test with destination
+        val resultDst = Mat3f.identity(dst) // Test with destination
         assertMat3Equals(expected, dst, "Instance identity with destination")
         assertSame(dst, resultDst, "Instance identity with destination should return destination")
 
         // Test on an already identity matrix
         val id = Mat3f.identity()
-        val idResult = id.identity()
+        val idResult = Mat3f.identity()
         assertMat3Equals(id, idResult, "Instance identity on identity matrix")
         assertNotSame(id, idResult, "Instance identity on identity should create new instance if no dst")
     }

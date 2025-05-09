@@ -3,6 +3,8 @@ import io.github.natanfudge.wgpu4k.matrix.FloatPi
 import io.github.natanfudge.wgpu4k.matrix.Mat3f
 import io.github.natanfudge.wgpu4k.matrix.Mat4f
 import io.github.natanfudge.wgpu4k.matrix.Vec2f
+import io.github.natanfudge.wgpu4k.matrix.Vec3f
+import io.github.natanfudge.wgpu4k.matrix.test.js.assertVec3EqualsApproximately
 import kotlin.test.* // Import kotlin.test
 import kotlin.math.*
 // Assume Vec2 class from previous step is available in the same package or imported
@@ -356,14 +358,14 @@ class Vec2Tests {
     fun `should cross`() {
         val v1 = Vec2f(2f, 3f)
         val v2 = Vec2f(4f, 5f)
-        val expected = floatArrayOf(0f, 0f, 2f * 5f - 3f * 4f) // -2f
+        val expected = Vec3f(0f, 0f, 2f * 5f - 3f * 4f) // -2f
 
         // No dst
         val c1 = v1.cross(v2)
         assertVec3EqualsApproximately(expected, c1)
 
         // With dst = new
-        val dest = FloatArray(3)
+        val dest = Vec3f()
         val c2 = v1.cross(v2, dest)
         assertSame(dest, c2)
         assertVec3EqualsApproximately(expected, c2)

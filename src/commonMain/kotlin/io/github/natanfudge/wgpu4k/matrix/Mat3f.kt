@@ -435,16 +435,6 @@ import kotlin.math.sqrt
      */
     inline fun clone(dst: Mat3f = Mat3f()): Mat3f = copy(dst)
 
-    /**
-     * Creates a 3-by-3 identity matrix.
-     */
-    fun identity(dst: Mat3f = Mat3f()): Mat3f {
-        dst.array[0] = 1f; dst.array[1] = 0f; dst.array[2] = 0f;
-        dst.array[4] = 0f; dst.array[5] = 1f; dst.array[6] = 0f;
-        dst.array[8] = 0f; dst.array[9] = 0f; dst.array[10] = 1f;
-
-        return dst
-    }
 
     /**
      * Computes the transpose of `this`.
@@ -504,7 +494,7 @@ import kotlin.math.sqrt
         val det = m00 * b01 + m01 * b11 + m02 * b21
         if (det == 0f) {
             // Matrix is not invertible
-            return dst.identity() // Or throw an exception, or return a special value
+            return identity()
         }
         val invDet = 1 / det
 

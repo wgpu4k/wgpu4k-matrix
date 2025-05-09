@@ -219,13 +219,6 @@ class Vec4f(
      */
     fun sub(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f = subtract(other, dst)
 
-    /**
-     * Checks if `this` is exactly equal to [other].
-     * Note: Prefer equalsApproximately for floating-point comparisons.
-     */
-    fun equals(other: Vec4f): Boolean {
-        return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
-    }
 
     /**
      * Computes the component-wise maximum of `this` and [other].

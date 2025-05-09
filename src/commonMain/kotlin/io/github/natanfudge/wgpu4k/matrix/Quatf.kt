@@ -319,6 +319,7 @@ data class Quatf(
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun times(other: Quatf) = multiply(other)
     inline operator fun div(scalar: Float) = divScalar(scalar)
+    inline operator fun div(quat: Quatf) = this * quat.inverse()
     inline operator fun unaryMinus() = negate()
 
     // <properties>

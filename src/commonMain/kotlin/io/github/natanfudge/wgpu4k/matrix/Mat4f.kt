@@ -179,49 +179,48 @@ class Mat4f private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which rotates around the given [axis] by the given [angleInRadians].
          */
         fun axisRotation(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
-            let {
-                var x = axis.x
-                var y = axis.y
-                var z = axis.z
+            var x = axis.x
+            var y = axis.y
+            var z = axis.z
 
-                val n = sqrt(x * x + y * y + z * z)
-                if (n < EPSILON) {
-                    return identity(dst)
-                }
-
-                x /= n
-                y /= n
-                z /= n
-
-                val xx = x * x
-                val yy = y * y
-                val zz = z * z
-                val c = cos(angleInRadians)
-                val s = sin(angleInRadians)
-                val oneMinusCosine = 1f - c
-
-                dst.array[0] = xx + (1f - xx) * c
-                dst.array[1] = x * y * oneMinusCosine + z * s
-                dst.array[2] = x * z * oneMinusCosine - y * s
-                dst.array[3] = 0f
-
-                dst.array[4] = x * y * oneMinusCosine - z * s
-                dst.array[5] = yy + (1f - yy) * c
-                dst.array[6] = y * z * oneMinusCosine + x * s
-                dst.array[7] = 0f
-
-                dst.array[8] = x * z * oneMinusCosine + y * s
-                dst.array[9] = y * z * oneMinusCosine - x * s
-                dst.array[10] = zz + (1f - zz) * c
-                dst.array[11] = 0f
-
-                dst.array[12] = 0f
-                dst.array[13] = 0f
-                dst.array[14] = 0f
-                dst.array[15] = 1f
-
-                return dst
+            val n = sqrt(x * x + y * y + z * z)
+            if (n < EPSILON) {
+                return identity(dst)
             }
+
+            x /= n
+            y /= n
+            z /= n
+
+            val xx = x * x
+            val yy = y * y
+            val zz = z * z
+            val c = cos(angleInRadians)
+            val s = sin(angleInRadians)
+            val oneMinusCosine = 1f - c
+
+            dst.array[0] = xx + (1f - xx) * c
+            dst.array[1] = x * y * oneMinusCosine + z * s
+            dst.array[2] = x * z * oneMinusCosine - y * s
+            dst.array[3] = 0f
+
+            dst.array[4] = x * y * oneMinusCosine - z * s
+            dst.array[5] = yy + (1f - yy) * c
+            dst.array[6] = y * z * oneMinusCosine + x * s
+            dst.array[7] = 0f
+
+            dst.array[8] = x * z * oneMinusCosine + y * s
+            dst.array[9] = y * z * oneMinusCosine - x * s
+            dst.array[10] = zz + (1f - zz) * c
+            dst.array[11] = 0f
+
+            dst.array[12] = 0f
+            dst.array[13] = 0f
+            dst.array[14] = 0f
+            dst.array[15] = 1f
+
+            return dst
+
         }
 
         /**
@@ -1143,12 +1142,26 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preTranslate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val x = v.x; val y = v.y; val z = v.z
+        val x = v.x;
+        val y = v.y;
+        val z = v.z
 
-        val a0 = array[0]; val a1 = array[1]; val a2 = array[2]; val a3 = array[3]
-        val a4 = array[4]; val a5 = array[5]; val a6 = array[6]; val a7 = array[7]
-        val a8 = array[8]; val a9 = array[9]; val a10 = array[10]; val a11 = array[11]
-        val a12 = array[12]; val a13 = array[13]; val a14 = array[14]; val a15 = array[15]
+        val a0 = array[0];
+        val a1 = array[1];
+        val a2 = array[2];
+        val a3 = array[3]
+        val a4 = array[4];
+        val a5 = array[5];
+        val a6 = array[6];
+        val a7 = array[7]
+        val a8 = array[8];
+        val a9 = array[9];
+        val a10 = array[10];
+        val a11 = array[11]
+        val a12 = array[12];
+        val a13 = array[13];
+        val a14 = array[14];
+        val a15 = array[15]
 
         dst.array[0] = a0 + x * a3
         dst.array[1] = a1 + y * a3
@@ -1184,10 +1197,14 @@ class Mat4f private constructor(val array: FloatArray) {
         val s = sin(angleInRadians)
         val c = cos(angleInRadians)
 
-        val a1 = array[1]; val a2 = array[2]
-        val a5 = array[5]; val a6 = array[6]
-        val a9 = array[9]; val a10 = array[10]
-        val a13 = array[13]; val a14 = array[14]
+        val a1 = array[1];
+        val a2 = array[2]
+        val a5 = array[5];
+        val a6 = array[6]
+        val a9 = array[9];
+        val a10 = array[10]
+        val a13 = array[13];
+        val a14 = array[14]
 
         if (dst !== this) {
             // Copy elements that are not modified or are read before write for their column
@@ -1223,10 +1240,14 @@ class Mat4f private constructor(val array: FloatArray) {
         val s = sin(angleInRadians)
         val c = cos(angleInRadians)
 
-        val a0 = array[0]; val a2 = array[2]
-        val a4 = array[4]; val a6 = array[6]
-        val a8 = array[8]; val a10 = array[10]
-        val a12 = array[12]; val a14 = array[14]
+        val a0 = array[0];
+        val a2 = array[2]
+        val a4 = array[4];
+        val a6 = array[6]
+        val a8 = array[8];
+        val a10 = array[10]
+        val a12 = array[12];
+        val a14 = array[14]
 
         if (dst !== this) {
             dst.array[1] = array[1]; dst.array[3] = array[3]
@@ -1261,10 +1282,14 @@ class Mat4f private constructor(val array: FloatArray) {
         val s = sin(angleInRadians)
         val c = cos(angleInRadians)
 
-        val a0 = array[0]; val a1 = array[1]
-        val a4 = array[4]; val a5 = array[5]
-        val a8 = array[8]; val a9 = array[9]
-        val a12 = array[12]; val a13 = array[13]
+        val a0 = array[0];
+        val a1 = array[1]
+        val a4 = array[4];
+        val a5 = array[5]
+        val a8 = array[8];
+        val a9 = array[9]
+        val a12 = array[12];
+        val a13 = array[13]
 
         if (dst !== this) {
             dst.array[2] = array[2]; dst.array[3] = array[3]
@@ -1296,7 +1321,9 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preScale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val sx = v.x; val sy = v.y; val sz = v.z
+        val sx = v.x;
+        val sy = v.y;
+        val sz = v.z
 
         dst.array[0] = array[0] * sx; dst.array[1] = array[1] * sy; dst.array[2] = array[2] * sz; dst.array[3] = array[3]
         dst.array[4] = array[4] * sx; dst.array[5] = array[5] * sy; dst.array[6] = array[6] * sz; dst.array[7] = array[7]

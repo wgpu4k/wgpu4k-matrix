@@ -251,15 +251,14 @@ class Vec2f(var x: Float , var y: Float) {
 
     /**
      * Computes the 2D cross product (returns the Z component) of `this` vector and [other].
-     * The result is stored in a 3-element FloatArray [0, 0, z].
+     *
      */
-    fun cross(other: Vec2f, dst: FloatArray? = null): FloatArray {
-        val target = dst ?: FloatArray(3)
+    fun cross(other: Vec2f, dst: Vec3f = Vec3f()): Vec3f {
         val z = this.x * other.y - this.y * other.x
-        target[0] = 0f
-        target[1] = 0f
-        target[2] = z
-        return target
+        dst[0] = 0f
+        dst[1] = 0f
+        dst[2] = z
+        return dst
     }
 
     /**
