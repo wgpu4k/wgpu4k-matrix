@@ -21,12 +21,12 @@ repositories {
 In code:
 ```kotlin
 // Example matrix operations
-val mat4 = Mat4.identity()
+val mat4 = Mat4f.identity()
 val rotated = mat4.rotateX(Math.PI / 4)
-val transformed = rotated.translate(Vec3(1.0, 2.0, 3.0))
+val transformed = rotated.translate(Vec3f(1.0, 2.0, 3.0))
 
 // Vector operations
-val vec4 = Vec4(1.0, 0.0, 0.0, 1.0)
+val vec4 = Vec4f(1.0, 0.0, 0.0, 1.0)
 val normalized = vec4.normalize()
 ```
 
