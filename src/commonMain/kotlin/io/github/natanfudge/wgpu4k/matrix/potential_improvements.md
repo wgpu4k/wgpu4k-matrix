@@ -1,6 +1,3 @@
-3. Add premulplication for mat4f
-For the kdocs of mat4f, clarify for post multiplication that if you do M * v the transform applies before `this`, and 
-if you do v * M the transform applies after `this`, and vice versa for premultiplication
 
 1. Reorganize the files Mat3f, Mat4f, Quatf, Vec2f, Vec3f, Vec4f, to be ordered like this:
 <secondary constructors>

@@ -29,15 +29,51 @@ import kotlin.math.sqrt
  * Do not depend on the values in the padding cells, as the behavior of those may change in the future.
  */
 /*@JvmInline value*/ class Mat3f private constructor(val array: FloatArray) {
-    inline val m00 get() = this[0]
-    inline val m01 get() = this[4]
-    inline val m02 get() = this[8]
-    inline val m10 get() = this[1]
-    inline val m11 get() = this[5]
-    inline val m12 get() = this[9]
-    inline val m20 get() = this[2]
-    inline val m21 get() = this[6]
-    inline val m22 get() = this[10]
+    inline var m00
+        get() = this[0];
+        set(value) {
+            this[0] = value
+        }
+    inline var m01
+        get() = this[4];
+        set(value) {
+            this[4] = value
+        }
+    inline var m02
+        get() = this[8];
+        set(value) {
+            this[8] = value
+        }
+    inline var m10
+        get() = this[1];
+        set(value) {
+            this[1] = value
+        }
+    inline var m11
+        get() = this[5];
+        set(value) {
+            this[5] = value
+        }
+    inline var m12
+        get() = this[9];
+        set(value) {
+            this[9] = value
+        }
+    inline var m20
+        get() = this[2];
+        set(value) {
+            this[2] = value
+        }
+    inline var m21
+        get() = this[6];
+        set(value) {
+            this[6] = value
+        }
+    inline var m22
+        get() = this[10];
+        set(value) {
+            this[10] = value
+        }
 
     init {
         if (array.size != 12) {
