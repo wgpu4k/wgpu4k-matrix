@@ -56,6 +56,30 @@ class Vec4fTest {
         assertVec4EqualsApproximately(Vec4f(2f, 4f, 6f, 8f), a * 2f, message = "Times operator")
         assertVec4EqualsApproximately(Vec4f(0.5f, 1f, 1.5f, 2f), a / 2f, message = "Div operator")
         assertVec4EqualsApproximately(Vec4f(-1f, -2f, -3f, -4f), -a, message = "Unary minus operator")
+@Test
+    fun testGetOperator() {
+        val v = Vec4f(10f, 20f, 30f, 40f)
+        assertEquals(10f, v[0], "Get x component")
+        assertEquals(20f, v[1], "Get y component")
+        assertEquals(30f, v[2], "Get z component")
+        assertEquals(40f, v[3], "Get w component")
+
+        assertFailsWith<IndexOutOfBoundsException>("Get out of bounds low") { v[-1] }
+        assertFailsWith<IndexOutOfBoundsException>("Get out of bounds high") { v[4] }
+    }
+
+    @Test
+    fun testSetOperator() {
+        val v = Vec4f()
+        v[0] = 15f
+        v[1] = 25f
+        v[2] = 35f
+        v[3] = 45f
+        assertVec4EqualsApproximately(Vec4f(15f, 25f, 35f, 45f), v, message ="Set components")
+
+        assertFailsWith<IndexOutOfBoundsException>("Set out of bounds low") { v[-1] = 0f }
+        assertFailsWith<IndexOutOfBoundsException>("Set out of bounds high") { v[4] = 0f }
+    }
     }
 
     @Test

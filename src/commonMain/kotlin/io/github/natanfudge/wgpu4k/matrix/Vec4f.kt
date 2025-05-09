@@ -36,8 +36,17 @@ class Vec4f(
         fun fromValues(x: Float = 0.0f, y: Float = 0.0f, z: Float = 0.0f, w: Float = 0.0f): Vec4f {
             return Vec4f(x, y, z, w)
         }
-        // <static operators>
-        // No static operators in Vec4f
+
+        /**
+         * Sets the components of [dst] to [x], [y],  [z] and [w].
+         */
+        fun set(x: Float, y: Float, z: Float,w: Float, dst: Vec4f = Vec4f()): Vec4f {
+            dst.x = x
+            dst.y = y
+            dst.z = z
+            dst.w = w
+            return dst
+        }
     }
 
     // <`operator fun` functions>
@@ -46,6 +55,32 @@ class Vec4f(
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
+
+    /**
+     * Allows accessing components using array syntax (e.g., vec[0]).
+     */
+    operator fun get(index: Int): Float {
+        return when (index) {
+            0 -> x
+            1 -> y
+            2 -> z
+            3 -> w
+            else -> throw IndexOutOfBoundsException("Index $index is out of bounds for Vec4")
+        }
+    }
+
+    /**
+     * Allows setting components using array syntax (e.g., vec[0] = 1.0f).
+     */
+    operator fun set(index: Int, value: Float) {
+        when (index) {
+            0 -> x = value
+            1 -> y = value
+            2 -> z = value
+            3 -> w = value
+            else -> throw IndexOutOfBoundsException("Index $index is out of bounds for Vec4")
+        }
+    }
 
     // <properties>
     /**
@@ -219,9 +254,7 @@ class Vec4f(
      */
     fun sub(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f = subtract(other, dst)
 
-
     /**
-     * Computes the component-wise maximum of `this` and [other].
      */
     fun max(other: Vec4f, dst: Vec4f = Vec4f()): Vec4f {
         dst.x = max(this.x, other.x)

@@ -35,6 +35,15 @@ class Vec2f(var x: Float , var y: Float) {
         }
 
         /**
+         * Sets the components of [dst] to [x] and [y]
+         */
+        fun set(x: Float, y: Float, dst: Vec2f = Vec2f()): Vec2f {
+            dst.x = x
+            dst.y = y
+            return dst
+        }
+
+        /**
          * Either creates a new zero vector, or sets [dst] to 0,0.
          * */
         fun zero(dst: Vec2f = Vec2f()): Vec2f {
@@ -52,6 +61,28 @@ class Vec2f(var x: Float , var y: Float) {
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
+
+    /**
+     * Allows accessing components using array syntax (e.g., vec[0]).
+     */
+    operator fun get(index: Int): Float {
+        return when (index) {
+            0 -> x
+            1 -> y
+            else -> throw IndexOutOfBoundsException("Index $index is out of bounds for Vec2")
+        }
+    }
+
+    /**
+     * Allows setting components using array syntax (e.g., vec[0] = 1.0f).
+     */
+    operator fun set(index: Int, value: Float) {
+        when (index) {
+            0 -> x = value
+            1 -> y = value
+            else -> throw IndexOutOfBoundsException("Index $index is out of bounds for Vec2")
+        }
+    }
 
     // <properties>
     /**

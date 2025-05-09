@@ -115,6 +115,26 @@ class Vec2fOperatorTest {
         val expected3 = Vec2f(0f, 0f)
         assertVec2fEqualsApproximately(expected3, -v3, "Unary minus on zero vector")
     }
+@Test
+    fun testGetOperator() {
+        val v = Vec2f(10f, 20f)
+        assertEquals(10f, v[0], "Get x component")
+        assertEquals(20f, v[1], "Get y component")
+
+        assertFailsWith<IndexOutOfBoundsException>("Get out of bounds low") { v[-1] }
+        assertFailsWith<IndexOutOfBoundsException>("Get out of bounds high") { v[2] }
+    }
+
+    @Test
+    fun testSetOperator() {
+        val v = Vec2f()
+        v[0] = 15f
+        v[1] = 25f
+        assertVec2fEqualsApproximately(Vec2f(15f, 25f), v, "Set components")
+
+        assertFailsWith<IndexOutOfBoundsException>("Set out of bounds low") { v[-1] = 0f }
+        assertFailsWith<IndexOutOfBoundsException>("Set out of bounds high") { v[2] = 0f }
+    }
 
     @Test
     fun testSet() {
