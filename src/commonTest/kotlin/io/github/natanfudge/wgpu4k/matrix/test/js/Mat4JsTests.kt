@@ -373,13 +373,28 @@ class Mat4Test {
         val aspect = 4f
         val zNear = 10f
         val zFar = 30f
-        val f = 1.0f / tan(fov / 2)
+        val f = tan(PI * 0.5 - 0.5 * fov).toFloat()
         val rangeInv = 1.0f / (zNear - zFar)
         val expected = Mat4f.fromFloatArray(floatArrayOf(
-            f / aspect, 0f, 0f, 0f,
-            0f, f, 0f, 0f,
-            0f, 0f, (zNear + zFar) * rangeInv, -1f,
-            0f, 0f, zNear * zFar * rangeInv * 2, 0f
+            f / aspect,
+            0f,
+            0f,
+            0f,
+
+            0f,
+            f,
+            0f,
+            0f,
+
+            0f,
+            0f,
+            zFar * rangeInv,
+            -1f,
+
+            0f,
+            0f,
+            zNear * zFar * rangeInv,
+            0f,
         ))
         testMat4({ dst -> Mat4f.perspective(fov, aspect, zNear, zFar, dst) }, expected)
     }
@@ -398,8 +413,11 @@ class Mat4Test {
         val expected = Mat4f.fromFloatArray(floatArrayOf(
             2 / width, 0f, 0f, 0f,
             0f, 2 / height, 0f, 0f,
-            0f, 0f, -2 / depth, 0f,
-            -(left + right) / width, -(top + bottom) / height, -(far + near) / depth, 1f
+            0f, 0f,1 / (near - far), 0f,
+            (right + left) / (left - right),
+            (top + bottom) / (bottom - top),
+            near / (near - far),
+            1f,
         ))
         testMat4({ dst -> Mat4f.ortho(left, right, bottom, top, near, far, dst) }, expected)
     }
