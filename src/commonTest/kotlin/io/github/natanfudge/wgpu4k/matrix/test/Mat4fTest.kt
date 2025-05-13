@@ -414,13 +414,13 @@ class Mat4fTest {
         val near = 1f
         val far = 100f
 
-        val f = 1.0f / tan(fovy / 2.0f)
-        val nf = 1.0f / (near - far)
+        val f = tan(PI.toFloat() * 0.5f - 0.5f * fovy)
+        val rangeInv = 1f / (near - far)
 
         val expected = Mat4f.rowMajor(
             f / aspect, 0f, 0f, 0f,
             0f, f, 0f, 0f,
-            0f, 0f, (far + near) * nf, (2f * far * near) * nf,
+            0f, 0f, far * rangeInv, far * near * rangeInv,
             0f, 0f, -1f, 0f
         )
         var actual = Mat4f.perspective(fovy, aspect, near, far)
@@ -435,11 +435,21 @@ class Mat4fTest {
         val expected2 = Mat4f.rowMajor(
             f / aspect2, 0f, 0f, 0f,
             0f, f, 0f, 0f,
-            0f, 0f, (far + near) * nf, (2f * far * near) * nf,
+            0f, 0f, far * rangeInv, far * near * rangeInv,
             0f, 0f, -1f, 0f
         )
         val actual2 = Mat4f.perspective(fovy, aspect2, near, far)
         assertMat4EqualsApproximately(expected2, actual2, message = "perspective different aspect", tolerance = 1e-5f)
+
+        // Test with infinite far plane
+        val expectedInf = Mat4f.rowMajor(
+            f / aspect, 0f, 0f, 0f,
+            0f, f, 0f, 0f,
+            0f, 0f, -1f, -near,
+            0f, 0f, -1f, 0f
+        )
+        val actualInf = Mat4f.perspective(fovy, aspect, near, Float.POSITIVE_INFINITY)
+        assertMat4EqualsApproximately(expectedInf, actualInf, message = "perspective with infinite far plane", tolerance = 1e-5f)
     }
 
     // --- Instance Method Tests ---
@@ -1446,6 +1456,62 @@ class Mat4fTest {
         actual = mSelf.preUniformScale(s, mSelf)
         assertMat4EqualsApproximately(expected, mSelf, "preUniformScale with dst == this")
         assertSame(mSelf, actual, "preUniformScale with dst == this should return self")
+    }
+
+    @Test
+    fun testMultiplyVector() {
+        // Test with identity matrix
+        val identity = Mat4f.identity()
+        val v1 = Vec4f(1f, 2f, 3f, 1f)
+        assertVec4EqualsApproximately(v1, identity.multiplyVector(v1), message = "Identity matrix should not change vector")
+
+        // Test with translation matrix
+        val translation = Mat4f.translation(Vec3f(10f, 20f, 30f))
+        val v2 = Vec4f(1f, 2f, 3f, 1f)
+        assertVec4EqualsApproximately(Vec4f(11f, 22f, 33f, 1f), translation.multiplyVector(v2), 
+            message = "Translation should add to position components when w=1")
+
+        // Test with scaling matrix
+        val scale = Mat4f.scaling(Vec3f(2f, 3f, 4f))
+        val v3 = Vec4f(1f, 1f, 1f, 1f)
+        assertVec4EqualsApproximately(Vec4f(2f, 3f, 4f, 1f), scale.multiplyVector(v3), 
+            message = "Scaling should multiply position components")
+
+        // Test with rotation matrix
+        val rotX = Mat4f.rotationX(PI.toFloat() / 2f) // 90 degrees around X
+        val v4 = Vec4f(0f, 1f, 0f, 1f)
+        assertVec4EqualsApproximately(Vec4f(0f, 0f, 1f, 1f), rotX.multiplyVector(v4), tolerance = 0.0001f,
+            message = "Rotation around X by 90 degrees should transform (0,1,0,1) to (0,0,1,1)")
+
+        // Test with custom matrix
+        val custom = Mat4f(
+            1f, 2f, 3f, 4f,
+            5f, 6f, 7f, 8f,
+            9f, 10f, 11f, 12f,
+            13f, 14f, 15f, 16f
+        )
+        val v5 = Vec4f(2f, 3f, 4f, 1f)
+        // Expected: (1*2 + 5*3 + 9*4 + 13*1, 2*2 + 6*3 + 10*4 + 14*1, 3*2 + 7*3 + 11*4 + 15*1, 4*2 + 8*3 + 12*4 + 16*1)
+        // = (2 + 15 + 36 + 13, 4 + 18 + 40 + 14, 6 + 21 + 44 + 15, 8 + 24 + 48 + 16) = (66, 76, 86, 96)
+        assertVec4EqualsApproximately(Vec4f(66f, 76f, 86f, 96f), custom.multiplyVector(v5), 
+            message = "Custom matrix multiplication should work correctly")
+
+        // Test with destination vector
+        val dst = Vec4f()
+        val result = rotX.multiplyVector(v4, dst)
+        assertVec4EqualsApproximately(Vec4f(0f, 0f, 1f, 1f), dst, tolerance = 0.0001f, 
+            message = "Multiplication with destination should store result in destination")
+        assertSame(dst, result, "Multiplication with destination should return destination")
+
+        // Test operator overloading
+        val opResult = rotX * v4
+        assertVec4EqualsApproximately(Vec4f(0f, 0f, 1f, 1f), opResult, tolerance = 0.0001f, 
+            message = "Operator * should work the same as multiplyVector")
+
+        // Test with w=0 (direction vector)
+        val v6 = Vec4f(1f, 0f, 0f, 0f)
+        assertVec4EqualsApproximately(Vec4f(0f, 1f, 0f, 0f), Mat4f.rotationZ(PI.toFloat() / 2f).multiplyVector(v6), 
+            tolerance = 0.0001f, message = "Direction vectors (w=0) should not be affected by translation")
     }
 }
 

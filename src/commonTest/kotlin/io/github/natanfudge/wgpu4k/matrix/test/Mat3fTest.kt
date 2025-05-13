@@ -1493,5 +1493,47 @@ class Mat3fTest {
         val preScaledByIdentity = mId.preUniformScale3D(1f)
         assertMat3EqualsApproximately(mId, preScaledByIdentity, "PreUniformScale3D by 1")
     }
-}
 
+    @Test
+    fun testMultiplyVector() {
+        // Test with identity matrix
+        val identity = Mat3f.identity()
+        val v1 = Vec3f(1f, 2f, 3f)
+        assertVec3EqualsApproximately(v1, identity.multiplyVector(v1), message = "Identity matrix should not change vector")
+
+        // Test with rotation matrix
+        val rotZ = Mat3f.rotationZ(PI.toFloat() / 2f) // 90 degrees around Z
+        val v2 = Vec3f(1f, 0f, 0f)
+        assertVec3EqualsApproximately(Vec3f(0f, 1f, 0f), rotZ.multiplyVector(v2), tolerance = 0.0001f, 
+            message = "Rotation around Z by 90 degrees should transform (1,0,0) to (0,1,0)")
+
+        // Test with scaling matrix
+        val scale = Mat3f.scaling3D(Vec3f(2f, 3f, 4f))
+        val v3 = Vec3f(1f, 1f, 1f)
+        assertVec3EqualsApproximately(Vec3f(2f, 3f, 4f), scale.multiplyVector(v3), 
+            message = "Scaling should multiply each component")
+
+        // Test with custom matrix
+        val custom = Mat3f(
+            1f, 2f, 3f,
+            4f, 5f, 6f,
+            7f, 8f, 9f
+        )
+        val v4 = Vec3f(2f, 3f, 4f)
+        // Expected: (1*2 + 4*3 + 7*4, 2*2 + 5*3 + 8*4, 3*2 + 6*3 + 9*4) = (42, 51, 60)
+        assertVec3EqualsApproximately(Vec3f(42f, 51f, 60f), custom.multiplyVector(v4), 
+            message = "Custom matrix multiplication should work correctly")
+
+        // Test with destination vector
+        val dst = Vec3f()
+        val result = rotZ.multiplyVector(v2, dst)
+        assertVec3EqualsApproximately(Vec3f(0f, 1f, 0f), dst, tolerance = 0.0001f, 
+            message = "Multiplication with destination should store result in destination")
+        assertSame(dst, result, "Multiplication with destination should return destination")
+
+        // Test operator overloading
+        val opResult = rotZ * v2
+        assertVec3EqualsApproximately(Vec3f(0f, 1f, 0f), opResult, tolerance = 0.0001f, 
+            message = "Operator * should work the same as multiplyVector")
+    }
+}

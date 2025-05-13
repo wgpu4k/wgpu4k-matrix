@@ -248,7 +248,17 @@ class Mat4f private constructor(val array: FloatArray) {
         }
 
         /**
-         * Creates a 4-by-4 perspective projection matrix.
+        * Computes a 4-by-4 perspective transformation matrix given the angular height
+        * of the frustum, the aspect ratio, and the near and far clipping planes.  The
+        * arguments define a frustum extending in the negative z direction.  The given
+        * angle is the vertical angle of the frustum, and the horizontal angle is
+        * determined to produce the given aspect ratio.  The arguments near and far are
+        * the distances to the near and far clipping planes.  Note that near and far
+        * are not z coordinates, but rather they are distances along the negative
+        * z-axis.  The matrix generated sends the viewing frustum to the unit box.
+        * We assume a unit box extending from -1 to 1 in the x and y dimensions and
+        * from 0 to 1 in the z dimension
+         *
          * If [zNear] = [zFar], the result is undefined.
          * @param fieldOfViewYInRadians The field of view in the y direction (in radians).
          * @param aspect The aspect ratio (width / height).
@@ -256,15 +266,36 @@ class Mat4f private constructor(val array: FloatArray) {
          * @param zFar The distance to the far clipping plane.
          */
         fun perspective(fieldOfViewYInRadians: Float, aspect: Float, zNear: Float, zFar: Float, dst: Mat4f = Mat4f()): Mat4f {
-            val f = 1.0f / tan(fieldOfViewYInRadians / 2)
-            val rangeInv = 1.0f / (zNear - zFar)
+            val f = tan(PI.toFloat() * 0.5f - 0.5f * fieldOfViewYInRadians)
 
-            return dst.apply {
-                array[0] = f / aspect; array[1] = 0f; array[2] = 0f; array[3] = 0f
-                array[4] = 0f; array[5] = f; array[6] = 0f; array[7] = 0f
-                array[8] = 0f; array[9] = 0f; array[10] = (zNear + zFar) * rangeInv; array[11] = -1f
-                array[12] = 0f; array[13] = 0f; array[14] = zNear * zFar * rangeInv * 2; array[15] = 0f
+            dst.array[0] = f / aspect
+            dst.array[1] = 0f
+            dst.array[2] = 0f
+            dst.array[3] = 0f
+
+            dst.array[4] = 0f
+            dst.array[5] = f
+            dst.array[6] = 0f
+            dst.array[7] = 0f
+
+            dst.array[8] = 0f
+            dst.array[9] = 0f
+            dst.array[11] = -1f
+
+            dst.array[12] = 0f
+            dst.array[13] = 0f
+            dst.array[15] = 0f
+
+            if (zFar.isFinite()) {
+                val rangeInv = 1f / (zNear - zFar)
+                dst.array[10] = zFar * rangeInv
+                dst.array[14] = zFar * zNear * rangeInv
+            } else {
+                dst.array[10] = -1f
+                dst.array[14] = -zNear
             }
+
+            return dst
         }
 
         /**
@@ -384,6 +415,7 @@ class Mat4f private constructor(val array: FloatArray) {
     inline operator fun minus(other: Mat4f) = diff(other)
     inline operator fun times(scalar: Float) = multiplyScalar(scalar)
     inline operator fun times(matrix: Mat4f) = multiply(matrix)
+    inline operator fun times(vector: Vec4f) = multiplyVector(vector)
     inline operator fun div(scalar: Float) = div(scalar, Mat4f())
     inline operator fun unaryMinus() = negate()
     inline operator fun get(index: Int): Float {
@@ -713,6 +745,24 @@ class Mat4f private constructor(val array: FloatArray) {
      * Multiplies `this` by [other] (`this` * [other]) (alias for [multiply]).
      */
     fun mul(other: Mat4f, dst: Mat4f = Mat4f()): Mat4f = multiply(other, dst)
+
+    /**
+     * Multiplies this matrix by the vector [v].
+     * @return The resulting vector.
+     */
+    fun multiplyVector(v: Vec4f, dst: Vec4f = Vec4f.create()): Vec4f {
+        val x = v.x
+        val y = v.y
+        val z = v.z
+        val w = v.w
+
+        dst.x = this[0] * x + this[4] * y + this[8] * z + this[12] * w
+        dst.y = this[1] * x + this[5] * y + this[9] * z + this[13] * w
+        dst.z = this[2] * x + this[6] * y + this[10] * z + this[14] * w
+        dst.w = this[3] * x + this[7] * y + this[11] * z + this[15] * w
+
+        return dst
+    }
 
     /**
      * Computes the transpose of `this`.

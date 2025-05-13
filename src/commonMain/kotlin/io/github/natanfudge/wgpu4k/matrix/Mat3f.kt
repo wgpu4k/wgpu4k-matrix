@@ -252,6 +252,7 @@ import kotlin.math.sqrt
     inline operator fun minus(other: Mat3f) = diff(other)
     inline operator fun times(scalar: Float) = multiplyScalar(scalar)
     inline operator fun times(matrix: Mat3f) = multiply(matrix)
+    inline operator fun times(vector: Vec3f) = multiplyVector(vector)
     inline operator fun div(scalar: Float) = div(scalar, Mat3f())
     inline operator fun unaryMinus() = negate()
 
@@ -557,6 +558,22 @@ import kotlin.math.sqrt
      * Multiplies `this` by [other] (`this` * [other]) (alias for [multiply]).
      */
     inline fun mul(other: Mat3f, dst: Mat3f = Mat3f()): Mat3f = multiply(other, dst)
+
+    /**
+     * Multiplies this matrix by the vector [v].
+     * @return The resulting vector.
+     */
+    fun multiplyVector(v: Vec3f, dst: Vec3f = Vec3f.create()): Vec3f {
+        val x = v.x
+        val y = v.y
+        val z = v.z
+
+        dst.x = this[0] * x + this[4] * y + this[8] * z
+        dst.y = this[1] * x + this[5] * y + this[9] * z
+        dst.z = this[2] * x + this[6] * y + this[10] * z
+
+        return dst
+    }
 
     /**
      * Gets the translation component of `this`.
