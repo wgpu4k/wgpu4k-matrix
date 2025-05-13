@@ -388,14 +388,14 @@ class Mat4fTest {
     @Test
     fun testCompanionOrthographic() {
         val left = -1f; val right = 1f; val bottom = -1f; val top = 1f; val near = 1f; val far = 100f
-        val tx = -(right + left) / (right - left)
-        val ty = -(top + bottom) / (top - bottom)
-        val tz = -(far + near) / (far - near)
+        val tx = (right + left) / (left - right)
+        val ty = (top + bottom) / (bottom - top)
+        val tz = near / (near - far)
 
         val expected = Mat4f.rowMajor(
             2f / (right - left), 0f, 0f, tx,
             0f, 2f / (top - bottom), 0f, ty,
-            0f, 0f, -2f / (far - near), tz,
+            0f, 0f, 1f / (near - far), tz,
             0f, 0f, 0f, 1f
         )
         var actual = Mat4f.orthographic(left, right, bottom, top, near, far)

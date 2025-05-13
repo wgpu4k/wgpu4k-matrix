@@ -248,22 +248,27 @@ class Mat4f private constructor(val array: FloatArray) {
         }
 
         /**
-        * Computes a 4-by-4 perspective transformation matrix given the angular height
-        * of the frustum, the aspect ratio, and the near and far clipping planes.  The
-        * arguments define a frustum extending in the negative z direction.  The given
-        * angle is the vertical angle of the frustum, and the horizontal angle is
-        * determined to produce the given aspect ratio.  The arguments near and far are
-        * the distances to the near and far clipping planes.  Note that near and far
-        * are not z coordinates, but rather they are distances along the negative
-        * z-axis.  The matrix generated sends the viewing frustum to the unit box.
-        * We assume a unit box extending from -1 to 1 in the x and y dimensions and
-        * from 0 to 1 in the z dimension
+         * Computes a 4-by-4 perspective transformation matrix given the angular height
+         * of the frustum, the aspect ratio, and the near and far clipping planes.  The
+         * arguments define a frustum extending in the negative z direction.  The given
+         * angle is the vertical angle of the frustum, and the horizontal angle is
+         * determined to produce the given aspect ratio.  The arguments near and far are
+         * the distances to the near and far clipping planes.  Note that near and far
+         * are not z coordinates, but rather they are distances along the negative
+         * z-axis.  The matrix generated sends the viewing frustum to the unit box.
+         * We assume a unit box extending from -1 to 1 in the x and y dimensions and
+         * from 0 to 1 in the z dimension.
          *
-         * If [zNear] = [zFar], the result is undefined.
-         * @param fieldOfViewYInRadians The field of view in the y direction (in radians).
-         * @param aspect The aspect ratio (width / height).
-         * @param zNear The distance to the near clipping plane.
-         * @param zFar The distance to the far clipping plane.
+         * Note: If you pass `Float.POSITIVE_INFINITY` for zFar then it will produce a projection matrix
+         * returns -Infinity for Z when transforming coordinates with Z <= 0 and +Infinity for Z
+         * otherwise.
+         *
+         * @param fieldOfViewYInRadians The camera angle from top to bottom (in radians).
+         * @param aspect The aspect ratio width / height.
+         * @param zNear The depth (negative z coordinate) of the near clipping plane.
+         * @param zFar The depth (negative z coordinate) of the far clipping plane.
+         * @param dst Matrix to hold result. If not passed a new one is created.
+         * @return The perspective matrix.
          */
         fun perspective(fieldOfViewYInRadians: Float, aspect: Float, zNear: Float, zFar: Float, dst: Mat4f = Mat4f()): Mat4f {
             val f = tan(PI.toFloat() * 0.5f - 0.5f * fieldOfViewYInRadians)
@@ -299,6 +304,58 @@ class Mat4f private constructor(val array: FloatArray) {
         }
 
         /**
+         * Computes a 4-by-4 reverse-z perspective transformation matrix given the angular height
+         * of the frustum, the aspect ratio, and the near and far clipping planes.  The
+         * arguments define a frustum extending in the negative z direction.  The given
+         * angle is the vertical angle of the frustum, and the horizontal angle is
+         * determined to produce the given aspect ratio.  The arguments near and far are
+         * the distances to the near and far clipping planes.  Note that near and far
+         * are not z coordinates, but rather they are distances along the negative
+         * z-axis.  The matrix generated sends the viewing frustum to the unit box.
+         * We assume a unit box extending from -1 to 1 in the x and y dimensions and
+         * from 1 (at -zNear) to 0 (at -zFar) in the z dimension.
+         *
+         * @param fieldOfViewYInRadians The camera angle from top to bottom (in radians).
+         * @param aspect The aspect ratio width / height.
+         * @param zNear The depth (negative z coordinate) of the near clipping plane.
+         * @param zFar The depth (negative z coordinate) of the far clipping plane. (default = Infinity)
+         * @param dst Matrix to hold result. If not passed a new one is created.
+         * @return The perspective matrix.
+         */
+        fun perspectiveReverseZ(fieldOfViewYInRadians: Float, aspect: Float, zNear: Float, zFar: Float = Float.POSITIVE_INFINITY, dst: Mat4f = Mat4f()): Mat4f {
+            val f = 1f / tan(fieldOfViewYInRadians * 0.5f)
+
+            dst.array[0] = f / aspect
+            dst.array[1] = 0f
+            dst.array[2] = 0f
+            dst.array[3] = 0f
+
+            dst.array[4] = 0f
+            dst.array[5] = f
+            dst.array[6] = 0f
+            dst.array[7] = 0f
+
+            dst.array[8] = 0f
+            dst.array[9] = 0f
+            dst.array[11] = -1f
+
+            dst.array[12] = 0f
+            dst.array[13] = 0f
+            dst.array[15] = 0f
+
+            if (zFar == Float.POSITIVE_INFINITY) {
+                dst.array[10] = 0f
+                dst.array[14] = zNear
+            } else {
+                val rangeInv = 1f / (zFar - zNear)
+                dst.array[10] = zNear * rangeInv
+                dst.array[14] = zFar * zNear * rangeInv
+            }
+
+            return dst
+        }
+
+        /**
          * Creates a 4-by-4 orthographic projection matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
          * If [left] = [right], the result is undefined.
          */
@@ -306,44 +363,151 @@ class Mat4f private constructor(val array: FloatArray) {
             ortho(left, right, bottom, top, near, far, dst)
 
         /**
-         * Creates a 4-by-4 orthographic projection matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
-         * If [left] = [right], the result is undefined.
+         * Computes a 4-by-4 orthogonal transformation matrix that transforms from
+         * the given the left, right, bottom, and top dimensions to -1 +1 in x, and y
+         * and 0 to +1 in z.
+         * @param left Left side of the near clipping plane viewport.
+         * @param right Right side of the near clipping plane viewport.
+         * @param bottom Bottom of the near clipping plane viewport.
+         * @param top Top of the near clipping plane viewport.
+         * @param near The depth (negative z coordinate) of the near clipping plane.
+         * @param far The depth (negative z coordinate) of the far clipping plane.
+         * @param dst Output matrix. If not passed a new one is created.
+         * @return The orthographic projection matrix.
          */
         fun ortho(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4f = Mat4f()): Mat4f {
-            val width = right - left
-            val height = top - bottom
-            val depth = far - near
-
             return dst.apply {
-                array[0] = 2 / width; array[1] = 0f; array[2] = 0f; array[3] = 0f
-                array[4] = 0f; array[5] = 2 / height; array[6] = 0f; array[7] = 0f
-                array[8] = 0f; array[9] = 0f; array[10] = -2 / depth; array[11] = 0f
-                array[12] = -(left + right) / width; array[13] = -(top + bottom) / height; array[14] = -(far + near) / depth; array[15] = 1f
+                array[0] = 2f / (right - left)
+                array[1] = 0f
+                array[2] = 0f
+                array[3] = 0f
+
+                array[4] = 0f
+                array[5] = 2f / (top - bottom)
+                array[6] = 0f
+                array[7] = 0f
+
+                array[8] = 0f
+                array[9] = 0f
+                array[10] = 1f / (near - far)
+                array[11] = 0f
+
+                array[12] = (right + left) / (left - right)
+                array[13] = (top + bottom) / (bottom - top)
+                array[14] = near / (near - far)
+                array[15] = 1f
             }
         }
 
         /**
-         * Creates a 4-by-4 frustum matrix defined by [left], [right], [bottom], [top], [near], and [far] clipping planes.
+         * Computes a 4-by-4 perspective transformation matrix given the left, right,
+         * top, bottom, near and far clipping planes. The arguments define a frustum
+         * extending in the negative z direction. The arguments near and far are the
+         * distances to the near and far clipping planes. Note that near and far are not
+         * z coordinates, but rather they are distances along the negative z-axis. The
+         * matrix generated sends the viewing frustum to the unit box. We assume a unit
+         * box extending from -1 to 1 in the x and y dimensions and from 0 to 1 in the z
+         * dimension.
+         * @param left The x coordinate of the left plane of the box.
+         * @param right The x coordinate of the right plane of the box.
+         * @param bottom The y coordinate of the bottom plane of the box.
+         * @param top The y coordinate of the right plane of the box.
+         * @param near The negative z coordinate of the near plane of the box.
+         * @param far The negative z coordinate of the far plane of the box.
+         * @param dst Output matrix. If not passed a new one is created.
+         * @return The perspective projection matrix.
          */
         fun frustum(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float, dst: Mat4f = Mat4f()): Mat4f {
             val dx = right - left
             val dy = top - bottom
-            val dz = far - near
+            val dz = near - far
 
             return dst.apply {
-                array[0] = 2 * near / dx; array[1] = 0f; array[2] = 0f; array[3] = 0f
-                array[4] = 0f; array[5] = 2 * near / dy; array[6] = 0f; array[7] = 0f
-                array[8] = (left + right) / dx; array[9] = (top + bottom) / dy; array[10] = -(far + near) / dz; array[11] = -1f
-                array[12] = 0f; array[13] = 0f; array[14] = -2 * near * far / dz; array[15] = 0f
+                array[0] = 2 * near / dx
+                array[1] = 0f
+                array[2] = 0f
+                array[3] = 0f
+
+                array[4] = 0f
+                array[5] = 2 * near / dy
+                array[6] = 0f
+                array[7] = 0f
+
+                array[8] = (left + right) / dx
+                array[9] = (top + bottom) / dy
+                array[10] = far / dz
+                array[11] = -1f
+
+                array[12] = 0f
+                array[13] = 0f
+                array[14] = near * far / dz
+                array[15] = 0f
             }
         }
 
         /**
-         * Creates a 4-by-4 look-at matrix.
-         * If [eye] == [target], or [up] is parallel the [eye] - [target], the result is undefined.
-         * @param eye The position of the eye.
-         * @param target The position to look at.
-         * @param up The up vector.
+         * Computes a 4-by-4 reverse-z perspective transformation matrix given the left, right,
+         * top, bottom, near and far clipping planes. The arguments define a frustum
+         * extending in the negative z direction. The arguments near and far are the
+         * distances to the near and far clipping planes. Note that near and far are not
+         * z coordinates, but rather they are distances along the negative z-axis. The
+         * matrix generated sends the viewing frustum to the unit box. We assume a unit
+         * box extending from -1 to 1 in the x and y dimensions and from 1 (-near) to 0 (-far) in the z
+         * dimension.
+         * @param left The x coordinate of the left plane of the box.
+         * @param right The x coordinate of the right plane of the box.
+         * @param bottom The y coordinate of the bottom plane of the box.
+         * @param top The y coordinate of the right plane of the box.
+         * @param near The negative z coordinate of the near plane of the box.
+         * @param far The negative z coordinate of the far plane of the box.
+         * @param dst Output matrix. If not passed a new one is created.
+         * @return The perspective projection matrix.
+         */
+        fun frustumReverseZ(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float = Float.POSITIVE_INFINITY, dst: Mat4f = Mat4f()): Mat4f {
+            val dx = right - left
+            val dy = top - bottom
+
+            return dst.apply {
+                array[0] = 2 * near / dx
+                array[1] = 0f
+                array[2] = 0f
+                array[3] = 0f
+
+                array[4] = 0f
+                array[5] = 2 * near / dy
+                array[6] = 0f
+                array[7] = 0f
+
+                array[8] = (left + right) / dx
+                array[9] = (top + bottom) / dy
+                array[11] = -1f
+
+                array[12] = 0f
+                array[13] = 0f
+                array[15] = 0f
+
+                if (far == Float.POSITIVE_INFINITY) {
+                    array[10] = 0f
+                    array[14] = near
+                } else {
+                    val rangeInv = 1f / (far - near)
+                    array[10] = near * rangeInv
+                    array[14] = far * near * rangeInv
+                }
+            }
+        }
+
+        /**
+         * Computes a 4-by-4 view transformation.
+         *
+         * This is a view matrix which transforms all other objects
+         * to be in the space of the view defined by the parameters.
+         *
+         * @param eye The position of the object.
+         * @param target The position meant to be aimed at.
+         * @param up A vector pointing up.
+         * @param dst Matrix to hold result. If not passed a new one is created.
+         * @return The look-at matrix.
          */
         fun lookAt(eye: Vec3f, target: Vec3f, up: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
             val eyex = eye.x
@@ -399,6 +563,65 @@ class Mat4f private constructor(val array: FloatArray) {
                 array[13] = -(y0 * eyex + y1 * eyey + y2 * eyez)
                 array[14] = -(nz0 * eyex + nz1 * eyey + nz2 * eyez)
                 array[15] = 1f
+            }
+        }
+
+        // Temporary vectors for aim and cameraAim functions
+        private val xAxis = Vec3f()
+        private val yAxis = Vec3f()
+        private val zAxis = Vec3f()
+
+        /**
+         * Computes a 4-by-4 aim transformation.
+         *
+         * This is a matrix which positions an object aiming down positive Z.
+         * toward the target.
+         *
+         * Note: this is **NOT** the inverse of lookAt as lookAt looks at negative Z.
+         *
+         * @param position The position of the object.
+         * @param target The position meant to be aimed at.
+         * @param up A vector pointing up.
+         * @param dst Matrix to hold result. If not passed a new one is created.
+         * @return The aim matrix.
+         */
+        fun aim(position: Vec3f, target: Vec3f, up: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+            target.subtract(position, zAxis).normalize(zAxis)
+            up.cross(zAxis, xAxis).normalize(xAxis)
+            zAxis.cross(xAxis, yAxis).normalize(yAxis)
+
+            return dst.apply {
+                array[0] = xAxis.x; array[1] = xAxis.y; array[2] = xAxis.z; array[3] = 0f
+                array[4] = yAxis.x; array[5] = yAxis.y; array[6] = yAxis.z; array[7] = 0f
+                array[8] = zAxis.x; array[9] = zAxis.y; array[10] = zAxis.z; array[11] = 0f
+                array[12] = position.x; array[13] = position.y; array[14] = position.z; array[15] = 1f
+            }
+        }
+
+        /**
+         * Computes a 4-by-4 camera aim transformation.
+         *
+         * This is a matrix which positions an object aiming down negative Z.
+         * toward the target.
+         *
+         * Note: this is the inverse of `lookAt`
+         *
+         * @param eye The position of the object.
+         * @param target The position meant to be aimed at.
+         * @param up A vector pointing up.
+         * @param dst Matrix to hold result. If not passed a new one is created.
+         * @return The aim matrix.
+         */
+        fun cameraAim(eye: Vec3f, target: Vec3f, up: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+            eye.subtract(target, zAxis).normalize(zAxis)
+            up.cross(zAxis, xAxis).normalize(xAxis)
+            zAxis.cross(xAxis, yAxis).normalize(yAxis)
+
+            return dst.apply {
+                array[0] = xAxis.x; array[1] = xAxis.y; array[2] = xAxis.z; array[3] = 0f
+                array[4] = yAxis.x; array[5] = yAxis.y; array[6] = yAxis.z; array[7] = 0f
+                array[8] = zAxis.x; array[9] = zAxis.y; array[10] = zAxis.z; array[11] = 0f
+                array[12] = eye.x; array[13] = eye.y; array[14] = eye.z; array[15] = 1f
             }
         }
 
