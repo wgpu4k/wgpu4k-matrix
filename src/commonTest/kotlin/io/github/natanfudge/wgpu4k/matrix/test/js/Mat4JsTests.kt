@@ -405,13 +405,13 @@ class Mat4Test {
 
             0f,
             0f,
-            (zNear + zFar) * rangeInv,
+            zFar * rangeInv,
             -1f,
 
             0f,
             0f,
-            zNear * zFar * rangeInv * 2,
-            0f,
+            zNear * zFar * rangeInv,
+            0f
         ))
         testMat4({ dst -> Mat4f.perspective(fov, aspect, zNear, zFar, dst) }, expected)
     }
@@ -686,58 +686,72 @@ class Mat4Test {
     
     @Test
     fun testAim() {
-        // Test case data from the JavaScript tests
+        // Test cases exactly matching the JavaScript tests
         val testCases = listOf(
-            TestCase(
+            // Case 0
+            Triple(
                 Vec3f(11f, 12f, 13f),
-                Vec3f(11f, 12f, 18f), // position + (0,0,5)
-                Vec3f(0f, 1f, 0f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    1f, 0f, 0f, 0f,
-                    0f, 1f, 0f, 0f,
-                    0f, 0f, 1f, 0f,
-                    11f, 12f, 13f, 1f
-                ))
-            ),
-            TestCase(
+                Vec3f(11f, 12f, 13f + 5f),
+                Vec3f(0f, 1f, 0f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                1f, 0f, 0f, 0f,
+                0f, 1f, 0f, 0f,
+                0f, 0f, 1f, 0f,
+                11f, 12f, 13f, 1f
+            )),
+            // Case 1
+            Triple(
                 Vec3f(11f, 12f, 13f),
-                Vec3f(11f, 12f, 8f), // position + (0,0,-5)
-                Vec3f(0f, 1f, 0f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    -1f, 0f, 0f, 0f,
-                    0f, 1f, 0f, 0f,
-                    0f, 0f, -1f, 0f,
-                    11f, 12f, 13f, 1f
-                ))
-            ),
-            TestCase(
+                Vec3f(11f, 12f, 13f - 5f),
+                Vec3f(0f, 1f, 0f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                -1f, 0f, 0f, 0f,
+                0f, 1f, 0f, 0f,
+                0f, 0f, -1f, 0f,
+                11f, 12f, 13f, 1f
+            )),
+            // Case 2
+            Triple(
                 Vec3f(11f, 12f, 13f),
-                Vec3f(16f, 12f, 13f), // position + (5,0,0)
-                Vec3f(0f, 1f, 0f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    0f, 0f, -1f, 0f,
-                    0f, 1f, 0f, 0f,
-                    1f, 0f, 0f, 0f,
-                    11f, 12f, 13f, 1f
-                ))
-            ),
-            TestCase(
+                Vec3f(11f + 5f, 12f, 13f),
+                Vec3f(0f, 1f, 0f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                0f, 0f, -1f, 0f,
+                0f, 1f, 0f, 0f,
+                1f, 0f, 0f, 0f,
+                11f, 12f, 13f, 1f
+            )),
+            // Case 3
+            Triple(
                 Vec3f(1f, 2f, 3f),
                 Vec3f(11f, 22f, 33f),
-                Vec3f(-4f, -5f, -6f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    -0.40824833f, 0.8164966f, -0.40824824f, 0f,
-                    -0.8728715f, -0.2182179f, 0.4364358f, 0f,
-                    -0.26726124f, -0.5345225f, -0.8017837f, 0f,
-                    1f, 2f, 3f, 1f
-                ))
-            )
+                Vec3f(-4f, -5f, -6f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                -0.40824833512306213f,
+                0.8164966106414795f,
+                -0.40824824571609497f,
+                0f,
+                -0.8728715181350708f,
+                -0.21821792423725128f,
+                0.4364357888698578f,
+                0f,
+                0.26726123690605164f,
+                0.5345224738121033f,
+                0.8017837405204773f,
+                0f,
+                1f,
+                2f,
+                3f,
+                1f
+            ))
         )
         
         for ((index, testCase) in testCases.withIndex()) {
+            val (inputs, expected) = testCase
+            val (position, target, up) = inputs
             testMat4(
-                { dst -> Mat4f.aim(testCase.position, testCase.target, testCase.up, dst) },
-                testCase.expected,
+                { dst -> Mat4f.aim(position, target, up, dst) },
+                expected,
                 "aim test case $index"
             )
         }
@@ -745,70 +759,76 @@ class Mat4Test {
     
     @Test
     fun testCameraAim() {
-        // Test case data from the JavaScript tests
+        // Test cases exactly matching the JavaScript tests
         val testCases = listOf(
-            TestCase(
+            // Case 0
+            Triple(
                 Vec3f(11f, 12f, 13f),
-                Vec3f(11f, 12f, 18f), // position + (0,0,5)
-                Vec3f(0f, 1f, 0f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    -1f, 0f, 0f, 0f,
-                    0f, 1f, 0f, 0f,
-                    0f, 0f, -1f, 0f,
-                    11f, 12f, 13f, 1f
-                ))
-            ),
-            TestCase(
+                Vec3f(11f, 12f, 13f + 5f),
+                Vec3f(0f, 1f, 0f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                -1f, 0f, 0f, 0f,
+                0f, 1f, 0f, 0f,
+                0f, 0f, -1f, 0f,
+                11f, 12f, 13f, 1f
+            )),
+            // Case 1
+            Triple(
                 Vec3f(11f, 12f, 13f),
-                Vec3f(11f, 12f, 8f), // position + (0,0,-5)
-                Vec3f(0f, 1f, 0f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    1f, 0f, 0f, 0f,
-                    0f, 1f, 0f, 0f,
-                    0f, 0f, 1f, 0f,
-                    11f, 12f, 13f, 1f
-                ))
-            ),
-            TestCase(
+                Vec3f(11f, 12f, 13f - 5f),
+                Vec3f(0f, 1f, 0f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                1f, 0f, 0f, 0f,
+                0f, 1f, 0f, 0f,
+                0f, 0f, 1f, 0f,
+                11f, 12f, 13f, 1f
+            )),
+            // Case 2
+            Triple(
                 Vec3f(11f, 12f, 13f),
-                Vec3f(16f, 12f, 13f), // position + (5,0,0)
-                Vec3f(0f, 1f, 0f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    0f, 0f, 1f, 0f,
-                    0f, 1f, 0f, 0f,
-                    -1f, 0f, 0f, 0f,
-                    11f, 12f, 13f, 1f
-                ))
-            ),
-            TestCase(
+                Vec3f(11f + 5f, 12f, 13f),
+                Vec3f(0f, 1f, 0f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                0f, 0f, 1f, 0f,
+                0f, 1f, 0f, 0f,
+                -1f, 0f, 0f, 0f,
+                11f, 12f, 13f, 1f
+            )),
+            // Case 3
+            Triple(
                 Vec3f(1f, 2f, 3f),
                 Vec3f(11f, 22f, 33f),
-                Vec3f(-4f, -5f, -6f),
-                Mat4f.fromFloatArray(floatArrayOf(
-                    0.40824833f, -0.8164966f, 0.40824824f, 0f,
-                    -0.8728715f, -0.2182179f, 0.4364358f, 0f,
-                    -0.26726124f, -0.5345225f, -0.8017837f, 0f,
-                    1f, 2f, 3f, 1f
-                ))
-            )
+                Vec3f(-4f, -5f, -6f)
+            ) to Mat4f.fromFloatArray(floatArrayOf(
+                0.40824833512306213f,
+                -0.8164966106414795f,
+                0.40824824571609497f,
+                0f,
+                -0.8728715181350708f,
+                -0.21821792423725128f,
+                0.4364357888698578f,
+                0f,
+                -0.26726123690605164f,
+                -0.5345224738121033f,
+                -0.8017837405204773f,
+                0f,
+                1f,
+                2f,
+                3f,
+                1f
+            ))
         )
         
         for ((index, testCase) in testCases.withIndex()) {
+            val (inputs, expected) = testCase
+            val (position, target, up) = inputs
             testMat4(
-                { dst -> Mat4f.cameraAim(testCase.position, testCase.target, testCase.up, dst) },
-                testCase.expected,
+                { dst -> Mat4f.cameraAim(position, target, up, dst) },
+                expected,
                 "cameraAim test case $index"
             )
         }
     }
-    
-    // Helper class for aim and cameraAim tests
-    private data class TestCase(
-        val position: Vec3f,
-        val target: Vec3f,
-        val up: Vec3f,
-        val expected: Mat4f
-    )
 
     @Test
     fun testSameFrustumAsPerspective() {
