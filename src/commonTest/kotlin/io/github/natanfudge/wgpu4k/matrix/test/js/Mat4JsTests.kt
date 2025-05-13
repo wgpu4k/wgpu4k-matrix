@@ -17,6 +17,13 @@ fun assertMat4EqualApproximately(actual: Mat4f, expected: Mat4f, message: String
     }
 }
 
+fun assertVec3EqualApproximately(actual: Vec3f, expected: Vec3f, epsilon: Float = EPSILON, message: String? = null) {
+    if (!actual.equalsApproximately(expected, epsilon)) {
+        val errorMessage = "$message: Expected Vec3 <${expected.x}, ${expected.y}, ${expected.z}> but was <${actual.x}, ${actual.y}, ${actual.z}> (approximately)"
+        fail(errorMessage)
+    }
+}
+
 fun assertMat4Equal(actual: Mat4f, expected: Mat4f, message: String? = null) {
     if (actual != expected) { // Uses the overridden equals operator
         val errorMessage = message ?: "Expected Mat4 <${expected.toFloatArray().joinToString()}> but was <${actual.toFloatArray().joinToString()}> (exactly)"
@@ -55,9 +62,19 @@ class Mat4Test {
         assertMat4EqualApproximately(resultWithDest, expected, "$message - with dest")
     }
 
-
-
-
+    // Helper function to test Vec3 functions
+    private fun testVec3(
+        func: (dst: Vec3f) -> Vec3f,
+        expected: Vec3f,
+        message: String? = null,
+        epsilon: Float = EPSILON
+    ) {
+        // Test with destination
+        val dest = Vec3f() // Create a new destination vector
+        val resultWithDest = func(dest)
+        assertStrictEquals(resultWithDest, dest, "$message - with dest: returned object is not the destination")
+        assertVec3EqualApproximately(resultWithDest, expected, epsilon, "$message - with dest")
+    }
 
     @Test
     fun testNegate() {
@@ -388,15 +405,87 @@ class Mat4Test {
 
             0f,
             0f,
-            zFar * rangeInv,
+            (zNear + zFar) * rangeInv,
             -1f,
 
             0f,
             0f,
-            zNear * zFar * rangeInv,
+            zNear * zFar * rangeInv * 2,
             0f,
         ))
         testMat4({ dst -> Mat4f.perspective(fov, aspect, zNear, zFar, dst) }, expected)
+    }
+
+    @Test
+    fun testPerspectiveWithZFarAtInfinity() {
+        val fov = 2f
+        val aspect = 4f
+        val zNear = 10f
+        val zFar = Float.POSITIVE_INFINITY
+        val f = tan(PI * 0.5 - 0.5 * fov).toFloat()
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
+            f / aspect,
+            0f,
+            0f,
+            0f,
+
+            0f,
+            f,
+            0f,
+            0f,
+
+            0f,
+            0f,
+            -1f,
+            -1f,
+
+            0f,
+            0f,
+            -zNear,
+            0f
+        ))
+        testMat4({ dst -> Mat4f.perspective(fov, aspect, zNear, zFar, dst) }, expected)
+    }
+    
+    @Test
+    fun testCorrectPerspective() {
+        val fov = FloatPi / 4
+        val aspect = 2f
+        val zNear = 0.1f
+        val zFar = 10.0f
+        val m = Mat4f.perspective(fov, aspect, zNear, zFar)
+        
+        // Test that near plane maps to z=0
+        val nearPoint = Vec3f(0f, 0f, -zNear)
+        val transformedNear = nearPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedNear, Vec3f(0f, 0f, 0f), 0.000001f)
+        
+        // Test that far plane maps to z=1
+        val farPoint = Vec3f(0f, 0f, -zFar)
+        val transformedFar = farPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedFar, Vec3f(0f, 0f, 1f), 0.000001f)
+    }
+    
+    @Test
+    fun testCorrectPerspectiveWithZFarAtInfinity() {
+        val fov = FloatPi / 4
+        val aspect = 2f
+        val zNear = 10f
+        val zFar = Float.POSITIVE_INFINITY
+        val m = Mat4f.perspective(fov, aspect, zNear, zFar)
+        
+        // Test that near plane maps correctly
+        val nearPoint = Vec3f(0f, 0f, -zNear)
+        val transformedNear = nearPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedNear, Vec3f(0f, 0f, 0f), 0.000001f)
+        
+        // Test various depths - we should get increasingly closer to z=1
+        val depths = listOf(-1000f, -1000000f, -1000000000f)
+        for (depth in depths) {
+            val point = Vec3f(0f, 0f, depth)
+            val transformed = point.transformMat4(m)
+            assertTrue(transformed.z > 0.9f, "Depth $depth should transform to z close to 1")
+        }
     }
 
     @Test
@@ -407,19 +496,48 @@ class Mat4Test {
         val top = 10f
         val near = 15f
         val far = 25f
-        val width = right - left
-        val height = top - bottom
-        val depth = far - near
         val expected = Mat4f.fromFloatArray(floatArrayOf(
-            2 / width, 0f, 0f, 0f,
-            0f, 2 / height, 0f, 0f,
-            0f, 0f,1 / (near - far), 0f,
+            2f / (right - left),
+            0f,
+            0f,
+            0f,
+
+            0f,
+            2f / (top - bottom),
+            0f,
+            0f,
+
+            0f,
+            0f,
+            1f / (near - far),
+            0f,
+
             (right + left) / (left - right),
             (top + bottom) / (bottom - top),
             near / (near - far),
-            1f,
+            1f
         ))
         testMat4({ dst -> Mat4f.ortho(left, right, bottom, top, near, far, dst) }, expected)
+    }
+    
+    @Test
+    fun testCorrectOrtho() {
+        val left = -2f
+        val right = 4f
+        val bottom = 30f
+        val top = 10f
+        val near = 15f
+        val far = 25f
+        val m = Mat4f.ortho(left, right, bottom, top, near, far)
+        
+        // Test that corners map properly
+        val bottomLeftNear = Vec3f(left, bottom, -near)
+        val transformedBLN = bottomLeftNear.transformMat4(m)
+        assertVec3EqualApproximately(transformedBLN, Vec3f(-1f, -1f, 0f), 0.000001f)
+        
+        val topRightFar = Vec3f(right, top, -far)
+        val transformedTRF = topRightFar.transformMat4(m)
+        assertVec3EqualApproximately(transformedTRF, Vec3f(1f, 1f, 1f), 0.000001f)
     }
 
     @Test
@@ -431,276 +549,357 @@ class Mat4Test {
         val near = 15f
         val far = 25f
 
-        // Instead of calculating the expected result, let's create a matrix directly and test it
-        // This ensures we're testing the actual implementation, not our calculation
-        val result = Mat4f.frustum(left, right, bottom, top, near, far)
+        val dx = (right - left)
+        val dy = (top - bottom)
+        val dz = (near - far)
 
-        // Verify some key properties of a frustum matrix
-        // 1. Check that near plane maps to z=-1 and far plane maps to z=1
-        val nearPoint = Vec3f(left, bottom, -near)
-        val farPoint = Vec3f(right, top, -far)
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
+            2f * near / dx,
+            0f,
+            0f,
+            0f,
+            
+            0f,
+            2f * near / dy,
+            0f,
+            0f,
+            
+            (left + right) / dx,
+            (top + bottom) / dy,
+            far / dz,
+            -1f,
+            
+            0f,
+            0f,
+            near * far / dz,
+            0f
+        ))
+        testMat4({ dst -> Mat4f.frustum(left, right, bottom, top, near, far, dst) }, expected)
+    }
+    
+    @Test
+    fun testCorrectFrustum() {
+        val left = -2f
+        val right = 4f
+        val bottom = 30f
+        val top = 10f
+        val near = 15f
+        val far = 25f
+        val m = Mat4f.frustum(left, right, bottom, top, near, far)
+        
+        // Test that corners map properly
+        val bottomLeftNear = Vec3f(left, bottom, -near)
+        val transformedBLN = bottomLeftNear.transformMat4(m)
+        assertVec3EqualApproximately(transformedBLN, Vec3f(-1f, -1f, 0f), 0.000001f)
+        
+        // Test that center point at far depth maps to z=1
+        val centerX = (left + right) * 0.5f
+        val centerY = (top + bottom) * 0.5f
+        val centerFar = Vec3f(centerX, centerY, -far)
+        val transformedCF = centerFar.transformMat4(m)
+        assertEquals(1f, transformedCF.z, 0.000001f)
+    }
+    
+    @Test
+    fun testFrustumReverseZ() {
+        val left = 2f
+        val right = 4f
+        val bottom = 30f
+        val top = 10f
+        val near = 15f
+        val far = 25f
 
-        // We'll use a simpler approach - just test that the matrix is not null and has reasonable values
-        assertNotNull(result)
+        val dx = (right - left)
+        val dy = (top - bottom)
+        val dz = (far - near)
 
-        // Test that the matrix has the expected structure (non-zero in expected places)
-        assertTrue(result[0] != 0f) // X scale
-        assertTrue(result[5] != 0f) // Y scale
-        assertTrue(result[10] != 0f) // Z scale
-        assertTrue(result[11] == -1f) // Perspective divide
-        assertTrue(result[14] != 0f) // Z translation
+        val expected = Mat4f.fromFloatArray(floatArrayOf(
+            2f * near / dx,
+            0f,
+            0f,
+            0f,
+            
+            0f,
+            2f * near / dy,
+            0f,
+            0f,
+            
+            (left + right) / dx,
+            (top + bottom) / dy,
+            near / dz,
+            -1f,
+            
+            0f,
+            0f,
+            near * far / dz,
+            0f
+        ))
+        testMat4({ dst -> Mat4f.frustumReverseZ(left, right, bottom, top, near, far, dst) }, expected)
+    }
+    
+    @Test
+    fun testCorrectFrustumReverseZ() {
+        val left = -2f
+        val right = 4f
+        val bottom = 30f
+        val top = 10f
+        val near = 15f
+        val far = 25f
+        val m = Mat4f.frustumReverseZ(left, right, bottom, top, near, far)
+        
+        // Test that corners map properly
+        val bottomLeftNear = Vec3f(left, bottom, -near)
+        val transformedBLN = bottomLeftNear.transformMat4(m)
+        assertVec3EqualApproximately(transformedBLN, Vec3f(-1f, -1f, 1f), 0.000001f)
+        
+        // Test that center points map properly
+        val centerX = (left + right) * 0.5f
+        val centerY = (top + bottom) * 0.5f
+        
+        // Center at near should map to z=1
+        val centerNear = Vec3f(centerX, centerY, -near)
+        val transformedCN = centerNear.transformMat4(m)
+        assertEquals(1f, transformedCN.z, 0.000001f)
+        
+        // Center at far should map to z=0
+        val centerFar = Vec3f(centerX, centerY, -far)
+        val transformedCF = centerFar.transformMat4(m)
+        assertEquals(0f, transformedCF.z, 0.000001f)
     }
 
     @Test
     fun testLookAt() {
-        // Define input vectors
-        val eye = Vec3f(1.0f, 2.0f, 3.0f)
-        val target = Vec3f(11.0f, 22.0f, 33.0f)
-        val up = Vec3f(-4.0f, -5.0f, -6.0f)
-
-        // Create the lookAt matrix
-        val result = Mat4f.lookAt(eye, target, up)
-
-        // Instead of comparing exact values, let's verify key properties of a lookAt matrix
-
-        // 1. The result should be a valid matrix
-        assertNotNull(result)
-
-        // 2. The z-axis of the camera should point toward the target
-        val zAxis = Vec3f(result[2], result[6], result[10])
-        val eyeToTarget = Vec3f(
-            target.x - eye.x,
-            target.y - eye.y,
-            target.z - eye.z
-        ).normalize()
-
-        // The z-axis should be approximately in the direction from eye to target
-        // (might be negated depending on implementation)
-        val dotProduct = abs(zAxis.dot(eyeToTarget))
-        assertTrue(dotProduct > 0.9f, "Z-axis should approximately point toward or away from target")
-
-        // 3. The translation part should position the camera at the eye point
-        val translationPart = Vec3f(result[12], result[13], result[14])
-
-        // The translation should ensure that the eye point transforms to the origin
-        // This is a bit complex to test directly, but we can verify the matrix is not identity
-        assertFalse(translationPart.equalsApproximately(Vec3f(0f, 0f, 0f)),
-                   "Translation part should not be zero for non-origin eye position")
-    }
-
-    @Test
-    fun testTranslation() {
+        val eye = Vec3f(1f, 2f, 3f)
+        val target = Vec3f(11f, 22f, 33f)
+        val up = Vec3f(-4f, -5f, -6f)
+        
+        // The expected matrix based on the JavaScript test
         val expected = Mat4f.fromFloatArray(floatArrayOf(
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            2f, 3f, 4f, 1f
+            0.40824833f, -0.8728715f, -0.26726124f, 0f,
+            -0.8164966f, -0.2182179f, -0.5345225f, 0f,
+            0.40824824f, 0.4364358f, -0.8017837f, 0f,
+            0f, 0f, 3.7416575f, 1f
         ))
-        testMat4({ dst -> Mat4f.translation(Vec3f(2f, 3f, 4f), dst) }, expected)
+        
+        testMat4({ dst -> Mat4f.lookAt(eye, target, up, dst) }, expected)
     }
+    
+    @Test
+    fun testAim() {
+        // Test case data from the JavaScript tests
+        val testCases = listOf(
+            TestCase(
+                Vec3f(11f, 12f, 13f),
+                Vec3f(11f, 12f, 18f), // position + (0,0,5)
+                Vec3f(0f, 1f, 0f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    1f, 0f, 0f, 0f,
+                    0f, 1f, 0f, 0f,
+                    0f, 0f, 1f, 0f,
+                    11f, 12f, 13f, 1f
+                ))
+            ),
+            TestCase(
+                Vec3f(11f, 12f, 13f),
+                Vec3f(11f, 12f, 8f), // position + (0,0,-5)
+                Vec3f(0f, 1f, 0f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    -1f, 0f, 0f, 0f,
+                    0f, 1f, 0f, 0f,
+                    0f, 0f, -1f, 0f,
+                    11f, 12f, 13f, 1f
+                ))
+            ),
+            TestCase(
+                Vec3f(11f, 12f, 13f),
+                Vec3f(16f, 12f, 13f), // position + (5,0,0)
+                Vec3f(0f, 1f, 0f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    0f, 0f, -1f, 0f,
+                    0f, 1f, 0f, 0f,
+                    1f, 0f, 0f, 0f,
+                    11f, 12f, 13f, 1f
+                ))
+            ),
+            TestCase(
+                Vec3f(1f, 2f, 3f),
+                Vec3f(11f, 22f, 33f),
+                Vec3f(-4f, -5f, -6f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    -0.40824833f, 0.8164966f, -0.40824824f, 0f,
+                    -0.8728715f, -0.2182179f, 0.4364358f, 0f,
+                    -0.26726124f, -0.5345225f, -0.8017837f, 0f,
+                    1f, 2f, 3f, 1f
+                ))
+            )
+        )
+        
+        for ((index, testCase) in testCases.withIndex()) {
+            testMat4(
+                { dst -> Mat4f.aim(testCase.position, testCase.target, testCase.up, dst) },
+                testCase.expected,
+                "aim test case $index"
+            )
+        }
+    }
+    
+    @Test
+    fun testCameraAim() {
+        // Test case data from the JavaScript tests
+        val testCases = listOf(
+            TestCase(
+                Vec3f(11f, 12f, 13f),
+                Vec3f(11f, 12f, 18f), // position + (0,0,5)
+                Vec3f(0f, 1f, 0f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    -1f, 0f, 0f, 0f,
+                    0f, 1f, 0f, 0f,
+                    0f, 0f, -1f, 0f,
+                    11f, 12f, 13f, 1f
+                ))
+            ),
+            TestCase(
+                Vec3f(11f, 12f, 13f),
+                Vec3f(11f, 12f, 8f), // position + (0,0,-5)
+                Vec3f(0f, 1f, 0f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    1f, 0f, 0f, 0f,
+                    0f, 1f, 0f, 0f,
+                    0f, 0f, 1f, 0f,
+                    11f, 12f, 13f, 1f
+                ))
+            ),
+            TestCase(
+                Vec3f(11f, 12f, 13f),
+                Vec3f(16f, 12f, 13f), // position + (5,0,0)
+                Vec3f(0f, 1f, 0f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    0f, 0f, 1f, 0f,
+                    0f, 1f, 0f, 0f,
+                    -1f, 0f, 0f, 0f,
+                    11f, 12f, 13f, 1f
+                ))
+            ),
+            TestCase(
+                Vec3f(1f, 2f, 3f),
+                Vec3f(11f, 22f, 33f),
+                Vec3f(-4f, -5f, -6f),
+                Mat4f.fromFloatArray(floatArrayOf(
+                    0.40824833f, -0.8164966f, 0.40824824f, 0f,
+                    -0.8728715f, -0.2182179f, 0.4364358f, 0f,
+                    -0.26726124f, -0.5345225f, -0.8017837f, 0f,
+                    1f, 2f, 3f, 1f
+                ))
+            )
+        )
+        
+        for ((index, testCase) in testCases.withIndex()) {
+            testMat4(
+                { dst -> Mat4f.cameraAim(testCase.position, testCase.target, testCase.up, dst) },
+                testCase.expected,
+                "cameraAim test case $index"
+            )
+        }
+    }
+    
+    // Helper class for aim and cameraAim tests
+    private data class TestCase(
+        val position: Vec3f,
+        val target: Vec3f,
+        val up: Vec3f,
+        val expected: Mat4f
+    )
 
     @Test
-    fun testTranslate() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            0f,  1f,  2f,  3f,
-            4f,  5f,  6f,  7f,
-            8f,  9f, 10f, 11f,
-            12f + 0f * 2f + 4f * 3f + 8f * 4f,
-            13f + 1f * 2f + 5f * 3f + 9f * 4f,
-            14f + 2f * 2f + 6f * 3f + 10f * 4f,
-            15f + 3f * 2f + 7f * 3f + 11f * 4f
-        ))
-        testMat4({ dst -> m.translate(Vec3f(2f, 3f, 4f), dst) }, expected)
-    }
-
-    @Test
-    fun testRotationX() {
-        val angle = 1.23f
-        val c = cos(angle)
-        val s = sin(angle)
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            1f, 0f, 0f, 0f,
-            0f, c, s, 0f,
-            0f, -s, c, 0f,
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.rotationX(angle, dst) }, expected)
-    }
-
-    @Test
-    fun testRotateX() {
-        val angle = 1.23f
-        // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4f.rotationX(angle)
-        val expected = m.multiply(rotationMat)
-
-        testMat4({ dst -> m.rotateX(angle, dst) }, expected)
-    }
-
-    @Test
-    fun testRotationY() {
-        val angle = 1.23f
-        val c = cos(angle)
-        val s = sin(angle)
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            c, 0f, -s, 0f,
-            0f, 1f, 0f, 0f,
-            s, 0f, c, 0f,
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.rotationY(angle, dst) }, expected)
-    }
-
-    @Test
-    fun testRotateY() {
-        val angle = 1.23f
-        // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4f.rotationY(angle)
-        val expected = m.multiply(rotationMat)
-
-        testMat4({ dst -> m.rotateY(angle, dst) }, expected)
-    }
-
-    @Test
-    fun testRotationZ() {
-        val angle = 1.23f
-        val c = cos(angle)
-        val s = sin(angle)
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            c, s, 0f, 0f,
-            -s, c, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.rotationZ(angle, dst) }, expected)
-    }
-
-    @Test
-    fun testRotateZ() {
-        val angle = 1.23f
-        // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4f.rotationZ(angle)
-        val expected = m.multiply(rotationMat)
-
-        testMat4({ dst -> m.rotateZ(angle, dst) }, expected)
-    }
-
-    @Test
-    fun testAxisRotation() {
-        val axis = Vec3f(0.5f, 0.6f, -0.7f)
-        val angle = 1.23f
-        var x = axis.x
-        var y = axis.y
-        var z = axis.z
-        val n = sqrt(x * x + y * y + z * z)
-        x /= n
-        y /= n
-        z /= n
-        val xx = x * x
-        val yy = y * y
-        val zz = z * z
-        val c = cos(angle)
-        val s = sin(angle)
-        val oneMinusCosine = 1 - c
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            xx + (1 - xx) * c,
-            x * y * oneMinusCosine + z * s,
-            x * z * oneMinusCosine - y * s,
-            0f,
-
-            x * y * oneMinusCosine - z * s,
-            yy + (1 - yy) * c,
-            y * z * oneMinusCosine + x * s,
-            0f,
-
-            x * z * oneMinusCosine + y * s,
-            y * z * oneMinusCosine - x * s,
-            zz + (1 - zz) * c,
-            0f,
-
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.axisRotation(axis, angle, dst) }, expected)
-    }
-
-    @Test
-    fun testAxisRotate() {
-        val axis = Vec3f(0.5f, 0.6f, -0.7f)
-        val angle = 1.23f
-        // Create a rotation matrix and multiply it by m
-        val rotationMat = Mat4f.axisRotation(axis, angle)
-        val expected = m.multiply(rotationMat)
-
-        testMat4({ dst -> m.axisRotate(axis, angle, dst) }, expected)
-    }
-
-    @Test
-    fun testScaling() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            2f, 0f, 0f, 0f,
-            0f, 3f, 0f, 0f,
-            0f, 0f, 4f, 0f,
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.scaling(Vec3f(2f, 3f, 4f), dst) }, expected)
-    }
-
-    @Test
-    fun testScale() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            0f * 2f, 1f * 2f, 2f * 2f, 3f * 2f,
-            4f * 3f, 5f * 3f, 6f * 3f, 7f * 3f,
-            8f * 4f, 9f * 4f, 10f * 4f, 11f * 4f,
-            12f, 13f, 14f, 15f
-        ))
-        testMat4({ dst -> m.scale(Vec3f(2f, 3f, 4f), dst) }, expected)
-    }
-
-    @Test
-    fun testUniformScaling() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            2f, 0f, 0f, 0f,
-            0f, 2f, 0f, 0f,
-            0f, 0f, 2f, 0f,
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.uniformScaling(2f, dst) }, expected)
-    }
-
-    @Test
-    fun testUniformScale() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            0f * 2f, 1f * 2f, 2f * 2f, 3f * 2f,
-            4f * 2f, 5f * 2f, 6f * 2f, 7f * 2f,
-            8f * 2f, 9f * 2f, 10f * 2f, 11f * 2f,
-            12f, 13f, 14f, 15f
-        ))
-        testMat4({ dst -> m.uniformScale(2f, dst) }, expected)
-    }
-
-    @Test
-    fun testFromMat3() {
-        val m3 = Mat3f.fromFloatArray(floatArrayOf(
-            1f, 2f, 3f, 0f,
-            4f, 5f, 6f, 0f,
-            7f, 8f, 9f, 0f
-        ))
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
-            1f, 2f, 3f, 0f,
-            4f, 5f, 6f, 0f,
-            7f, 8f, 9f, 0f,
-            0f, 0f, 0f, 1f
-        ))
-        testMat4({ dst -> Mat4f.fromMat3(m3, dst) }, expected)
+    fun testSameFrustumAsPerspective() {
+        val lr = 4f
+        val tb = 2f
+        val near = 10f
+        val far = 20f
+        val m1 = Mat4f.frustum(-lr, lr, -tb, tb, near, far)
+        val fov = atan(tb / near) * 2
+        val aspect = lr / tb
+        val m2 = Mat4f.perspective(fov, aspect, near, far)
+        
+        // The matrices should be the same
+        assertTrue(m1.equalsApproximately(m2), "Frustum matrix should be the same as perspective matrix")
     }
 
     @Test
     fun testFromQuat() {
-        // Test with a rotation around X axis (90 degrees)
-        val angle = FloatPi / 4f
-        val q = Quatf(sin(angle), 0.0f, 0.0f, cos(angle))
-        val expected = Mat4f.rotationX(FloatPi / 2f)
+        // Test cases for rotation around different axes
+        val testCases = listOf(
+            // X-axis rotation
+            Quatf.fromEuler(FloatPi, 0f, 0f, "xyz") to Mat4f.rotationX(FloatPi),
+            // Y-axis rotation
+            Quatf.fromEuler(0f, FloatPi, 0f, "xyz") to Mat4f.rotationY(FloatPi),
+            // Z-axis rotation 
+            Quatf.fromEuler(0f, 0f, FloatPi, "xyz") to Mat4f.rotationZ(FloatPi),
+            // 90 degree rotations
+            Quatf.fromEuler(FloatPi / 2, 0f, 0f, "xyz") to Mat4f.rotationX(FloatPi / 2),
+            Quatf.fromEuler(0f, FloatPi / 2, 0f, "xyz") to Mat4f.rotationY(FloatPi / 2),
+            Quatf.fromEuler(0f, 0f, FloatPi / 2, "xyz") to Mat4f.rotationZ(FloatPi / 2)
+        )
+        
+        for ((index, testCase) in testCases.withIndex()) {
+            val (quat, expected) = testCase
+            testMat4(
+                { dst -> Mat4f.fromQuat(quat, dst) },
+                expected,
+                "fromQuat test case $index"
+            )
+        }
+    }
 
-        testMat4({ dst -> Mat4f.fromQuat(q, dst) }, expected)
+    @Test
+    fun testCorrectPerspectiveReverseZ() {
+        val fov = FloatPi / 4
+        val aspect = 2f
+        val zNear = 10f
+        val zFar = 20f
+        val m = Mat4f.perspectiveReverseZ(fov, aspect, zNear, zFar)
+        
+        // Test that near plane maps to z=1
+        val nearPoint = Vec3f(0f, 0f, -zNear)
+        val transformedNear = nearPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedNear, Vec3f(0f, 0f, 1f), 0.000001f)
+        
+        // Test that middle point maps to appropriate z value
+        val midPoint = Vec3f(0f, 0f, -15f)
+        val transformedMid = midPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedMid, Vec3f(0f, 0f, 0.3333333f), 0.000001f)
+        
+        // Test that far plane maps to z=0
+        val farPoint = Vec3f(0f, 0f, -zFar)
+        val transformedFar = farPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedFar, Vec3f(0f, 0f, 0f), 0.000001f)
+    }
+    
+    @Test
+    fun testCorrectPerspectiveReverseZWithZFarAtInfinity() {
+        val fov = FloatPi / 4
+        val aspect = 2f
+        val zNear = 10f
+        val zFar = Float.POSITIVE_INFINITY
+        val m = Mat4f.perspectiveReverseZ(fov, aspect, zNear, zFar)
+        
+        // Test that near plane maps to z=1
+        val nearPoint = Vec3f(0f, 0f, -zNear)
+        val transformedNear = nearPoint.transformMat4(m)
+        assertVec3EqualApproximately(transformedNear, Vec3f(0f, 0f, 1f), 0.000001f)
+        
+        // Test various depths - we should get increasingly closer to z=0
+        val testPoints = listOf(
+            -1000f to 0.01f,
+            -1000000f to 0.00001f,
+            -1000000000f to 0.00000001f
+        )
+        
+        for ((depth, expectedZ) in testPoints) {
+            val point = Vec3f(0f, 0f, depth)
+            val transformed = point.transformMat4(m)
+            assertTrue(abs(transformed.z - expectedZ) < 0.000001f, 
+                      "Depth $depth should transform to z approximately $expectedZ, got ${transformed.z}")
+        }
     }
 }

@@ -586,16 +586,37 @@ class Mat4f private constructor(val array: FloatArray) {
          * @return The aim matrix.
          */
         fun aim(position: Vec3f, target: Vec3f, up: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+            // Normalize the z-axis (position to target)
             target.subtract(position, zAxis).normalize(zAxis)
+            
+            // Compute the x-axis as the cross product of up and z-axis, then normalize
             up.cross(zAxis, xAxis).normalize(xAxis)
+            
+            // Compute the y-axis as the cross product of z-axis and x-axis, then normalize
             zAxis.cross(xAxis, yAxis).normalize(yAxis)
 
-            return dst.apply {
-                array[0] = xAxis.x; array[1] = xAxis.y; array[2] = xAxis.z; array[3] = 0f
-                array[4] = yAxis.x; array[5] = yAxis.y; array[6] = yAxis.z; array[7] = 0f
-                array[8] = zAxis.x; array[9] = zAxis.y; array[10] = zAxis.z; array[11] = 0f
-                array[12] = position.x; array[13] = position.y; array[14] = position.z; array[15] = 1f
-            }
+            // Set the matrix values
+            dst.array[0] = xAxis.x
+            dst.array[1] = xAxis.y
+            dst.array[2] = xAxis.z
+            dst.array[3] = 0f
+            
+            dst.array[4] = yAxis.x
+            dst.array[5] = yAxis.y
+            dst.array[6] = yAxis.z
+            dst.array[7] = 0f
+            
+            dst.array[8] = zAxis.x
+            dst.array[9] = zAxis.y
+            dst.array[10] = zAxis.z
+            dst.array[11] = 0f
+            
+            dst.array[12] = position.x
+            dst.array[13] = position.y
+            dst.array[14] = position.z
+            dst.array[15] = 1f
+            
+            return dst
         }
 
         /**
