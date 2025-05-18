@@ -1,4 +1,4 @@
-0.3.0 Milestone:
+0.3.1 Milestone:
 1. Verify all JS Tests
 2. Verify no docs are missing
 

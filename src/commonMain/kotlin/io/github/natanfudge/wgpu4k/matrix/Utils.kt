@@ -10,40 +10,41 @@ import kotlin.math.roundToLong
 internal const val EPSILON = 0.000001f
 
 internal const val FloatPi = PI.toFloat()
+
 /**
  * Converts a Float to a readable string:
  * • Rounds to **at most six** digits after the decimal point.
  * • Removes any trailing “0” characters and an orphan “.”.
  * • Leaves **NaN**, **Infinity** and **‑Infinity** untouched.
  */
-internal val Float.ns: String get() {
-    // Special IEEE‑754 values
-    if (!isFinite()) return toString()
+internal val Float.ns: String
+    get() {
+        // Special IEEE‑754 values
+        if (!isFinite()) return toString()
 
-    // -------- 1. Round to 6 decimal places --------
-    val factor = 1_000_000L                // 10⁶
-    val d = toDouble()
+        // -------- 1. Round to 6 decimal places --------
+        val factor = 1_000_000L                // 10⁶
+        val d = toDouble()
 
-    /*  For huge magnitudes (|d| > ~9223372036854) the scaling step would
-     *  overflow a Long.  At such sizes fractional digits are irrelevant
-     *  anyway, so we just return the default representation.
-     */
-    if (abs(d) > Long.MAX_VALUE / factor.toDouble()) return d.toString()
+        /*  For huge magnitudes (|d| > ~9223372036854) the scaling step would
+         *  overflow a Long.  At such sizes fractional digits are irrelevant
+         *  anyway, so we just return the default representation.
+         */
+        if (abs(d) > Long.MAX_VALUE / factor.toDouble()) return d.toString()
 
-    val scaled   = (d * factor).roundToLong()   // HALF_UP rounding
-    val rounded  = scaled.toDouble() / factor   // still full double precision
+        val scaled = (d * factor).roundToLong()   // HALF_UP rounding
+        val rounded = scaled.toDouble() / factor   // still full double precision
 
-    // -------- 2. Convert to text & strip cruft --------
-    var s = rounded.toString()                  // e.g. "3.140000" or "2.0"
+        // -------- 2. Convert to text & strip cruft --------
+        var s = rounded.toString()                  // e.g. "3.140000" or "2.0"
 
-    if (s.contains('.')) {
-        s = s.trimEnd('0').trimEnd('.')         // -> "3.14" or "2"
+        if (s.contains('.')) {
+            s = s.trimEnd('0').trimEnd('.')         // -> "3.14" or "2"
+        }
+
+        if (s == "-0") s = "0"                      // normalise negative zero
+        return s
     }
-
-    if (s == "-0") s = "0"                      // normalise negative zero
-    return s
-}
-
 
 
 /**

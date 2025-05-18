@@ -9,20 +9,16 @@ import kotlin.math.*
  */
 class Vec4f(
     var x: Float,
-    var y: Float ,
-    var z: Float ,
+    var y: Float,
+    var z: Float,
     var w: Float,
 ) {
-    // <secondary constructors>
-    constructor() : this(0f,0f,0f,0f)
+    constructor() : this(0f, 0f, 0f, 0f)
 
-    // <companion object>
     companion object {
-        // <constants>
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
 
-        // <static builders>
         /**
          * Creates a vec4 with initial values [x], [y], [z], and [w].
          */
@@ -40,7 +36,7 @@ class Vec4f(
         /**
          * Sets the components of [dst] to [x], [y],  [z] and [w].
          */
-        fun set(x: Float, y: Float, z: Float,w: Float, dst: Vec4f = Vec4f()): Vec4f {
+        fun set(x: Float, y: Float, z: Float, w: Float, dst: Vec4f = Vec4f()): Vec4f {
             dst.x = x
             dst.y = y
             dst.z = z
@@ -49,7 +45,6 @@ class Vec4f(
         }
     }
 
-    // <`operator fun` functions>
     inline operator fun plus(other: Vec4f) = add(other)
     inline operator fun minus(other: Vec4f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
@@ -82,12 +77,12 @@ class Vec4f(
         }
     }
 
-    // <properties>
     /**
      * Computes the length of `this`.
      */
     val length: Float
         get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
+    inline val norm: Float get() = length
 
     /**
      * Computes the length of `this`. (Alias for length)
@@ -107,7 +102,6 @@ class Vec4f(
     val lenSq: Float
         get() = lengthSq
 
-    // <functions with 0 parameters>
     /**
      * Sets this vector to the zero vec4
      */
@@ -226,7 +220,6 @@ class Vec4f(
         return dst
     }
 
-    // <functions with 1 parameter>
     /**
      * Adds [other] to `this`.
      */
@@ -417,7 +410,6 @@ class Vec4f(
         return this.lerp(other, 0.5f, dst)
     }
 
-    // <functions with 2 parameters>
     /**
      * Clamp each element of `this` between [min] and [max].
      */
@@ -474,7 +466,6 @@ class Vec4f(
         return dst
     }
 
-    // <functions with 3 or more parameters>
     /**
      * Sets the components of `this` to [x], [y], [z], and [w].
      */
@@ -486,10 +477,19 @@ class Vec4f(
         return this
     }
 
-    // <toString>
+    /**
+     * Sets the values of `this` equal to the values of [other].
+     */
+    fun set(other: Vec4f): Vec4f {
+        this.x = other.x
+        this.y = other.y
+        this.z = other.z
+        this.w = other.w
+        return this
+    }
+
     override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
 
-    // <equals>
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec4f) return false
@@ -502,7 +502,6 @@ class Vec4f(
         return true
     }
 
-    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()

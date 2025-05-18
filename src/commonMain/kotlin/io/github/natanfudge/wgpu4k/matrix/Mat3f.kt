@@ -28,7 +28,6 @@ import kotlin.math.sqrt
  */
 /*@JvmInline value*/ class Mat3f private constructor(val array: FloatArray) {
 
-    // <secondary constructors>
     constructor() : this(FloatArray(12))
 
     /**
@@ -54,18 +53,16 @@ import kotlin.math.sqrt
         this[11] = 0f
     })
 
-    // <companion object>
     companion object {
         /**
          * Creates a Mat3 from the given [values].
          * You should generally not use this constructor as it assumes indices 3, 7, and 11 are all 0s for padding reasons.
          */
         operator fun invoke(vararg values: Float) = Mat3f(floatArrayOf(*values))
-        // <constants>
+
         // 12 * 4 bytes
         const val SIZE_BYTES = 48u
 
-        // <static builders>
         /**
          * Constructs a [Mat3f] in row-major order.
          */
@@ -247,7 +244,6 @@ import kotlin.math.sqrt
 
     }
 
-    // <`operator fun` functions>
     inline operator fun plus(other: Mat3f) = add(other)
     inline operator fun minus(other: Mat3f) = diff(other)
     inline operator fun times(scalar: Float) = multiplyScalar(scalar)
@@ -274,7 +270,6 @@ import kotlin.math.sqrt
         this.array[index] = value
     }
 
-    // <properties>
     inline var m00
         get() = this[0];
         set(value) {
@@ -321,14 +316,12 @@ import kotlin.math.sqrt
             this[10] = value
         }
 
-    // <init block>
     init {
         if (array.size != 12) {
             throw IllegalArgumentException("Mat3 requires a 12-element FloatArray for storage.")
         }
     }
 
-    // <functions with 0 parameters>
     /**
      * Sets this matrix to the identity matrix
      */
@@ -361,7 +354,6 @@ import kotlin.math.sqrt
                 m20 * (m01 * m12 - m11 * m02)
     }
 
-    // <functions with 1 parameter>
     /**
      * Negates `this`.
      */
@@ -885,9 +877,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preTranslate(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         val vx = v.x
         val vy = v.y
@@ -918,9 +916,15 @@ import kotlin.math.sqrt
      * This is equivalent to `preRotateZ`. For 2D transformations, this rotates points in the XY plane.
      */
     fun preRotate(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         val s = sin(angleInRadians)
         val c = cos(angleInRadians)
@@ -950,9 +954,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The X-axis rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preRotateX(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         val s = sin(angleInRadians)
         val c = cos(angleInRadians)
@@ -982,9 +992,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The Y-axis rotation defined by [angleInRadians] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preRotateY(angleInRadians: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         val s = sin(angleInRadians)
         val c = cos(angleInRadians)
@@ -1026,9 +1042,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preScale(v: Vec2f, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         val sx = v.x
         val sy = v.y
@@ -1058,9 +1080,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preScale3D(v: Vec3f, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         val sx = v.x
         val sy = v.y
@@ -1091,9 +1119,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The uniform scaling defined by [s] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preUniformScale(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         dst.array[0] = s * m00
         dst.array[1] = s * m10
@@ -1120,9 +1154,15 @@ import kotlin.math.sqrt
      * - Row vectors (`vec * dst`): The uniform scaling defined by [s] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preUniformScale3D(s: Float, dst: Mat3f = Mat3f()): Mat3f {
-        val m00 = array[0]; val m01 = array[4]; val m02 = array[8]
-        val m10 = array[1]; val m11 = array[5]; val m12 = array[9]
-        val m20 = array[2]; val m21 = array[6]; val m22 = array[10]
+        val m00 = array[0];
+        val m01 = array[4];
+        val m02 = array[8]
+        val m10 = array[1];
+        val m11 = array[5];
+        val m12 = array[9]
+        val m20 = array[2];
+        val m21 = array[6];
+        val m22 = array[10]
 
         dst.array[0] = s * m00
         dst.array[1] = s * m10
@@ -1141,7 +1181,6 @@ import kotlin.math.sqrt
     }
 
 
-    // <functions with 2 parameters>
     /**
      * Checks if `this` is approximately equal to [other].
      */
@@ -1200,7 +1239,6 @@ import kotlin.math.sqrt
         return newDst
     }
 
-    // <functions with 3 or more parameters>
     /**
      * Sets the values of `this` from [v0] to [v8], in column-major order.
      */
@@ -1214,7 +1252,6 @@ import kotlin.math.sqrt
         array[8] = v6; array[9] = v7; array[10] = v8; array[11] = 0f;
     }
 
-    // <toString>
     override fun toString(): String {
         return """
             [${m00.ns},${m01.ns},${m02.ns}]
@@ -1223,7 +1260,6 @@ import kotlin.math.sqrt
         """.trimIndent()
     }
 
-    // <equals>
     /**
      * Checks if `this` is exactly equal to [other].
      */
@@ -1240,7 +1276,6 @@ import kotlin.math.sqrt
                 array[10] == other.array[10]
     }
 
-    // <hashcode>
     /**
      * Computes the hash code for `this`.
      */

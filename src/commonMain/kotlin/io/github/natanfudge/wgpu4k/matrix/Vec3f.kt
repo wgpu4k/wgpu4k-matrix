@@ -15,16 +15,12 @@ class Vec3f(
     var y: Float,
     var z: Float,
 ) {
-    // <secondary constructors>
     constructor() : this(0f, 0f, 0f)
 
-    // <companion object>
     companion object {
-        // <constants>
         // 3 * 4 bytes
         const val SIZE_BYTES = 12u
 
-        // <static builders>
         /**
          * Creates a vec3 with initial values [x], [y], and [z].
          */
@@ -112,11 +108,25 @@ class Vec3f(
             dst.z = sqrt(zColX * zColX + zColY * zColY + zColZ * zColZ)
             return dst
         }
-        // <static operators>
+
+        /**
+         * Converts a 4D homogeneous vector to a 3D Cartesian vector by performing perspective division.
+         *
+         * This is typically used after applying a projection matrix, where the resulting `Vec4f`
+         * needs to be converted back into 3D space by dividing x, y, and z by w.
+         *
+         * */
+        fun fromHomogenous(vec4f: Vec4f, dst: Vec3f = Vec3f()): Vec3f {
+            dst.x = vec4f.x / vec4f.w
+            dst.y = vec4f.y / vec4f.w
+            dst.z = vec4f.z / vec4f.w
+            return dst
+        }
+
+
         // No static operators in Vec3f
     }
 
-    // <`operator fun` functions>
     /**
      * Allows accessing components using array syntax (e.g., vec[0]).
      */
@@ -147,12 +157,13 @@ class Vec3f(
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
 
-    // <properties>
     /**
      * Computes the length (magnitude) of `this` vector.
      */
     val length: Float
         get() = sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+
+    inline val norm: Float get() = length
 
     /**
      * Computes the length (magnitude) of `this` vector (alias for [length]).
@@ -172,7 +183,6 @@ class Vec3f(
     val lenSq: Float
         get() = lengthSq
 
-    // <functions with 0 parameters>
     /**
      * Sets this vector to the zero vec3
      */
@@ -253,6 +263,7 @@ class Vec3f(
         return dst
     }
 
+
     /**
      * Negates `this` vector (multiplies components by -1).
      */
@@ -291,7 +302,6 @@ class Vec3f(
         return this
     }
 
-    // <functions with 1 parameter>
     /**
      * Adds [b] to `this`.
      */
@@ -524,26 +534,21 @@ class Vec3f(
      * Transforms `this` vector by the quaternion [q].
      */
     fun transformQuat(q: Quatf, dst: Vec3f = Vec3f()): Vec3f {
-        // Access quaternion components using properties and ensure they are Float
         val qx = q.x;
         val qy = q.y;
         val qz = q.z;
-        val qw = q.w
-        // Calculation based on transforming a vector by a quaternion: v' = q * v * conjugate(q)
-        // Simplified calculation:
+        val w2 = q.w * 2
         val x = this.x;
         val y = this.y;
         val z = this.z
 
-        // Correct calculation: v' = v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v)
-        // Or using the optimized formula:
-        val tx = 2f * (qy * z - qz * y)
-        val ty = 2f * (qz * x - qx * z)
-        val tz = 2f * (qx * y - qy * x)
+        val uvX = qy * z - qz * y;
+        val uvY = qz * x - qx * z;
+        val uvZ = qx * y - qy * x;
 
-        dst.x = x + qw * tx + (qy * tz - qz * ty)
-        dst.y = y + qw * ty + (qz * tx - qx * tz)
-        dst.z = z + qw * tz + (qx * ty - qy * tx)
+        dst.x = x + uvX * w2 + (qy * uvZ - qz * uvY) * 2;
+        dst.y = y + uvY * w2 + (qz * uvX - qx * uvZ) * 2;
+        dst.z = z + uvZ * w2 + (qx * uvY - qy * uvX) * 2;
 
         return dst
     }
@@ -574,7 +579,6 @@ class Vec3f(
         return this.lerp(b, 0.5f, dst)
     }
 
-    // <functions with 2 parameters>
     /**
      * Clamps each component of `this` between [min] and [max].
      */
@@ -693,7 +697,6 @@ class Vec3f(
         return dst
     }
 
-    // <functions with 3 or more parameters>
     /**
      * Sets the components of `this` to [x], [y], and [z].
      * @return `this`
@@ -705,10 +708,23 @@ class Vec3f(
         return this
     }
 
-    // <toString>
+    /**
+     * Sets the values of `this` equal to the values of [other].
+     */
+    fun set(other: Vec3f): Vec3f {
+        this.x = other.x
+        this.y = other.y
+        this.z = other.z
+        return this
+    }
+
+    /**
+     * Converts this into a `Vec4f` with `w = 1`
+     */
+    fun toVec4f() = Vec4f(x, y, z, 1f)
+
     override fun toString(): String = "(${x.ns},${y.ns},${z.ns})"
 
-    // <equals>
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vec3f) return false
@@ -720,7 +736,6 @@ class Vec3f(
         return true
     }
 
-    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()

@@ -21,12 +21,9 @@ data class Quatf(
     var z: Float,
     var w: Float,
 ) {
-    // <secondary constructors>
     constructor() : this(0f, 0f, 0f, 1f)
 
-    // <companion object>
     companion object {
-        // <constants>
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
 
@@ -39,7 +36,6 @@ data class Quatf(
         private val tempQuat2 = Quatf()
 
 
-        // <static builders>
         /**
          * Creates a Quat with initial values [x], [y], [z], [w].
          * Defaults to the identity quaternion (0, 0, 0, 1).
@@ -309,11 +305,9 @@ data class Quatf(
             tempQuat1.slerp(tempQuat2, 2.0f * t * (1.0f - t), dst)
             return dst
         }
-        // <static operators>
         // No static operators in Quatf
     }
 
-    // <`operator fun` functions>
     inline operator fun plus(other: Quatf) = add(other)
     inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
     inline operator fun times(scalar: Float) = mulScalar(scalar)
@@ -322,7 +316,6 @@ data class Quatf(
     inline operator fun div(quat: Quatf) = this * quat.inverse()
     inline operator fun unaryMinus() = negate()
 
-    // <properties>
     /**
      * Computes the length (magnitude) of `this` quaternion.
      */
@@ -349,7 +342,6 @@ data class Quatf(
         get() = lengthSq
 
 
-    // <functions with 0 parameters>
     /**
      * Sets this quaternion to the identity quaternion
      */
@@ -476,7 +468,6 @@ data class Quatf(
         return Pair(angle, axis)
     }
 
-    // <functions with 1 parameter>
     /**
      * Computes the angle in radians between `this` quaternion and [other].
      */
@@ -630,12 +621,15 @@ data class Quatf(
         return dst
     }
 
+    fun rotate(v: Vec3f, dst: Vec3f = Vec3f()): Vec3f = v.transformQuat(this, dst)
+
     /**
      * Computes the dot product of `this` quaternion and [other].
      */
     fun dot(other: Quatf): Float {
         return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w
     }
+
 
     /**
      * Checks if `this` quaternion is exactly equal to [other].
@@ -645,7 +639,6 @@ data class Quatf(
         return this.x == other.x && this.y == other.y && this.z == other.z && this.w == other.w
     }
 
-    // <functions with 2 parameters>
     /**
      * Spherically linearly interpolates between `this` quaternion and [other] by [t].
      * Handles shortest path interpolation.
@@ -718,7 +711,6 @@ data class Quatf(
                 abs(this.w - other.w) < epsilon
     }
 
-    // <functions with 3 or more parameters>
     /**
      * Sets the components of `this` to [x], [y], [z], [w].
      * @return `this`
@@ -731,10 +723,8 @@ data class Quatf(
         return this
     }
 
-    // <toString>
     override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
 
-    // <equals>
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Quatf) return false
@@ -747,7 +737,6 @@ data class Quatf(
         return true
     }
 
-    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()

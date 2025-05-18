@@ -9,17 +9,13 @@ import kotlin.random.Random
  * Represents a mutable 2D Vector with instance methods,
  * including optional 'dst' parameter support.
  */
-class Vec2f(var x: Float , var y: Float) {
-    // <secondary constructors>
-    constructor(): this(0f,0f)
+class Vec2f(var x: Float, var y: Float) {
+    constructor() : this(0f, 0f)
 
-    // <companion object>
     companion object {
-        // <constants>
         // 2 * 4 bytes
         const val SIZE_BYTES = 8u
 
-        // <static builders>
         /** Creates a new Vec2 instance. */
         fun create(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)
 
@@ -51,11 +47,9 @@ class Vec2f(var x: Float , var y: Float) {
             dst.y = 0f
             return dst
         }
-        // <static operators>
         // No static operators in Vec2f
     }
 
-    // <`operator fun` functions>
     inline operator fun plus(other: Vec2f) = add(other)
     inline operator fun minus(other: Vec2f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
@@ -84,7 +78,6 @@ class Vec2f(var x: Float , var y: Float) {
         }
     }
 
-    // <properties>
     /**
      * Computes the length (magnitude) of `this` vector.
      */
@@ -94,6 +87,7 @@ class Vec2f(var x: Float , var y: Float) {
     /** Computes the length (magnitude) of `this` vector (alias for [length]). */
     val len: Float
         get() = length
+    inline val norm: Float get() = length
 
     /**
      * Computes the square of the length of `this` vector. Faster than [length] if only comparing magnitudes.
@@ -105,7 +99,6 @@ class Vec2f(var x: Float , var y: Float) {
     val lenSq: Float
         get() = lengthSq
 
-    // <functions with 0 parameters>
     /**
      * Sets this vector to the zero vec2
      */
@@ -196,7 +189,6 @@ class Vec2f(var x: Float , var y: Float) {
     /** Copies the components of `this` vector (alias for [copyTo]). */
     fun clone(dst: Vec2f = Vec2f()): Vec2f = copyTo(dst)
 
-    // <functions with 1 parameter>
     /**
      * Creates a copy of `this`.
      */
@@ -404,13 +396,21 @@ class Vec2f(var x: Float , var y: Float) {
         return dst
     }
 
-    // <functions with 2 parameters>
     /**
      * Sets the components of `this` to [x] and [y].
      */
     fun set(x: Float, y: Float): Vec2f {
         this.x = x
         this.y = y
+        return this
+    }
+
+    /**
+     * Sets the values of `this` equal to the values of [other].
+     */
+    fun set(other: Vec2f): Vec2f {
+        this.x = other.x
+        this.y = other.y
         return this
     }
 
@@ -475,18 +475,14 @@ class Vec2f(var x: Float , var y: Float) {
         return dst
     }
 
-    // <functions with 3 or more parameters>
     // No functions with 3 or more parameters in Vec2f
 
-    // <toString>
     override fun toString(): String = "(${x.ns},${y.ns})"
 
-    // <equals>
     override fun equals(other: Any?): Boolean {
         return other is Vec2f && other.x == x && other.y == y
     }
 
-    // <hashcode>
     override fun hashCode(): Int {
         var result = x.hashCode()
         result = 31 * result + y.hashCode()

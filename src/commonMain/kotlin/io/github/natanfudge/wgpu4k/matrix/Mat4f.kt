@@ -16,7 +16,6 @@ import kotlin.math.*
  */
 class Mat4f private constructor(val array: FloatArray) {
 
-    // <secondary constructors>
     /**
      * Creates a new Mat4 with the given values ([v0] to [v15]) in column-major order.
      */
@@ -34,13 +33,10 @@ class Mat4f private constructor(val array: FloatArray) {
 
     constructor() : this(FloatArray(16))
 
-    // <companion object>
     companion object {
-        // <constants>
         // 16 * 4 bytes
         const val SIZE_BYTES = 64u
 
-        // <static builders>
         fun rowMajor(
             a00: Float, a01: Float, a02: Float, a03: Float,
             a10: Float, a11: Float, a12: Float, a13: Float,
@@ -463,7 +459,15 @@ class Mat4f private constructor(val array: FloatArray) {
          * @param dst Output matrix. If not passed a new one is created.
          * @return The perspective projection matrix.
          */
-        fun frustumReverseZ(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float = Float.POSITIVE_INFINITY, dst: Mat4f = Mat4f()): Mat4f {
+        fun frustumReverseZ(
+            left: Float,
+            right: Float,
+            bottom: Float,
+            top: Float,
+            near: Float,
+            far: Float = Float.POSITIVE_INFINITY,
+            dst: Mat4f = Mat4f(),
+        ): Mat4f {
             val dx = right - left
             val dy = top - bottom
 
@@ -588,10 +592,10 @@ class Mat4f private constructor(val array: FloatArray) {
         fun aim(position: Vec3f, target: Vec3f, up: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
             // Normalize the z-axis (position to target)
             target.subtract(position, zAxis).normalize(zAxis)
-            
+
             // Compute the x-axis as the cross product of up and z-axis, then normalize
             up.cross(zAxis, xAxis).normalize(xAxis)
-            
+
             // Compute the y-axis as the cross product of z-axis and x-axis, then normalize
             zAxis.cross(xAxis, yAxis).normalize(yAxis)
 
@@ -600,22 +604,22 @@ class Mat4f private constructor(val array: FloatArray) {
             dst.array[1] = xAxis.y
             dst.array[2] = xAxis.z
             dst.array[3] = 0f
-            
+
             dst.array[4] = yAxis.x
             dst.array[5] = yAxis.y
             dst.array[6] = yAxis.z
             dst.array[7] = 0f
-            
+
             dst.array[8] = zAxis.x
             dst.array[9] = zAxis.y
             dst.array[10] = zAxis.z
             dst.array[11] = 0f
-            
+
             dst.array[12] = position.x
             dst.array[13] = position.y
             dst.array[14] = position.z
             dst.array[15] = 1f
-            
+
             return dst
         }
 
@@ -646,7 +650,6 @@ class Mat4f private constructor(val array: FloatArray) {
             }
         }
 
-        // <static operators>
         /**
          * Creates a Mat4 from the given [values].
          * You should generally not use this constructor as it assumes the array is already in the correct format.
@@ -654,7 +657,6 @@ class Mat4f private constructor(val array: FloatArray) {
         operator fun invoke(vararg values: Float) = Mat4f(floatArrayOf(*values))
     }
 
-    // <`operator fun` functions>
     inline operator fun plus(other: Mat4f) = add(other)
     inline operator fun minus(other: Mat4f) = diff(other)
     inline operator fun times(scalar: Float) = multiplyScalar(scalar)
@@ -678,7 +680,6 @@ class Mat4f private constructor(val array: FloatArray) {
         this.array[col * 4 + row] = value // Column-major order
     }
 
-    // <properties>
     inline var m00
         get() = this[0];
         set(value) {
@@ -760,14 +761,12 @@ class Mat4f private constructor(val array: FloatArray) {
             array[15] = value
         }
 
-    // <init block>
     init {
         if (array.size != 16) {
             throw IllegalArgumentException("Mat4 requires a 16-element FloatArray for storage.")
         }
     }
 
-    // <functions with 0 parameters>
     /**
      * Sets this matrix to the identity matrix
      */
@@ -821,7 +820,6 @@ class Mat4f private constructor(val array: FloatArray) {
         return m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3
     }
 
-    // <functions with 1 parameter>
     /**
      * Gets a copy of the internal FloatArray representation of the matrix.
      * Modifying the returned array will not affect the original matrix.
@@ -1642,7 +1640,6 @@ class Mat4f private constructor(val array: FloatArray) {
         return dst
     }
 
-    // <functions with 2 parameters>
     /**
      * Post-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
      * `dst = this * axisRotation(axis, angleInRadians)`
@@ -1748,7 +1745,6 @@ class Mat4f private constructor(val array: FloatArray) {
         return newDst
     }
 
-    // <functions with 3 or more parameters>
     /**
      * Sets the values of `this` from [v0] to [v15], in column-major order.
      */
@@ -1764,7 +1760,6 @@ class Mat4f private constructor(val array: FloatArray) {
         array[12] = v12; array[13] = v13; array[14] = v14; array[15] = v15
     }
 
-    // <toString>
     override fun toString(): String {
         return """
             [${m00.ns},${m01.ns},${m02.ns},${m03.ns}]
@@ -1774,7 +1769,6 @@ class Mat4f private constructor(val array: FloatArray) {
         """.trimIndent()
     }
 
-    // <equals>
     /**
      * Checks if `this` is exactly equal to [other].
      */
@@ -1798,7 +1792,6 @@ class Mat4f private constructor(val array: FloatArray) {
                 array[15] == other.array[15]
     }
 
-    // <hashcode>
     override fun hashCode(): Int {
         return array.contentHashCode()
     }
