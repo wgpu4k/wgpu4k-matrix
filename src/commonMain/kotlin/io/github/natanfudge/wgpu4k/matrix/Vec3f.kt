@@ -2,6 +2,8 @@
 
 package io.github.natanfudge.wgpu4k.matrix
 
+import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.ACTUAL_SIZE_BYTES
+import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.ALIGN_BYTES
 import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.create
 import kotlin.math.*
 import kotlin.random.Random
@@ -18,9 +20,14 @@ class Vec3f(
     constructor() : this(0f, 0f, 0f)
 
     /**
-     * Converts this into an array, including the padding value to reach 16 bytes.
+     * Converts this into an array, including the padding value to reach 16 bytes, matching [ALIGN_BYTES].
      */
-    fun toWgslArray() = floatArrayOf(x,y,z, 0f)
+    fun toAlignedArray() = floatArrayOf(x, y, z, 0f)
+
+    /**
+     * Converts this into an array, not including the padding value, only reaching 12 bytes, matching [ACTUAL_SIZE_BYTES].
+     */
+    fun toCompactArray() = floatArrayOf(x, y, z)
 
     companion object {
         /**
