@@ -17,9 +17,23 @@ class Vec3f(
 ) {
     constructor() : this(0f, 0f, 0f)
 
+    /**
+     * Converts this into an array, including the padding value to reach 16 bytes.
+     */
+    fun toWgslArray() = floatArrayOf(x,y,z, 0f)
+
     companion object {
-        // 3 * 4 bytes
-        const val SIZE_BYTES = 12u
+        /**
+         * Just 3 * 4, suitable for aligning vec3f in vertex attributes.
+         *  for uniform and storage buffers you usually want [ALIGN_BYTES]
+         */
+        const val ACTUAL_SIZE_BYTES = 12u
+
+        /**
+         * WebGPU vec3f actually takes 16 bytes in uniform and storage buffers because of alignment.
+         * For vertex attributes you usually want [ACTUAL_SIZE_BYTES]
+         */
+        const val ALIGN_BYTES = 16u
 
         /**
          * Creates a vec3 with initial values [x], [y], and [z].
