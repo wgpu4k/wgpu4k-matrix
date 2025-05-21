@@ -308,6 +308,8 @@ data class Quatf(
         // No static operators in Quatf
     }
 
+    fun toArray() = floatArrayOf(x, y, z, w)
+
     inline operator fun plus(other: Quatf) = add(other)
     inline operator fun minus(other: Quatf) = subtract(other) // Assuming subtract exists or is added
     inline operator fun times(scalar: Float) = mulScalar(scalar)

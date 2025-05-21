@@ -45,6 +45,8 @@ class Vec4f(
         }
     }
 
+    fun toArray() = floatArrayOf(x, y, z, w)
+
     inline operator fun plus(other: Vec4f) = add(other)
     inline operator fun minus(other: Vec4f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)

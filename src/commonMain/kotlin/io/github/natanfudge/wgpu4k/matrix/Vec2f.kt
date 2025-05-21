@@ -50,6 +50,8 @@ class Vec2f(var x: Float, var y: Float) {
         // No static operators in Vec2f
     }
 
+    fun toArray() = floatArrayOf(x, y)
+
     inline operator fun plus(other: Vec2f) = add(other)
     inline operator fun minus(other: Vec2f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
