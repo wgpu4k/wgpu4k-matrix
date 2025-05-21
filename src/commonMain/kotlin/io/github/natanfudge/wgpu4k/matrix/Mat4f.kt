@@ -118,11 +118,18 @@ class Mat4f private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which translates by the given vector [v].
          */
         fun translation(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+            return translation(v.x, v.y, v.z, dst)
+        }
+
+        /**
+         * Creates a 4-by-4 matrix which translates by [x], [y], [z]
+         */
+        fun translation(x: Float, y: Float, z: Float, dst: Mat4f = Mat4f()): Mat4f {
             return dst.apply {
                 array[0] = 1f; array[1] = 0f; array[2] = 0f; array[3] = 0f
                 array[4] = 0f; array[5] = 1f; array[6] = 0f; array[7] = 0f
                 array[8] = 0f; array[9] = 0f; array[10] = 1f; array[11] = 0f
-                array[12] = v.x; array[13] = v.y; array[14] = v.z; array[15] = 1f
+                array[12] = x; array[13] = y; array[14] = z; array[15] = 1f
             }
         }
 
@@ -174,10 +181,21 @@ class Mat4f private constructor(val array: FloatArray) {
         /**
          * Creates a 4-by-4 matrix which rotates around the given [axis] by the given [angleInRadians].
          */
-        fun axisRotation(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
-            var x = axis.x
-            var y = axis.y
-            var z = axis.z
+        fun axisRotation(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f = rotation(axis.x, axis.y, axis.z, angleInRadians, dst)
+
+        /**
+         * Creates a 4-by-4 matrix which rotates around the given [axis] by the given [angleInRadians].
+         */
+        inline fun rotation(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f = axisRotation(axis, angleInRadians, dst)
+
+
+        /**
+         * Creates a 4-by-4 matrix which rotates around the given [x], [y], [z] axis by the given [angleInRadians].
+         */
+        fun rotation(x: Float, y: Float, z: Float, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+            var x = x
+            var y = y
+            var z = z
 
             val n = sqrt(x * x + y * y + z * z)
             if (n < EPSILON) {
@@ -223,10 +241,17 @@ class Mat4f private constructor(val array: FloatArray) {
          * Creates a 4-by-4 matrix which scales in each dimension by the components of [v].
          */
         fun scaling(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
+            return scaling(v.x, v.y, v.z, dst)
+        }
+
+        /**
+         * Creates a 4-by-4 matrix which scales in each dimension by [x] ,[y], [z]
+         */
+        fun scaling(x: Float, y: Float, z: Float, dst: Mat4f = Mat4f()): Mat4f {
             return dst.apply {
-                array[0] = v.x; array[1] = 0f; array[2] = 0f; array[3] = 0f
-                array[4] = 0f; array[5] = v.y; array[6] = 0f; array[7] = 0f
-                array[8] = 0f; array[9] = 0f; array[10] = v.z; array[11] = 0f
+                array[0] = x; array[1] = 0f; array[2] = 0f; array[3] = 0f
+                array[4] = 0f; array[5] = y; array[6] = 0f; array[7] = 0f
+                array[8] = 0f; array[9] = 0f; array[10] = z; array[11] = 0f
                 array[12] = 0f; array[13] = 0f; array[14] = 0f; array[15] = 1f
             }
         }
@@ -1185,10 +1210,20 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Column vectors (`dst * vec`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
-    fun translate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val v0 = v.x
-        val v1 = v.y
-        val v2 = v.z
+    fun translate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f = translate(v.x, v.y, v.z, dst)
+
+    /**
+     * Post-multiplies this 4x4 matrix by a 3D translation matrix created from [x], [y], [z] and writes the result into [dst].
+     * `dst = this * translation(v)`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The translation defined by [x], [y], [z] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The translation defined by [x], [y], [z] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     */
+    fun translate(x: Float, y: Float, z: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val v0 = x
+        val v1 = y
+        val v2 = z
 
         val m00 = array[0]
         val m01 = array[1]
@@ -1366,10 +1401,20 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Column vectors (`dst * vec`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
-    fun scale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val v0 = v.x
-        val v1 = v.y
-        val v2 = v.z
+    fun scale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f = scale(v.x, v.y, v.z, dst)
+
+    /**
+     * Post-multiplies this 4x4 matrix by a 3D scaling matrix created from [v] (for X, Y, and Z axes) and writes the result into [dst].
+     * `dst = this * scaling(v)`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     */
+    fun scale(x: Float, y: Float, z: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val v0 = x
+        val v1 = y
+        val v2 = z
 
         dst.array[0] = v0 * array[0]
         dst.array[1] = v0 * array[1]
@@ -1425,6 +1470,8 @@ class Mat4f private constructor(val array: FloatArray) {
         return dst
     }
 
+    fun scale(s: Float, dst: Mat4f = Mat4f()): Mat4f = uniformScale(s, dst)
+
     /**
      * Pre-multiplies this 4x4 matrix by a 3D translation matrix created from [v] and writes the result into [dst].
      * `dst = translation(v) * this`
@@ -1433,11 +1480,17 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Column vectors (`dst * vec`): The translation defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
-    fun preTranslate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val x = v.x;
-        val y = v.y;
-        val z = v.z
+    fun preTranslate(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f = preTranslate(v.x, v.y, v.z, dst)
 
+    /**
+     * Pre-multiplies this 4x4 matrix by a 3D translation matrix created from [v] and writes the result into [dst].
+     * `dst = translation(v) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The translation defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The translation defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     */
+    fun preTranslate(x: Float, y: Float, z: Float, dst: Mat4f = Mat4f()): Mat4f {
         val a0 = array[0];
         val a1 = array[1];
         val a2 = array[2];
@@ -1612,10 +1665,20 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Column vectors (`dst * vec`): The scaling defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
      * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
-    fun preScale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f {
-        val sx = v.x;
-        val sy = v.y;
-        val sz = v.z
+    fun preScale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f = preScale(v.x, v.y, v.z, dst)
+
+    /**
+     * Pre-multiplies this 4x4 matrix by a 3D scaling matrix created from [v] (for X, Y, and Z axes) and writes the result into [dst].
+     * `dst = scaling(v) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The scaling defined by [v] is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     */
+    fun preScale(x: Float, y: Float, z: Float, dst: Mat4f = Mat4f()): Mat4f {
+        val sx = x;
+        val sy = y;
+        val sz = z
 
         dst.array[0] = array[0] * sx; dst.array[1] = array[1] * sy; dst.array[2] = array[2] * sz; dst.array[3] = array[3]
         dst.array[4] = array[4] * sx; dst.array[5] = array[5] * sy; dst.array[6] = array[6] * sz; dst.array[7] = array[7]
@@ -1623,6 +1686,7 @@ class Mat4f private constructor(val array: FloatArray) {
         dst.array[12] = array[12] * sx; dst.array[13] = array[13] * sy; dst.array[14] = array[14] * sz; dst.array[15] = array[15]
         return dst
     }
+
 
     /**
      * Pre-multiplies this 4x4 matrix by a 3D uniform scaling matrix created from [s] and writes the result into [dst].
@@ -1648,26 +1712,86 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
      * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
-    fun axisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
-        val x = axis.x
-        val y = axis.y
-        val z = axis.z
+    fun axisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f = rotate(axis.x, axis.y, axis.z, angleInRadians, dst)
 
-        val n = sqrt(x * x + y * y + z * z)
-        if (n < EPSILON) {
-            return copy(dst)
+    /**
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
+     * `dst = this * axisRotation(axis, angleInRadians)`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     */
+    inline fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
+
+    /**
+     * Post-multiplies this 4x4 matrix by a 3D rotation matrix about the given [x], [y] ,[z] axis by [angleInRadians] and writes the result into [dst].
+     * `dst = this * axisRotation(axis, angleInRadians)`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     */
+    fun rotate(x: Float, y: Float, z: Float, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
+        var x = x
+        var y = y
+        var z = z
+        val n = sqrt(x * x + y * y + z * z);
+        x /= n;
+        y /= n;
+        z /= n;
+        val xx = x * x;
+        val yy = y * y;
+        val zz = z * z;
+        val c = cos(angleInRadians);
+        val s = sin(angleInRadians);
+        val oneMinusCosine = 1 - c;
+
+        val r00 = xx + (1 - xx) * c;
+        val r01 = x * y * oneMinusCosine + z * s;
+        val r02 = x * z * oneMinusCosine - y * s;
+        val r10 = x * y * oneMinusCosine - z * s;
+        val r11 = yy + (1 - yy) * c;
+        val r12 = y * z * oneMinusCosine + x * s;
+        val r20 = x * z * oneMinusCosine + y * s;
+        val r21 = y * z * oneMinusCosine - x * s;
+        val r22 = zz + (1 - zz) * c;
+
+        val m00 = this[0];
+        val m01 = this[1];
+        val m02 = this[2];
+        val m03 = this[3];
+        val m10 = this[4];
+        val m11 = this[5];
+        val m12 = this[6];
+        val m13 = this[7];
+        val m20 = this[8];
+        val m21 = this[9];
+        val m22 = this[10];
+        val m23 = this[11];
+
+        dst[0] = r00 * m00 + r01 * m10 + r02 * m20;
+        dst[1] = r00 * m01 + r01 * m11 + r02 * m21;
+        dst[2] = r00 * m02 + r01 * m12 + r02 * m22;
+        dst[3] = r00 * m03 + r01 * m13 + r02 * m23;
+        dst[4] = r10 * m00 + r11 * m10 + r12 * m20;
+        dst[5] = r10 * m01 + r11 * m11 + r12 * m21;
+        dst[6] = r10 * m02 + r11 * m12 + r12 * m22;
+        dst[7] = r10 * m03 + r11 * m13 + r12 * m23;
+        dst[8] = r20 * m00 + r21 * m10 + r22 * m20;
+        dst[9] = r20 * m01 + r21 * m11 + r22 * m21;
+        dst[10] = r20 * m02 + r21 * m12 + r22 * m22;
+        dst[11] = r20 * m03 + r21 * m13 + r22 * m23;
+
+        if (this !== dst) {
+            dst[12] = this[12];
+            dst[13] = this[13];
+            dst[14] = this[14];
+            dst[15] = this[15];
         }
 
-        val axisX = x / n
-        val axisY = y / n
-        val axisZ = z / n
-
-        val m = Mat4f.axisRotation(Vec3f(axisX, axisY, axisZ), angleInRadians)
-
-        return multiply(m, dst)
+        return dst;
     }
-
-    fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
 
     /**
      * Pre-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
@@ -1677,13 +1801,100 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
      * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
-    fun preAxisRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f {
-        // For complex transformations like axis-angle, it's often clearer and less error-prone
-        // to use the existing multiply with a temporary matrix, similar to how post-multiply is handled.
-        val rotationMatrix = Mat4f() // Consider a pool or companion object temp if performance critical
-        Mat4f.axisRotation(axis, angleInRadians, rotationMatrix)
-        return rotationMatrix.multiply(this, dst)
+    fun preRotate(
+        x: Float, y: Float, z: Float,
+        angleInRadians: Float,
+        dst: Mat4f = Mat4f(),
+    ): Mat4f {
+        // Normalize axis
+        var ax = x
+        var ay = y
+        var az = z
+        val n = sqrt(ax * ax + ay * ay + az * az)
+
+        if (n < EPSILON) { // Axis is zero vector, rotation is identity
+            if (this !== dst) {
+                this.array.copyInto(dst.array) // dst = this
+            }
+            return dst
+        }
+        ax /= n
+        ay /= n
+        az /= n
+
+        // Calculate rotation matrix components (column-major R)
+        val s = sin(angleInRadians)
+        val c = cos(angleInRadians)
+        val oneMinusCosine = 1f - c
+
+        val xx = ax * ax
+        val yy = ay * ay
+        val zz = az * az
+
+        // These are the elements of the rotation matrix R, stored column-wise.
+        // r00, r01, r02 are the first column of R.
+        // r10, r11, r12 are the second column of R.
+        // r20, r21, r22 are the third column of R.
+        val r00 = xx + (1f - xx) * c
+        val r01 = ax * ay * oneMinusCosine + az * s
+        val r02 = ax * az * oneMinusCosine - ay * s
+
+        val r10 = ax * ay * oneMinusCosine - az * s
+        val r11 = yy + (1f - yy) * c
+        val r12 = ay * az * oneMinusCosine + ax * s
+
+        val r20 = ax * az * oneMinusCosine + ay * s
+        val r21 = ay * az * oneMinusCosine - ax * s
+        val r22 = zz + (1f - zz) * c
+
+        // Load elements of `this` matrix (M) to handle `dst === this` case correctly.
+        // M is column-major: a0,a1,a2,a3 is first column, etc.
+        val a0 = array[0]; val a1 = array[1]; val a2 = array[2]; val a3 = array[3]
+        val a4 = array[4]; val a5 = array[5]; val a6 = array[6]; val a7 = array[7]
+        val a8 = array[8]; val a9 = array[9]; val a10 = array[10]; val a11 = array[11]
+        val a12 = array[12]; val a13 = array[13]; val a14 = array[14]; val a15 = array[15]
+
+        // Apply D = R * M
+        // R is the rotation matrix. M is `this` matrix. D is `dst` matrix.
+
+        // Column 0 of D
+        dst.array[0] = r00 * a0 + r10 * a1 + r20 * a2
+        dst.array[1] = r01 * a0 + r11 * a1 + r21 * a2
+        dst.array[2] = r02 * a0 + r12 * a1 + r22 * a2
+        // dst.array[3] = 0*a0 + 0*a1 + 0*a2 + 1*a3 = a3 (since R's 4th row is 0,0,0,1)
+        if (dst !== this) { dst.array[3] = a3 } else { /* It's already a3 */ }
+
+
+        // Column 1 of D
+        dst.array[4] = r00 * a4 + r10 * a5 + r20 * a6
+        dst.array[5] = r01 * a4 + r11 * a5 + r21 * a6
+        dst.array[6] = r02 * a4 + r12 * a5 + r22 * a6
+        if (dst !== this) { dst.array[7] = a7 } else { /* It's already a7 */ }
+
+        // Column 2 of D
+        dst.array[8] = r00 * a8 + r10 * a9 + r20 * a10
+        dst.array[9] = r01 * a8 + r11 * a9 + r21 * a10
+        dst.array[10] = r02 * a8 + r12 * a9 + r22 * a10
+        if (dst !== this) { dst.array[11] = a11 } else { /* It's already a11 */ }
+
+        // Column 3 of D
+        dst.array[12] = r00 * a12 + r10 * a13 + r20 * a14
+        dst.array[13] = r01 * a12 + r11 * a13 + r21 * a14
+        dst.array[14] = r02 * a12 + r12 * a13 + r22 * a14
+        if (dst !== this) { dst.array[15] = a15 } else { /* It's already a15 */ }
+
+        return dst
     }
+
+    /**
+     * Pre-multiplies this 4x4 matrix by a 3D rotation matrix about the given [axis] by [angleInRadians] and writes the result into [dst].
+     * `dst = axisRotation(axis, angleInRadians) * this`
+     *
+     * Order of operations on a transformed vector:
+     * - Column vectors (`dst * vec`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
+     * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **before** the transformation represented by the original matrix `this`.
+     */
+    fun preRotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()): Mat4f = preRotate(axis.x, axis.y, axis.z, angleInRadians, dst)
 
     /**
      * Checks if `this` is approximately equal to [other].

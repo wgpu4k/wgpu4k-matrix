@@ -1391,16 +1391,16 @@ class Mat4fTest {
         val rotationMatrix = Mat4f.axisRotation(axis, angle)
         val expected = rotationMatrix.multiply(m)
 
-        var actual = m.preAxisRotate(axis, angle)
+        var actual = m.preRotate(axis, angle)
         assertMat4EqualsApproximately(expected, actual, "preAxisRotate basic", tolerance = 1e-6f)
 
         val dst = Mat4f()
-        actual = m.preAxisRotate(axis, angle, dst)
+        actual = m.preRotate(axis, angle, dst)
         assertMat4EqualsApproximately(expected, dst, "preAxisRotate with dst", tolerance = 1e-6f)
         assertSame(dst, actual, "preAxisRotate with dst should return dst")
 
         val mSelf = m.copy()
-        actual = mSelf.preAxisRotate(axis, angle, mSelf)
+        actual = mSelf.preRotate(axis, angle, mSelf)
         assertMat4EqualsApproximately(expected, mSelf, "preAxisRotate with dst == this", tolerance = 1e-6f)
         assertSame(mSelf, actual, "preAxisRotate with dst == this should return self")
     }

@@ -111,6 +111,16 @@ import kotlin.math.sqrt
         }
 
         /**
+         * Creates the normal matrix corresponding to a model [Mat4f], see http://www.lighthouse3d.com/tutorials/glsl-tutorial/the-normal-matrix/
+         */
+        fun normalMatrix(mat: Mat4f, dst: Mat3f = Mat3f()): Mat3f {
+            fromMat4(mat, dst)
+            dst.inverse(dst)
+            dst.transpose(dst)
+            return dst
+        }
+
+        /**
          * Creates a Mat3 rotation matrix from [q].
          */
         fun fromQuat(q: Quatf, dst: Mat3f = Mat3f()): Mat3f {
