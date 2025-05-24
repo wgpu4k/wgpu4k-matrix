@@ -49,7 +49,7 @@ kotlin {
     }
 }
 group = "io.github.natanfudge"
-version = "0.4.0"
+version = "0.4.1"
 
 val artifactId = "wgpu4k-matrix"
 val githubUrl = "https://github.com/natanfudge/wgpu4k-matrix"

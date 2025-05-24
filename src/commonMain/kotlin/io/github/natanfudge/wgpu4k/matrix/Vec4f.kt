@@ -282,6 +282,11 @@ class Vec4f(
     }
 
     /**
+     * Multiples this vector by [k]
+     */
+    inline fun mul(k: Float, dst: Vec4f = Vec4f()) = mulScalar(k, dst)
+
+    /**
      * Multiplies `this` by scalar [k]. (Alias for mulScalar)
      */
     fun scale(k: Float, dst: Vec4f = Vec4f()): Vec4f = mulScalar(k, dst)
@@ -296,6 +301,11 @@ class Vec4f(
         dst.w = this.w / k
         return dst
     }
+
+    /**
+     * Divides this vector by [k]
+     */
+    inline fun div(k: Float, dst: Vec4f = Vec4f()) = divScalar(k, dst)
 
     /**
      * Computes the dot product of `this` and [other].

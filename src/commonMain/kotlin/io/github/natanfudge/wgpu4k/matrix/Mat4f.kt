@@ -269,6 +269,11 @@ class Mat4f private constructor(val array: FloatArray) {
         }
 
         /**
+         * Creates a 4-by-4 matrix which scales uniformly in each dimension by [s].
+         */
+        fun scaling(s: Float, dst: Mat4f = Mat4f()) = uniformScaling(s, dst)
+
+        /**
          * Computes a 4-by-4 perspective transformation matrix given the angular height
          * of the frustum, the aspect ratio, and the near and far clipping planes.  The
          * arguments define a frustum extending in the negative z direction.  The given
@@ -863,6 +868,25 @@ class Mat4f private constructor(val array: FloatArray) {
      */
     fun set(arr: FloatArray) {
         arr.copyInto(this.array)
+    }
+
+    /**
+     * Uniformly scales this matrix by [s] in a way that does not modify the translation of the matrix, keeping it in place.
+     * Much faster alternative to doing the typical TranslateToOrigin -> Scale -> TranslateBack
+     */
+    fun scaleInPlace(s: Float, dst: Mat4f = Mat4f()): Mat4f {
+        dst.m00 = m00 * s; dst.m10 = m10 * s; dst.m20 = m20 * s
+        dst.m01 = m01 * s; dst.m11 = m11 * s; dst.m21 = m21 * s
+        dst.m02 = m02 * s; dst.m12 = m12 * s; dst.m22 = m22 * s
+
+        dst.m03 = m03
+        dst.m13 = m13
+        dst.m23 = m23
+        dst.m33 = m33
+        dst.m30 = m30
+        dst.m31 = m31
+        dst.m32 = m32
+        return dst
     }
 
     /**
@@ -1666,6 +1690,7 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Row vectors (`vec * dst`): The scaling defined by [v] is applied to `vec` **before** the transformation represented by the original matrix `this`.
      */
     fun preScale(v: Vec3f, dst: Mat4f = Mat4f()): Mat4f = preScale(v.x, v.y, v.z, dst)
+    inline fun preScale(s: Float, dst: Mat4f = Mat4f()): Mat4f = preUniformScale(s, dst)
 
     /**
      * Pre-multiplies this 4x4 matrix by a 3D scaling matrix created from [v] (for X, Y, and Z axes) and writes the result into [dst].
@@ -1849,10 +1874,22 @@ class Mat4f private constructor(val array: FloatArray) {
 
         // Load elements of `this` matrix (M) to handle `dst === this` case correctly.
         // M is column-major: a0,a1,a2,a3 is first column, etc.
-        val a0 = array[0]; val a1 = array[1]; val a2 = array[2]; val a3 = array[3]
-        val a4 = array[4]; val a5 = array[5]; val a6 = array[6]; val a7 = array[7]
-        val a8 = array[8]; val a9 = array[9]; val a10 = array[10]; val a11 = array[11]
-        val a12 = array[12]; val a13 = array[13]; val a14 = array[14]; val a15 = array[15]
+        val a0 = array[0];
+        val a1 = array[1];
+        val a2 = array[2];
+        val a3 = array[3]
+        val a4 = array[4];
+        val a5 = array[5];
+        val a6 = array[6];
+        val a7 = array[7]
+        val a8 = array[8];
+        val a9 = array[9];
+        val a10 = array[10];
+        val a11 = array[11]
+        val a12 = array[12];
+        val a13 = array[13];
+        val a14 = array[14];
+        val a15 = array[15]
 
         // Apply D = R * M
         // R is the rotation matrix. M is `this` matrix. D is `dst` matrix.
@@ -1862,26 +1899,34 @@ class Mat4f private constructor(val array: FloatArray) {
         dst.array[1] = r01 * a0 + r11 * a1 + r21 * a2
         dst.array[2] = r02 * a0 + r12 * a1 + r22 * a2
         // dst.array[3] = 0*a0 + 0*a1 + 0*a2 + 1*a3 = a3 (since R's 4th row is 0,0,0,1)
-        if (dst !== this) { dst.array[3] = a3 } else { /* It's already a3 */ }
+        if (dst !== this) {
+            dst.array[3] = a3
+        }
 
 
         // Column 1 of D
         dst.array[4] = r00 * a4 + r10 * a5 + r20 * a6
         dst.array[5] = r01 * a4 + r11 * a5 + r21 * a6
         dst.array[6] = r02 * a4 + r12 * a5 + r22 * a6
-        if (dst !== this) { dst.array[7] = a7 } else { /* It's already a7 */ }
+        if (dst !== this) {
+            dst.array[7] = a7
+        }
 
         // Column 2 of D
         dst.array[8] = r00 * a8 + r10 * a9 + r20 * a10
         dst.array[9] = r01 * a8 + r11 * a9 + r21 * a10
         dst.array[10] = r02 * a8 + r12 * a9 + r22 * a10
-        if (dst !== this) { dst.array[11] = a11 } else { /* It's already a11 */ }
+        if (dst !== this) {
+            dst.array[11] = a11
+        }
 
         // Column 3 of D
         dst.array[12] = r00 * a12 + r10 * a13 + r20 * a14
         dst.array[13] = r01 * a12 + r11 * a13 + r21 * a14
         dst.array[14] = r02 * a12 + r12 * a13 + r22 * a14
-        if (dst !== this) { dst.array[15] = a15 } else { /* It's already a15 */ }
+        if (dst !== this) {
+            dst.array[15] = a15
+        }
 
         return dst
     }
