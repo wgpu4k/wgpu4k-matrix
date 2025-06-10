@@ -2,6 +2,7 @@
 
 package io.github.natanfudge.wgpu4k.matrix
 
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 
 /**
@@ -14,6 +15,7 @@ import kotlin.math.*
  * 2  6  10  14
  * 3  7  11  15
  */
+@Serializable
 class Mat4f private constructor(val array: FloatArray) {
 
     /**

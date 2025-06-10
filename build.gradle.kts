@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     id("com.vanniktech.maven.publish") version "0.31.0"
+    kotlin("plugin.serialization") version "2.2.0-RC"
 }
 
 repositories {
@@ -41,6 +42,12 @@ kotlin {
 
 
     sourceSets {
+        commonMain {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1")
+
+            }
+        }
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
