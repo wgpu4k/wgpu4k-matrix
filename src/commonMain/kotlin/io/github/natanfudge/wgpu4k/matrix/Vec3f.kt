@@ -5,6 +5,7 @@ package io.github.natanfudge.wgpu4k.matrix
 import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.ACTUAL_SIZE_BYTES
 import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.ALIGN_BYTES
 import io.github.natanfudge.wgpu4k.matrix.Vec3f.Companion.create
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -12,6 +13,7 @@ import kotlin.random.Random
 /**
  * Represents a 3-component vector using individual x, y, z fields.
  */
+@Serializable
 class Vec3f(
     var x: Float,
     var y: Float,

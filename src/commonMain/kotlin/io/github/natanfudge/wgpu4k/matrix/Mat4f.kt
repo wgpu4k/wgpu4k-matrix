@@ -87,6 +87,82 @@ class Mat4f private constructor(val array: FloatArray) {
         }
 
         /**
+         * Builds a 4x4 transformation matrix from translation, rotation, and scale components.
+         *
+         * The final transformation is equivalent to `Translate * Rotate * Scale`. This is a common
+         * order for transforming an object from its local space to a parent or world space. When this
+         * matrix is applied to a vertex `v` (as a column vector), the transformations occur in the
+         * expected order: `M * v = (Translate * (Rotate * (Scale * v)))`.
+         *
+         */
+         fun translateRotateScale(translate: Vec3f, rotate: Quatf, scale: Vec3f): Mat4f {
+            // 1. Extract quaternion components for rotation
+            val qx = rotate.x
+            val qy = rotate.y
+            val qz = rotate.z
+            val qw = rotate.w
+
+            // 2. Extract scale components.
+            val sx = scale.x
+            val sy = scale.y
+            val sz = scale.z
+
+            // 3. Extract translation components
+            val tx = translate.x
+            val ty = translate.y
+            val tz = translate.z
+
+            // 4. Pre-calculate products for the quaternion-to-matrix conversion.
+            // This is an optimized version of the standard conversion formula.
+            val qx2 = qx + qx
+            val qy2 = qy + qy
+            val qz2 = qz + qz
+
+            val xx = qx * qx2
+            val yx = qy * qx2
+            val yy = qy * qy2
+            val zx = qz * qx2
+            val zy = qz * qy2
+            val zz = qz * qz2
+            val wx = qw * qx2
+            val wy = qw * qy2
+            val wz = qw * qz2
+
+            // 5. Construct the matrix directly.
+            // The upper-left 3x3 portion of the matrix is derived from the rotation
+            // matrix columns, each scaled by the corresponding scale factor. This is
+            // equivalent to the matrix multiplication R * S.
+            // The last column is set to the translation vector. The combined result
+            // is equivalent to T * (R * S).
+            // The Mat4f constructor takes values in column-major order.
+            return Mat4f(
+                // Column 0 (X-axis)
+                v0 = (1f - yy - zz) * sx,
+                v1 = (yx + wz) * sx,
+                v2 = (zx - wy) * sx,
+                v3 = 0f,
+
+                // Column 1 (Y-axis)
+                v4 = (yx - wz) * sy,
+                v5 = (1f - xx - zz) * sy,
+                v6 = (zy + wx) * sy,
+                v7 = 0f,
+
+                // Column 2 (Z-axis)
+                v8 = (zx + wy) * sz,
+                v9 = (zy - wx) * sz,
+                v10 = (1f - xx - yy) * sz,
+                v11 = 0f,
+
+                // Column 3 (Translation)
+                v12 = tx,
+                v13 = ty,
+                v14 = tz,
+                v15 = 1f
+            )
+        }
+
+        /**
          * Creates a Mat4 rotation matrix from [q].
          */
         fun fromQuat(q: Quatf, dst: Mat4f = Mat4f()): Mat4f {
@@ -1750,6 +1826,7 @@ class Mat4f private constructor(val array: FloatArray) {
      * - Row vectors (`vec * dst`): The axis rotation is applied to `vec` **after** the transformation represented by the original matrix `this`.
      */
     inline fun rotate(axis: Vec3f, angleInRadians: Float, dst: Mat4f = Mat4f()) = axisRotate(axis, angleInRadians, dst)
+
 
     /**
      * Post-multiplies this 4x4 matrix by a 3D rotation matrix about the given [x], [y] ,[z] axis by [angleInRadians] and writes the result into [dst].

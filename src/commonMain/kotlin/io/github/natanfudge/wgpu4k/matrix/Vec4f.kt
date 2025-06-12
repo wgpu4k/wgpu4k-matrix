@@ -2,11 +2,13 @@
 
 package io.github.natanfudge.wgpu4k.matrix
 
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 
 /**
  * Represents a 4-dimensional vector.
  */
+@Serializable
 class Vec4f(
     var x: Float,
     var y: Float,

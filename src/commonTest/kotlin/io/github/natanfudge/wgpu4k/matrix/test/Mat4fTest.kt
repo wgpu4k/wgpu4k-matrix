@@ -1513,6 +1513,155 @@ class Mat4fTest {
         assertVec4EqualsApproximately(Vec4f(0f, 1f, 0f, 0f), Mat4f.rotationZ(PI.toFloat() / 2f).multiplyVector(v6), 
             tolerance = 0.0001f, message = "Direction vectors (w=0) should not be affected by translation")
     }
+
+    /**
+     * The "known correct" way to build the matrix using existing functions.
+     * The standard transformation order is Scale -> Rotate -> Translate.
+     * This means the matrix multiplication order is T * R * S.
+     */
+    private fun Mat4f.translateRotateScaleCorrectly(translate: Vec3f, rotate: Quatf, scale: Vec4f): Mat4f {
+        val scaleMatrix = Mat4f.scaling(scale.x, scale.y, scale.z)
+        val rotationMatrix = Mat4f.fromQuat(rotate)
+        val translationMatrix = Mat4f.translation(translate)
+
+        // M = T * R * S
+        return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix)
+    }
+
+    @Test
+    fun `test with identity transformations`() {
+        // Arrange
+        val translate = Vec3f(0f, 0f, 0f)
+        val rotate = Quatf(0f, 0f, 0f, 1f) // Identity quaternion
+        val scale = Vec3f(1f, 1f, 1f)
+        val expectedMatrix = Mat4f.identity()
+
+        // Act
+        val resultMatrix = Mat4f.translateRotateScale(translate, rotate, scale)
+
+        // Assert
+        assertTrue(
+            expectedMatrix.equalsApproximately(resultMatrix),
+            "With identity transformations, the result should be an identity matrix.\nExpected:\n$expectedMatrix\nGot:\n$resultMatrix"
+        )
+    }
+
+    @Test
+    fun `test with translation only`() {
+        // Arrange
+        val translate = Vec3f(10f, -5f, 20f)
+        val rotate = Quatf(0f, 0f, 0f, 1f)
+        val scale = Vec3f(1f, 1f, 1f)
+        val expectedMatrix = Mat4f.translation(translate)
+
+        // Act
+        val resultMatrix = Mat4f.translateRotateScale(translate, rotate, scale)
+
+        // Assert
+        assertTrue(
+            expectedMatrix.equalsApproximately(resultMatrix),
+            "With only translation, the result should be a pure translation matrix.\nExpected:\n$expectedMatrix\nGot:\n$resultMatrix"
+        )
+    }
+
+    @Test
+    fun `test with scale only`() {
+        // Arrange
+        val translate = Vec3f(0f, 0f, 0f)
+        val rotate = Quatf(0f, 0f, 0f, 1f)
+        val scale = Vec3f(2f, 0.5f, 10f)
+        val expectedMatrix = Mat4f.scaling(scale.x, scale.y, scale.z)
+
+        // Act
+        val resultMatrix = Mat4f.translateRotateScale(translate, rotate, scale)
+
+        // Assert
+        assertTrue(
+            expectedMatrix.equalsApproximately(resultMatrix),
+            "With only scaling, the result should be a pure scaling matrix.\nExpected:\n$expectedMatrix\nGot:\n$resultMatrix"
+        )
+    }
+
+    /**
+     * The "known correct" way to build the matrix using existing functions.
+     * The standard transformation order is Scale -> Rotate -> Translate.
+     * This means the matrix multiplication order is T * R * S.
+     */
+    private fun buildMatrixCorrectly(translate: Vec3f, rotate: Quatf, scale: Vec3f): Mat4f {
+        val scaleMatrix = Mat4f.scaling(scale.x, scale.y, scale.z)
+        val rotationMatrix = Mat4f.fromQuat(rotate)
+        val translationMatrix = Mat4f.translation(translate)
+
+        // M = T * R * S
+        return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix)
+    }
+
+    @Test
+    fun `test with rotation only`() {
+        // Arrange
+        val translate = Vec3f(0f, 0f, 0f)
+        // 90 degrees rotation around Y axis
+        val rotate = Quatf.fromAxisAngle(Vec3f(0f, 1f, 0f), degToRad(90.0f))
+        val scale = Vec3f(1f, 1f, 1f)
+        val expectedMatrix = Mat4f.fromQuat(rotate)
+
+        // Act
+        val resultMatrix = Mat4f.translateRotateScale(translate, rotate, scale)
+
+        // Assert
+        assertTrue(
+            expectedMatrix.equalsApproximately(resultMatrix),
+            "With only rotation, the result should be a pure rotation matrix.\nExpected:\n$expectedMatrix\nGot:\n$resultMatrix"
+        )
+    }
+
+    @Test
+    fun `test with complex combination of all transformations`() {
+        // Arrange
+        val translate = Vec3f(100f, -50f, 25f)
+        val scale = Vec3f(2f, 0.5f, 1.5f)
+
+        // 45 degrees rotation around a non-cardinal axis (1, 1, 1)
+        val rotationAxis = Vec3f(1f, 1f, 1f).normalize()
+        val rotationAngle = radToDeg(45.0f)
+        val rotate = Quatf.fromAxisAngle(rotationAxis, rotationAngle)
+
+        // Calculate expected result using the trusted, sequential method
+        val expectedMatrix = buildMatrixCorrectly(translate, rotate, scale)
+
+        // Act
+        // Calculate result using the new, optimized function
+        val resultMatrix = Mat4f.translateRotateScale(translate, rotate, scale)
+
+        // Assert
+        assertTrue(
+            expectedMatrix.equalsApproximately(resultMatrix, 1e-5f),
+            "The optimized function should produce the same result as the sequential multiplication.\nExpected:\n$expectedMatrix\nGot:\n$resultMatrix"
+        )
+    }
+
+    @Test
+    fun `test with another complex combination`() {
+        // Arrange
+        val translate = Vec3f(-1.2f, 0f, 8.8f)
+        val scale = Vec3f(1f, 1f, 5f)
+
+        // -30 degrees rotation around X axis
+        val rotationAxis = Vec3f(1f, 0f, 0f)
+        val rotationAngle = radToDeg(-30.0f)
+        val rotate = Quatf.fromAxisAngle(rotationAxis, rotationAngle)
+
+        val expectedMatrix = buildMatrixCorrectly(translate, rotate, scale)
+
+        // Act
+        val resultMatrix = Mat4f.translateRotateScale(translate, rotate, scale)
+
+        // Assert
+        assertTrue(
+            expectedMatrix.equalsApproximately(resultMatrix, 1e-5f),
+            "The optimized function should produce the same result for a different complex case.\nExpected:\n$expectedMatrix\nGot:\n$resultMatrix"
+        )
+    }
 }
 
 // Helper for Quatf comparison (add if not present elsewhere)

@@ -3,6 +3,7 @@
 package io.github.natanfudge.wgpu4k.matrix
 
 import io.github.natanfudge.wgpu4k.matrix.Quatf.Companion.create
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 
 typealias RotationOrder = String
@@ -15,6 +16,7 @@ typealias RotationOrder = String
  * @property z The z component (imaginary part k).
  * @property w The w component (real part).
  */
+@Serializable
 data class Quatf(
     var x: Float,
     var y: Float,
