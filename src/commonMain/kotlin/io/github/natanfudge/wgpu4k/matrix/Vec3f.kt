@@ -300,19 +300,17 @@ class Vec3f(
     /**
      * Copies the components of `this`.
      */
-    fun copy(dst: Vec3f = Vec3f()): Vec3f {
-        dst.x = this.x
-        dst.y = this.y
-        dst.z = this.z
+    fun copy(x: Float = this.x, y: Float = this.y, z: Float = this.z, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = x
+        dst.y = y
+        dst.z = z
         return dst
     }
 
     /**
      * Copies the components of `this` (alias for [copy]).
      */
-    fun clone(dst: Vec3f = Vec3f()): Vec3f {
-        return copy(dst)
-    }
+    inline fun clone(x: Float = this.x, y: Float = this.y, z: Float = this.z, dst: Vec3f = Vec3f()): Vec3f = copy(x, y, z, dst)
 
     /**
      * Sets the components of `this` vector to 0.
@@ -334,6 +332,8 @@ class Vec3f(
         dst.z = this.z + b.z
         return dst
     }
+
+
 
     /**
      * Computes the angle in radians between `this` and [b].
@@ -592,7 +592,7 @@ class Vec3f(
         if (currentLength > maxLen) {
             return this.setLength(maxLen, dst)
         }
-        return this.copy(dst)
+        return this.copy(dst = dst)
     }
 
     /**
