@@ -206,6 +206,8 @@ class Vec3f(
     val lenSq: Float
         get() = lengthSq
 
+    val isZero get() = this.x == 0f && this.y == 0f && this.z == 0f
+
     /**
      * Sets this vector to the zero vec3
      */
@@ -308,6 +310,16 @@ class Vec3f(
     }
 
     /**
+     * Sets `dst` to `v[axis] = value` and returns it
+     */
+    fun copy(axis: Int, value: Float, dst: Vec3f = Vec3f()): Vec3f = when(axis) {
+        0 -> copy(x = value, dst = dst)
+        1 -> copy(y = value, dst = dst)
+        2 -> copy(z = value, dst = dst)
+        else -> throw IndexOutOfBoundsException("Invalid axis index: $axis")
+    }
+
+    /**
      * Copies the components of `this` (alias for [copy]).
      */
     inline fun clone(x: Float = this.x, y: Float = this.y, z: Float = this.z, dst: Vec3f = Vec3f()): Vec3f = copy(x, y, z, dst)
@@ -332,7 +344,6 @@ class Vec3f(
         dst.z = this.z + b.z
         return dst
     }
-
 
 
     /**
@@ -746,7 +757,8 @@ class Vec3f(
      */
     fun toVec4f() = Vec4f(x, y, z, 1f)
 
-    override fun toString(): String = "(${x.ns},${y.ns},${z.ns})"
+    fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns},${z.ns})" else "($x,$y,$z)"
+    override fun toString(): String = toString(round = true)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
