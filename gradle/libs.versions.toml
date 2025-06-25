@@ -1,7 +1,10 @@
 [versions]
 kotlin = "2.2.0-RC"
 
+serialization = "1.8.1"
+
 [libraries]
+serialization = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization"}
 
 
 [plugins]

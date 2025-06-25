@@ -3,6 +3,7 @@
 package io.github.natanfudge.wgpu4k.matrix
 
 import io.github.natanfudge.wgpu4k.matrix.Mat3f.Companion.rowMajor
+import kotlinx.serialization.Serializable
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -26,7 +27,8 @@ import kotlin.math.sqrt
  *
  * Do not depend on the values in the padding cells, as the behavior of those may change in the future.
  */
-/*@JvmInline value*/ class Mat3f private constructor(val array: FloatArray) {
+/*@JvmInline value*/ @Serializable
+class Mat3f private constructor(val array: FloatArray) {
 
     constructor() : this(FloatArray(12))
 
@@ -1262,13 +1264,20 @@ import kotlin.math.sqrt
         array[8] = v6; array[9] = v7; array[10] = v8; array[11] = 0f;
     }
 
-    override fun toString(): String {
-        return """
+    /**
+     * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
+     */
+    fun toString(round: Boolean): String = if (round) """
             [${m00.ns},${m01.ns},${m02.ns}]
             [${m10.ns},${m11.ns},${m12.ns}]
             [${m20.ns},${m21.ns},${m22.ns}]
+        """.trimIndent() else """
+            [${m00},${m01},${m02}]
+            [${m10},${m11},${m12}]
+            [${m20},${m21},${m22}]
         """.trimIndent()
-    }
+
+    override fun toString(): String = toString(round = true)
 
     /**
      * Checks if `this` is exactly equal to [other].

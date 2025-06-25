@@ -44,8 +44,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1")
-
+                // We don't need to pull in this dependency transitively
+                compileOnly(libs.serialization)
+                api(libs.serialization)
             }
         }
         commonTest {
@@ -56,7 +57,7 @@ kotlin {
     }
 }
 group = "io.github.natanfudge"
-version = "0.4.1"
+version = "0.5.0"
 
 val artifactId = "wgpu4k-matrix"
 val githubUrl = "https://github.com/natanfudge/wgpu4k-matrix"

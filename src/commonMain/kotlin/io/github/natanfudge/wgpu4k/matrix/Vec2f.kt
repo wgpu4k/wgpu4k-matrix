@@ -2,6 +2,7 @@
 
 package io.github.natanfudge.wgpu4k.matrix
 
+import kotlinx.serialization.Serializable
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -9,6 +10,7 @@ import kotlin.random.Random
  * Represents a mutable 2D Vector with instance methods,
  * including optional 'dst' parameter support.
  */
+@Serializable
 class Vec2f(var x: Float, var y: Float) {
     constructor() : this(0f, 0f)
 
@@ -179,26 +181,29 @@ class Vec2f(var x: Float, var y: Float) {
         return dst
     }
 
-    /**
-     * Copies the components of `this` vector.
-     */
-    fun copyTo(dst: Vec2f = Vec2f()): Vec2f { // Renamed from 'copy' to avoid clash
-        dst.x = this.x
-        dst.y = this.y
-        return dst
-    }
 
     /** Copies the components of `this` vector (alias for [copyTo]). */
-    fun clone(dst: Vec2f = Vec2f()): Vec2f = copyTo(dst)
+    fun clone(x: Float = this.x, y: Float = this.y, dst: Vec2f = Vec2f()): Vec2f = copy(x, y, dst)
+
 
     /**
-     * Creates a copy of `this`.
+     * Copies the components of `this`.
      */
-    fun copy(dst: Vec2f = Vec2f()): Vec2f {
-        dst.x = this.x
-        dst.y = this.y
+    fun copy(x: Float = this.x, y: Float = this.y, dst: Vec2f = Vec2f()): Vec2f {
+        dst.x = x
+        dst.y = y
         return dst
     }
+
+    /**
+     * Sets `dst` to `v[axis] = value` and returns it
+     */
+    fun copy(axis: Int, value: Float, dst: Vec2f = Vec2f()): Vec2f = when (axis) {
+        0 -> copy(x = value, dst = dst)
+        1 -> copy(y = value, dst = dst)
+        else -> throw IndexOutOfBoundsException("Invalid axis index: $axis")
+    }
+
 
     /**
      * Adds [other] to `this`.
@@ -384,7 +389,7 @@ class Vec2f(var x: Float, var y: Float) {
             this.setLength(maxLen, dst)
         } else {
             // Otherwise, just copy this vector's components into target
-            this.copyTo(dst)
+            this.copy(dst = dst)
         }
         return dst
     }
@@ -477,9 +482,12 @@ class Vec2f(var x: Float, var y: Float) {
         return dst
     }
 
-    // No functions with 3 or more parameters in Vec2f
 
-    override fun toString(): String = "(${x.ns},${y.ns})"
+    /**
+     * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
+     */
+    fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns})" else "($x,$y)"
+    override fun toString(): String = toString(round = true)
 
     override fun equals(other: Any?): Boolean {
         return other is Vec2f && other.x == x && other.y == y

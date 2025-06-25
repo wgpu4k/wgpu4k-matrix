@@ -312,7 +312,7 @@ class Vec3f(
     /**
      * Sets `dst` to `v[axis] = value` and returns it
      */
-    fun copy(axis: Int, value: Float, dst: Vec3f = Vec3f()): Vec3f = when(axis) {
+    fun copy(axis: Int, value: Float, dst: Vec3f = Vec3f()): Vec3f = when (axis) {
         0 -> copy(x = value, dst = dst)
         1 -> copy(y = value, dst = dst)
         2 -> copy(z = value, dst = dst)
@@ -757,6 +757,9 @@ class Vec3f(
      */
     fun toVec4f() = Vec4f(x, y, z, 1f)
 
+    /**
+     * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
+     */
     fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns},${z.ns})" else "($x,$y,$z)"
     override fun toString(): String = toString(round = true)
 

@@ -2094,15 +2094,23 @@ class Mat4f private constructor(val array: FloatArray) {
         array[8] = v8; array[9] = v9; array[10] = v10; array[11] = v11
         array[12] = v12; array[13] = v13; array[14] = v14; array[15] = v15
     }
-
-    override fun toString(): String {
-        return """
+    /**
+     * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
+     */
+    fun toString(round: Boolean): String = if (round) """
             [${m00.ns},${m01.ns},${m02.ns},${m03.ns}]
             [${m10.ns},${m11.ns},${m12.ns},${m13.ns}]
             [${m20.ns},${m21.ns},${m22.ns},${m23.ns}]
             [${m30.ns},${m31.ns},${m32.ns},${m33.ns}]
+        """.trimIndent() else """
+            [${m00},${m01},${m02},${m03}]
+            [${m10},${m11},${m12},${m13}]
+            [${m20},${m21},${m22},${m23}]
+            [${m30},${m31},${m32},${m33}]
         """.trimIndent()
-    }
+
+    override fun toString(): String = toString(round = true)
+
 
     /**
      * Checks if `this` is exactly equal to [other].

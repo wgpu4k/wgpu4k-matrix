@@ -386,20 +386,31 @@ data class Quatf(
     }
 
     /**
-     * Copies the values from `this` quaternion.
+     * Copies the components of `this`.
      */
-    fun copy(dst: Quatf = Quatf()): Quatf {
-        dst.x = this.x
-        dst.y = this.y
-        dst.z = this.z
-        dst.w = this.w
+    fun copy(x: Float = this.x, y: Float = this.y, z: Float = this.z, w: Float = this.w, dst: Quatf = Quatf()): Quatf {
+        dst.x = x
+        dst.y = y
+        dst.z = z
+        dst.w = w
         return dst
     }
 
     /**
-     * Copies `this` quaternion (alias for [copy]).
+     * Sets `dst` to `q[axis] = value` and returns it
      */
-    fun clone(dst: Quatf = Quatf()): Quatf = copy(dst)
+    fun copy(axis: Int, value: Float, dst: Quatf = Quatf()): Quatf = when (axis) {
+        0 -> copy(x = value, dst = dst)
+        1 -> copy(y = value, dst = dst)
+        2 -> copy(z = value, dst = dst)
+        3 -> copy(w = value, dst = dst)
+        else -> throw IndexOutOfBoundsException("Invalid axis index: $axis")
+    }
+
+    /**
+     * Creates a copy of `this`. (Alias for copy)
+     */
+    fun clone(x: Float = this.x, y: Float = this.y, z: Float = this.z, w: Float = this.w, dst: Quatf = Quatf()): Quatf = copy(x, y, z, w, dst)
 
     /**
      * Negates `this` quaternion (negates all components).
@@ -727,7 +738,11 @@ data class Quatf(
         return this
     }
 
-    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
+    /**
+     * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
+     */
+    fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns},${z.ns},${w.ns})" else "($x,$y,$z,$w)"
+    override fun toString(): String = toString(round = true)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

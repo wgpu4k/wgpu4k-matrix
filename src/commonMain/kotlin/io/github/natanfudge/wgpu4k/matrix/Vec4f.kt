@@ -194,29 +194,36 @@ class Vec4f(
     }
 
     /**
-     * Creates a copy of `this`.
+     * Copies the components of `this`.
      */
-    fun copy(dst: Vec4f = Vec4f()): Vec4f {
-        dst.x = this.x
-        dst.y = this.y
-        dst.z = this.z
-        dst.w = this.w
+    fun copy(x: Float = this.x, y: Float = this.y, z: Float = this.z, w: Float = this.w, dst: Vec4f = Vec4f()): Vec4f {
+        dst.x = x
+        dst.y = y
+        dst.z = z
+        dst.w = w
         return dst
+    }
+
+    /**
+     * Sets `dst` to `v[axis] = value` and returns it
+     */
+    fun copy(axis: Int, value: Float, dst: Vec4f = Vec4f()): Vec4f = when (axis) {
+        0 -> copy(x = value, dst = dst)
+        1 -> copy(y = value, dst = dst)
+        2 -> copy(z = value, dst = dst)
+        3 -> copy(w = value, dst = dst)
+        else -> throw IndexOutOfBoundsException("Invalid axis index: $axis")
     }
 
     /**
      * Creates a copy of `this`. (Alias for copy)
      */
-    fun clone(dst: Vec4f = Vec4f()): Vec4f = copy(dst)
+    fun clone(x: Float = this.x, y: Float = this.y, z: Float = this.z, w: Float = this.w, dst: Vec4f = Vec4f()): Vec4f = copy(x, y, z, w, dst)
 
     /**
      * Sets the components of `this` to zero.
      */
     fun zero(dst: Vec4f = Vec4f()): Vec4f {
-        // Note: This behavior differs from the original if dst is not provided.
-        // The original modified `this`. This version modifies the new default dst.
-        // If the original behavior is desired, this needs adjustment.
-        // For now, applying the requested pattern strictly.
         dst.x = 0.0f
         dst.y = 0.0f
         dst.z = 0.0f
@@ -414,7 +421,7 @@ class Vec4f(
         if (this.length > maxLen) {
             return this.setLength(maxLen, dst)
         }
-        return this.copy(dst)
+        return this.copy(dst = dst)
     }
 
     /**
@@ -502,7 +509,11 @@ class Vec4f(
         return this
     }
 
-    override fun toString(): String = "(${x.ns},${y.ns},${z.ns},${w.ns})"
+    /**
+     * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
+     */
+    fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns},${z.ns},${w.ns})" else "($x,$y,$z,$w)"
+    override fun toString(): String = toString(round = true)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
