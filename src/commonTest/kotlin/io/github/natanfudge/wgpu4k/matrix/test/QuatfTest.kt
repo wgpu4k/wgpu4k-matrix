@@ -513,7 +513,7 @@ class QuatfTest {
         assertQuatEqualsApproximately(q1, q3, "Cloned quaternion should be equal")
 
         val qDst = Quatf()
-        q1.copy(qDst)
+        q1.copy(dst = qDst)
         assertQuatEqualsApproximately(q1, qDst, "Copy with dst")
     }
 

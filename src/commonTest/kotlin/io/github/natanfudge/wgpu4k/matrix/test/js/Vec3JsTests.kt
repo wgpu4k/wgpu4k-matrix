@@ -540,7 +540,7 @@ class Vec3Tests {
             // Assuming Vec3 has a method like copy(dst: Vec3): Vec3 for in-place copy
             // and the standard data class copy() for creating a new instance.
             if (dst != null) {
-                v1.copy(dst) // Call the in-place copy method (expects non-null dst)
+                v1.copy(dst = dst) // Call the in-place copy method (expects non-null dst)
                 dst // Return the modified destination
             } else {
                 v1.copy() // Call standard data class copy() to return a new instance
@@ -558,7 +558,7 @@ class Vec3Tests {
             // Assuming Vec3 has a method like clone(dst: Vec3): Vec3 for in-place clone
             // and clone() for creating a new instance.
             if (dst != null) {
-                v1.clone(dst) // Call the in-place clone method (expects non-null dst)
+                v1.clone(dst = dst) // Call the in-place clone method (expects non-null dst)
                 dst // Return the modified destination
             } else {
                 v1.clone() // Call method to return a new instance

@@ -459,11 +459,11 @@ class Vec2Tests {
     fun `should copyTo`() { // Renamed from copy
         val expected = Vec2f(2f, 3f)
         // Test helper covers dst = new and dst = self (which is trivial for copy)
-        testUnaryVecOp(Vec2f::copyTo, Vec2f(2f, 3f), expected)
+        testUnaryVecOp({ copy(dst = it) }, Vec2f(2f, 3f), expected)
 
         // Explicitly check non-identity for null dst
         val v = Vec2f(2f, 3f)
-        val result = v.copyTo(Vec2f())
+        val result = v.copy(dst = Vec2f())
         assertNotSame(v, result)
         assertEquals(expected, result)
     }
@@ -471,10 +471,10 @@ class Vec2Tests {
     @Test
     fun `should clone`() {
         val expected = Vec2f(2f, 3f)
-        testUnaryVecOp(Vec2f::clone, Vec2f(2f, 3f), expected)
+        testUnaryVecOp({ clone(dst = it) }, Vec2f(2f, 3f), expected)
         // Explicitly check non-identity for null dst
         val v = Vec2f(2f, 3f)
-        val result = v.clone(Vec2f())
+        val result = v.clone(dst = Vec2f())
         assertNotSame(v, result)
         assertEquals(expected, result)
     }

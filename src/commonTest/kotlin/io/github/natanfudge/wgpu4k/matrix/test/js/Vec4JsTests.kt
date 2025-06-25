@@ -455,7 +455,7 @@ class Vec4Tests {
         val copyOperation = { args: Array<out Any?>, dst: Vec4f? ->
             val v1 = args[0] as Vec4f
             if (dst != null) {
-                v1.copy(dst)
+                v1.copy(dst = dst)
                 dst
             } else {
                 v1.copy() // data class copy
@@ -476,7 +476,7 @@ class Vec4Tests {
         val v = Vec4f(1.0f, 2.0f, 3.0f, 4.0f)
         val cloneOperation = { args: Array<out Any?>, dst: Vec4f? ->
             val v1 = args[0] as Vec4f
-            v1.clone(dst ?: Vec4f()) // Assumes clone method exists similar to copy
+            v1.clone(dst = dst ?: Vec4f()) // Assumes clone method exists similar to copy
         }
         // Test without dest
         val resultNoDest = cloneOperation(arrayOf(v), null) as Vec4f

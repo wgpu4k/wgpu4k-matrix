@@ -408,17 +408,17 @@ class Vec2fOperatorTest {
     fun testCopyTo() {
         val v1 = Vec2f(10f, -20f)
         val v2 = Vec2f()
-        v1.copyTo(v2)
+        v1.copy(dst = v2)
         assertVec2fEqualsApproximately(v1, v2, "CopyTo existing destination")
         assertNotSame(v1, v2, "CopyTo should not be the same instance")
 
         val v3 = Vec2f(5f, 6f)
-        val v4 = v3.copyTo() // Create new destination
+        val v4 = v3.copy() // Create new destination
         assertVec2fEqualsApproximately(v3, v4, "CopyTo new destination")
         assertNotSame(v3, v4, "CopyTo new destination should not be the same instance")
 
         val v5 = Vec2f(0f, 0f)
-        val v6 = v5.copyTo()
+        val v6 = v5.copy()
         assertVec2fEqualsApproximately(Vec2f(0f, 0f), v6, "CopyTo zero vector")
     }
 

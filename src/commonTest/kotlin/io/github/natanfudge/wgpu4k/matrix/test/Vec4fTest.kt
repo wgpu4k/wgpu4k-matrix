@@ -369,18 +369,18 @@ class Vec4fTest {
         assertNotSame(a, b)
         assertVec4EqualsApproximately(a, b, message = "Data class copy")
 
-        val c = a.copy(Vec4f()) // Method copy
+        val c = a.copy(dst = Vec4f()) // Method copy
         assertNotSame(a, c)
         assertVec4EqualsApproximately(a, c, message = "Method copy with new dst")
 
         val dst = Vec4f()
-        a.copy(dst) // Method copy with existing dst
+        a.copy(dst = dst) // Method copy with existing dst
         assertVec4EqualsApproximately(a, dst, message = "Method copy with existing dst")
 
         val d = a.clone()
         assertNotSame(a, d)
         assertVec4EqualsApproximately(a, d, message = "Clone alias")
-        a.clone(dst)
+        a.clone(dst = dst)
         assertVec4EqualsApproximately(a, dst, message = "Clone alias with dst")
     }
 

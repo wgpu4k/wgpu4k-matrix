@@ -355,13 +355,13 @@ class Vec3fTest {
         assertVec3EqualsApproximately(a, b)
 
         val dst = Vec3f()
-        a.copy(dst)
+        a.copy(dst = dst)
         assertVec3EqualsApproximately(a, dst)
 
         val c = a.clone()
         assertNotSame(a, c)
         assertVec3EqualsApproximately(a, c, message = "Clone alias")
-        a.clone(dst)
+        a.clone(dst = dst)
         assertVec3EqualsApproximately(a, dst, message = "Clone alias with dst")
     }
 
