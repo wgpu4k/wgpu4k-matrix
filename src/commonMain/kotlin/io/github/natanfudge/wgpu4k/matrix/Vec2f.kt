@@ -56,6 +56,12 @@ class Vec2f(var x: Float, var y: Float) {
 
     inline operator fun plus(other: Vec2f) = add(other)
     inline operator fun minus(other: Vec2f) = subtract(other)
+
+    /**
+     * Component-wise (Hadamard) product of `this` and [other].
+     * Important note: NOT cross product, and NOT dot product!
+     */
+    operator fun times(other: Vec2f) = Vec2f(this.x * other.x, this.y * other.y)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()

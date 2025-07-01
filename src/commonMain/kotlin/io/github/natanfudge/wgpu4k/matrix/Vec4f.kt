@@ -52,6 +52,11 @@ class Vec4f(
     inline operator fun plus(other: Vec4f) = add(other)
     inline operator fun minus(other: Vec4f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
+    /**
+     * Component-wise (Hadamard) product of `this` and [other].
+     * Important note: NOT cross product, and NOT dot product!
+     */
+    operator fun times(other: Vec4f) = Vec4f(this.x * other.x, this.y * other.y, this.z * other.z, this.w * other.w)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
 

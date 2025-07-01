@@ -182,7 +182,7 @@ class Vec3f(
      * Component-wise (Hadamard) product of `this` and [other].
      * Important note: NOT cross product, and NOT dot product!
      */
-    inline operator fun times(other: Vec3f) = Vec3f(this.x * other.x, this.y * other.y, this.z * other.z)
+    operator fun times(other: Vec3f) = Vec3f(this.x * other.x, this.y * other.y, this.z * other.z)
     inline operator fun div(scalar: Float) = divScalar(scalar)
     inline operator fun unaryMinus() = negate()
 
