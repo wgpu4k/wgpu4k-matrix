@@ -2,7 +2,6 @@ package io.github.natanfudge.wgpu4k.matrix.test.js
 
 import io.github.natanfudge.wgpu4k.matrix.EPSILON
 import io.github.natanfudge.wgpu4k.matrix.FloatPi
-import io.github.natanfudge.wgpu4k.matrix.Mat3f
 import io.github.natanfudge.wgpu4k.matrix.Mat4f
 import io.github.natanfudge.wgpu4k.matrix.Quatf
 import io.github.natanfudge.wgpu4k.matrix.Vec3f
@@ -42,7 +41,7 @@ fun assertStrictEquals(actual: Any?, expected: Any?, message: String? = null) {
 class Mat4Test {
 
     // The base matrix 'm' from the JavaScript test
-    private val m = Mat4f.fromFloatArray(floatArrayOf(
+    private val m = Mat4f.copyOf(floatArrayOf(
         0f,  1f,  2f,  3f,
         4f,  5f,  6f,  7f,
         8f,  9f, 10f, 11f,
@@ -78,7 +77,7 @@ class Mat4Test {
 
     @Test
     fun testNegate() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             -0f,  -1f,  -2f,  -3f,
             -4f,  -5f,  -6f,  -7f,
             -8f,  -9f, -10f, -11f,
@@ -89,7 +88,7 @@ class Mat4Test {
 
     @Test
     fun testAdd() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             0f,  2f,  4f,  6f,
             8f, 10f, 12f, 14f,
             16f, 18f, 20f, 22f,
@@ -100,7 +99,7 @@ class Mat4Test {
 
     @Test
     fun testMultiplyScalar() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             0f,  2f,  4f,  6f,
             8f, 10f, 12f, 14f,
             16f, 18f, 20f, 22f,
@@ -133,14 +132,14 @@ class Mat4Test {
 
         for (i in 0..15) {
             assertTrue(
-                Mat4f.fromFloatArray(genAlmostEqualMat(-1)).equalsApproximately(
-                    Mat4f.fromFloatArray(genAlmostEqualMat(i))
+                Mat4f.copyOf(genAlmostEqualMat(-1)).equalsApproximately(
+                    Mat4f.copyOf(genAlmostEqualMat(i))
                 ),
                 "Should be approximately equal when differing by small amount at index $i"
             )
             assertTrue(
-                !Mat4f.fromFloatArray(genNotAlmostEqualMat(-1)).equalsApproximately(
-                    Mat4f.fromFloatArray(genNotAlmostEqualMat(i))
+                !Mat4f.copyOf(genNotAlmostEqualMat(-1)).equalsApproximately(
+                    Mat4f.copyOf(genNotAlmostEqualMat(i))
                 ),
                  "Should not be approximately equal when differing by large amount at index $i"
             )
@@ -156,13 +155,13 @@ class Mat4Test {
 
         for (i in 0..15) {
             assertTrue(
-                Mat4f.fromFloatArray(genNotEqualMat(i)) == // Uses the overridden equals operator
-                        Mat4f.fromFloatArray(genNotEqualMat(i)),
+                Mat4f.copyOf(genNotEqualMat(i)) == // Uses the overridden equals operator
+                        Mat4f.copyOf(genNotEqualMat(i)),
                  "Should be exactly equal when values are the same at index $i"
             )
             assertTrue(
-                Mat4f.fromFloatArray(genNotEqualMat(-1)) != // Uses the overridden equals operator
-                        Mat4f.fromFloatArray(genNotEqualMat(i)),
+                Mat4f.copyOf(genNotEqualMat(-1)) != // Uses the overridden equals operator
+                        Mat4f.copyOf(genNotEqualMat(i)),
                  "Should not be exactly equal when values are different at index $i"
             )
         }
@@ -180,7 +179,7 @@ class Mat4Test {
 
     @Test
     fun testSet() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             2f, 3f, 4f, 5f, 
             22f, 33f, 44f, 55f, 
             222f, 333f, 444f, 555f, 
@@ -199,7 +198,7 @@ class Mat4Test {
 
     @Test
     fun testIdentity() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
@@ -210,7 +209,7 @@ class Mat4Test {
 
     @Test
     fun testTranspose() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             0f, 4f, 8f, 12f,
             1f, 5f, 9f, 13f,
             2f, 6f, 10f, 14f,
@@ -220,7 +219,7 @@ class Mat4Test {
     }
 
     private fun testMultiply(fn: (a: Mat4f, b: Mat4f, dst: Mat4f) -> Mat4f) {
-        val m2 = Mat4f.fromFloatArray(floatArrayOf(
+        val m2 = Mat4f.copyOf(floatArrayOf(
             4f, 5f, 6f, 7f,
             1f, 2f, 3f, 4f,
             9f, 10f, 11f, 12f,
@@ -228,7 +227,7 @@ class Mat4Test {
         ))
 
         // Calculate expected result using the formula from the JS test
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             m2[0] * m[0] + m2[1] * m[4] + m2[2] * m[8] + m2[3] * m[12],
             m2[0] * m[1] + m2[1] * m[5] + m2[2] * m[9] + m2[3] * m[13],
             m2[0] * m[2] + m2[1] * m[6] + m2[2] * m[10] + m2[3] * m[14],
@@ -264,14 +263,14 @@ class Mat4Test {
     }
 
     private fun testInverse(fn: (m: Mat4f, dst: Mat4f) -> Mat4f) {
-        val testMatrix = Mat4f.fromFloatArray(floatArrayOf(
+        val testMatrix = Mat4f.copyOf(floatArrayOf(
             2f, 1f, 3f, 0f,
             1f, 2f, 1f, 0f,
             3f, 1f, 2f, 0f,
             4f, 5f, 6f, 1f
         ))
 
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             -0.375f, -0.125f, 0.625f, 0f,
             -0.125f, 0.625f, -0.125f, 0f,
             0.625f, -0.125f, -0.375f, 0f,
@@ -294,13 +293,13 @@ class Mat4Test {
     @Test
     fun testDeterminant() {
         val tests = listOf(
-            Mat4f.fromFloatArray(floatArrayOf(
+            Mat4f.copyOf(floatArrayOf(
                 2f, 1f, 3f, 0f,
                 1f, 2f, 1f, 0f,
                 3f, 1f, 2f, 0f,
                 4f, 5f, 6f, 1f
             )) to -8f,
-            Mat4f.fromFloatArray(floatArrayOf(
+            Mat4f.copyOf(floatArrayOf(
                 2f, 0f, 0f, 0f,
                 0f, 3f, 0f, 0f,
                 0f, 0f, 4f, 0f,
@@ -314,7 +313,7 @@ class Mat4Test {
 
     @Test
     fun testSetTranslation() {
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             0f,  1f,  2f,  3f,
             4f,  5f,  6f,  7f,
             8f,  9f, 10f, 11f,
@@ -344,19 +343,19 @@ class Mat4Test {
     @Test
     fun testSetAxis() {
         val tests = listOf(
-            0 to Mat4f.fromFloatArray(floatArrayOf(
+            0 to Mat4f.copyOf(floatArrayOf(
                 11f, 22f, 33f,  3f,
                 4f,  5f,  6f,  7f,
                 8f,  9f, 10f, 11f,
                 12f, 13f, 14f, 15f
             )),
-            1 to Mat4f.fromFloatArray(floatArrayOf(
+            1 to Mat4f.copyOf(floatArrayOf(
                 0f,  1f,  2f,  3f,
                 11f, 22f, 33f,  7f,
                 8f,  9f, 10f, 11f,
                 12f, 13f, 14f, 15f
             )),
-            2 to Mat4f.fromFloatArray(floatArrayOf(
+            2 to Mat4f.copyOf(floatArrayOf(
                 0f,  1f,  2f,  3f,
                 4f,  5f,  6f,  7f,
                 11f, 22f, 33f, 11f,
@@ -370,7 +369,7 @@ class Mat4Test {
 
     @Test
     fun testGetScaling() {
-        val testM = Mat4f.fromFloatArray(floatArrayOf(
+        val testM = Mat4f.copyOf(floatArrayOf(
             1f, 2f, 3f, 4f,
             5f, 6f, 7f, 8f,
             9f, 10f, 11f, 12f,
@@ -392,7 +391,7 @@ class Mat4Test {
         val zFar = 30f
         val f = tan(PI * 0.5 - 0.5 * fov).toFloat()
         val rangeInv = 1.0f / (zNear - zFar)
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             f / aspect,
             0f,
             0f,
@@ -423,7 +422,7 @@ class Mat4Test {
         val zNear = 10f
         val zFar = Float.POSITIVE_INFINITY
         val f = tan(PI * 0.5 - 0.5 * fov).toFloat()
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             f / aspect,
             0f,
             0f,
@@ -496,7 +495,7 @@ class Mat4Test {
         val top = 10f
         val near = 15f
         val far = 25f
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             2f / (right - left),
             0f,
             0f,
@@ -553,7 +552,7 @@ class Mat4Test {
         val dy = (top - bottom)
         val dz = (near - far)
 
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             2f * near / dx,
             0f,
             0f,
@@ -613,7 +612,7 @@ class Mat4Test {
         val dy = (top - bottom)
         val dz = (far - near)
 
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             2f * near / dx,
             0f,
             0f,
@@ -674,7 +673,7 @@ class Mat4Test {
         val up = Vec3f(-4f, -5f, -6f)
         
         // The expected matrix based on the JavaScript test
-        val expected = Mat4f.fromFloatArray(floatArrayOf(
+        val expected = Mat4f.copyOf(floatArrayOf(
             0.40824833f, -0.8728715f, -0.26726124f, 0f,
             -0.8164966f, -0.2182179f, -0.5345225f, 0f,
             0.40824824f, 0.4364358f, -0.8017837f, 0f,
@@ -693,7 +692,7 @@ class Mat4Test {
                 Vec3f(11f, 12f, 13f),
                 Vec3f(11f, 12f, 13f + 5f),
                 Vec3f(0f, 1f, 0f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 0f, 0f, 1f, 0f,
@@ -704,7 +703,7 @@ class Mat4Test {
                 Vec3f(11f, 12f, 13f),
                 Vec3f(11f, 12f, 13f - 5f),
                 Vec3f(0f, 1f, 0f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 -1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 0f, 0f, -1f, 0f,
@@ -715,7 +714,7 @@ class Mat4Test {
                 Vec3f(11f, 12f, 13f),
                 Vec3f(11f + 5f, 12f, 13f),
                 Vec3f(0f, 1f, 0f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 0f, 0f, -1f, 0f,
                 0f, 1f, 0f, 0f,
                 1f, 0f, 0f, 0f,
@@ -726,7 +725,7 @@ class Mat4Test {
                 Vec3f(1f, 2f, 3f),
                 Vec3f(11f, 22f, 33f),
                 Vec3f(-4f, -5f, -6f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 -0.40824833512306213f,
                 0.8164966106414795f,
                 -0.40824824571609497f,
@@ -766,7 +765,7 @@ class Mat4Test {
                 Vec3f(11f, 12f, 13f),
                 Vec3f(11f, 12f, 13f + 5f),
                 Vec3f(0f, 1f, 0f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 -1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 0f, 0f, -1f, 0f,
@@ -777,7 +776,7 @@ class Mat4Test {
                 Vec3f(11f, 12f, 13f),
                 Vec3f(11f, 12f, 13f - 5f),
                 Vec3f(0f, 1f, 0f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 0f, 0f, 1f, 0f,
@@ -788,7 +787,7 @@ class Mat4Test {
                 Vec3f(11f, 12f, 13f),
                 Vec3f(11f + 5f, 12f, 13f),
                 Vec3f(0f, 1f, 0f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 0f, 0f, 1f, 0f,
                 0f, 1f, 0f, 0f,
                 -1f, 0f, 0f, 0f,
@@ -799,7 +798,7 @@ class Mat4Test {
                 Vec3f(1f, 2f, 3f),
                 Vec3f(11f, 22f, 33f),
                 Vec3f(-4f, -5f, -6f)
-            ) to Mat4f.fromFloatArray(floatArrayOf(
+            ) to Mat4f.copyOf(floatArrayOf(
                 0.40824833512306213f,
                 -0.8164966106414795f,
                 0.40824824571609497f,

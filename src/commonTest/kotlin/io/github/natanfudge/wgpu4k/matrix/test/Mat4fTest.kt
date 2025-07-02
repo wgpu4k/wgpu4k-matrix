@@ -55,18 +55,18 @@ class Mat4fTest {
             9f, 10f, 11f, 12f,
             13f, 14f, 15f, 16f
         )
-        val actual = Mat4f.fromFloatArray(colMajorValues)
+        val actual = Mat4f.copyOf(colMajorValues)
         assertMat4Equals(expected, actual, "fromFloatArray basic")
 
 
         // Edge case: Array with zeros
         val zeroValues = FloatArray(16)
-        val zeroMat = Mat4f.fromFloatArray(zeroValues)
+        val zeroMat = Mat4f.copyOf(zeroValues)
         assertMat4Equals(Mat4f.rowMajor(0f,0f,0f,0f, 0f,0f,0f,0f, 0f,0f,0f,0f, 0f,0f,0f,0f), zeroMat, "fromFloatArray zeros")
 
         // Edge case: Invalid size
         assertFailsWith<IllegalArgumentException>("fromFloatArray should fail for too small array") {
-            Mat4f.fromFloatArray(FloatArray(15))
+            Mat4f.copyOf(FloatArray(15))
         }
     }
 

@@ -16,7 +16,7 @@ import kotlin.math.*
  * 3  7  11  15
  */
 @Serializable
-class Mat4f private constructor(val array: FloatArray) {
+class Mat4f(val array: FloatArray) {
 
     /**
      * Creates a new Mat4 with the given values ([v0] to [v15]) in column-major order.
@@ -38,6 +38,7 @@ class Mat4f private constructor(val array: FloatArray) {
     companion object {
         // 16 * 4 bytes
         const val SIZE_BYTES = 64u
+        const val ELEMENT_COUNT = 16u
 
         fun rowMajor(
             a00: Float, a01: Float, a02: Float, a03: Float,
@@ -55,7 +56,7 @@ class Mat4f private constructor(val array: FloatArray) {
          * Creates a Mat4 from a 16-element FloatArray [values].
          * Assumes the array is already in the correct internal format.
          */
-        fun fromFloatArray(values: FloatArray): Mat4f {
+        fun copyOf(values: FloatArray): Mat4f {
             if (values.size != 16) {
                 throw IllegalArgumentException("Mat4.fromFloatArray requires a 16-element FloatArray.")
             }
