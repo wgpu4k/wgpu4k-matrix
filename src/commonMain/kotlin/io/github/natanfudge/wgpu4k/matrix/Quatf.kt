@@ -738,6 +738,8 @@ data class Quatf(
         return this
     }
 
+    inline fun set(quat: Quatf): Quatf = set(quat.x, quat.y, quat.z, quat.w)
+
     /**
      * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.
      */
