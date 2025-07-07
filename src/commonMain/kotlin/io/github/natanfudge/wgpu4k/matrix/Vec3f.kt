@@ -208,6 +208,8 @@ class Vec3f(
     val lengthSq: Float
         get() = this.x * this.x + this.y * this.y + this.z * this.z
 
+    inline fun lengthSquared() = lengthSq
+
     /**
      * Computes the square of the length of `this` vector (alias for [lengthSq]).
      */
@@ -295,6 +297,8 @@ class Vec3f(
         }
         return dst
     }
+
+    inline fun normalized(dst: Vec3f = Vec3f()): Vec3f  = normalize(dst)
 
 
     /**
@@ -449,12 +453,15 @@ class Vec3f(
         return dst
     }
 
+    inline infix fun cross(b: Vec3f) = cross(b, Vec3f())
+
     /**
      * Computes the dot product of `this` and [b].
      */
-    fun dot(b: Vec3f): Float {
+    infix fun dot(b: Vec3f): Float {
         return (this.x * b.x) + (this.y * b.y) + (this.z * b.z)
     }
+
 
     /**
      * Computes the distance between `this` point and [b].

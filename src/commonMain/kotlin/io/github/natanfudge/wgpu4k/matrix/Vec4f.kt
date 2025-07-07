@@ -188,6 +188,8 @@ class Vec4f(
         return dst
     }
 
+    inline fun normalized(dst: Vec4f = Vec4f()): Vec4f = normalize(dst)
+
     /**
      * Negates `this`.
      */

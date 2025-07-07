@@ -179,6 +179,8 @@ class Vec2f(var x: Float, var y: Float) {
         return dst
     }
 
+    inline fun normalized(dst: Vec2f = Vec2f()): Vec2f = normalize(dst)
+
     /**
      * Negates `this` vector (multiplies components by -1).
      */

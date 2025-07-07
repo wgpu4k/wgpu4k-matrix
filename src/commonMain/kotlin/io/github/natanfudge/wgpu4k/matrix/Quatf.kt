@@ -460,6 +460,8 @@ data class Quatf(
 
     }
 
+    inline fun normalized(dst: Quatf = Quatf()) = normalize(dst)
+
     /**
      * Gets the rotation axis and angle for `this` quaternion.
      * @return A Pair containing the angle (in radians) and the axis (Vec3).
@@ -638,6 +640,7 @@ data class Quatf(
     }
 
     fun rotate(v: Vec3f, dst: Vec3f = Vec3f()): Vec3f = v.transformQuat(this, dst)
+    inline fun transform(v: Vec3f, dst: Vec3f = Vec3f()): Vec3f = rotate(v, dst)
 
     /**
      * Computes the dot product of `this` quaternion and [other].
