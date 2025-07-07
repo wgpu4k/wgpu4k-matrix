@@ -25,7 +25,7 @@ class QuatJsTests {
         return when (v) {
             is Quatf -> safeQuatCopy(v) // Use our safe copy method
             is Vec3f -> v.copy()
-            is Mat3f -> Mat3f.fromFloatArray(v.toFloatArray().copyOf()) // Use toFloatArray
+            is Mat3f -> Mat3f.copyOf(v.toFloatArray().copyOf()) // Use toFloatArray
             is FloatArray -> v.copyOf()
             // DoubleArray cloning might not be needed anymore if we switch everything to Float
             // is DoubleArray -> v.copyOf()

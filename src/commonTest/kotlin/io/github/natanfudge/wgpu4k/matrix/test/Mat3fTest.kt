@@ -64,17 +64,17 @@ class Mat3fTest {
         )
         // fromFloatArray expects column-major data matching internal layout
         val colMajorValues = floatArrayOf(1f, 4f, 7f, 0f, 2f, 5f, 8f, 0f, 3f, 6f, 9f, 0f) // Padded for internal array size 12
-        val actual = Mat3f.fromFloatArray(colMajorValues)
+        val actual = Mat3f.copyOf(colMajorValues)
         assertMat3Equals(expected, actual, "fromFloatArray basic")
 
         // Edge case: Array with zeros
         val zeroValues = FloatArray(12)
-        val zeroMat = Mat3f.fromFloatArray(zeroValues)
+        val zeroMat = Mat3f.copyOf(zeroValues)
         assertMat3Equals(Mat3f.rowMajor(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f), zeroMat, "fromFloatArray zeros")
 
         // Edge case: Invalid size (though constructor handles this) - Test the intended use
         assertFailsWith<IllegalArgumentException>("fromFloatArray should fail for incorrect size") {
-            Mat3f.fromFloatArray(floatArrayOf(1f, 2f, 3f))
+            Mat3f.copyOf(floatArrayOf(1f, 2f, 3f))
         }
     }
 
@@ -274,7 +274,7 @@ class Mat3fTest {
             0f, 1f, 0f, 0f, // Col 1 -> 0, 1, 0
             s, 0f, c, 0f  // Col 2 -> -1, 0, 0
         )
-        assertMat3EqualsApproximately(Mat3f.fromFloatArray(expectedArray), m, tolerance = 1e-6f, message = "RotationY basic (-90 deg)")
+        assertMat3EqualsApproximately(Mat3f.copyOf(expectedArray), m, tolerance = 1e-6f, message = "RotationY basic (-90 deg)")
 
         // Edge case: Zero angle
         assertMat3EqualsApproximately(Mat3f.identity(), Mat3f.rotationY(0f), "RotationY zero angle")

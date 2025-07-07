@@ -58,7 +58,7 @@ fun assertFloatArrayEqualApproximately(actual: FloatArray, expected: FloatArray,
 class Mat3Test {
 
     // The base matrix 'm' from the JavaScript test
-    private val m = Mat3f.fromFloatArray(floatArrayOf(
+    private val m = Mat3f.copyOf(floatArrayOf(
         0f,  1f,  2f,  0f,
         4f,  5f,  6f,  0f,
         8f,  9f, 10f,  0f
@@ -83,7 +83,7 @@ class Mat3Test {
 
     @Test
     fun testNegate() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             -0f,  -1f,  -2f,  0f,
             -4f,  -5f,  -6f,  0f,
             -8f,  -9f, -10f,  0f
@@ -93,7 +93,7 @@ class Mat3Test {
 
     @Test
     fun testAdd() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f,  2f,  4f,  0f,
             8f, 10f, 12f,  0f,
             16f, 18f, 20f,  0f
@@ -103,7 +103,7 @@ class Mat3Test {
 
     @Test
     fun testMultiplyScalar() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f,  2f,  4f,  0f,
             8f, 10f, 12f,  0f,
             16f, 18f, 20f,  0f
@@ -139,14 +139,14 @@ class Mat3Test {
         for (i in relevantIndices.indices) {
             val idxToDiff = relevantIndices[i]
             assertTrue(
-                Mat3f.fromFloatArray(genAlmostEqualMat(-1)).equalsApproximately(
-                    Mat3f.fromFloatArray(genAlmostEqualMat(idxToDiff))
+                Mat3f.copyOf(genAlmostEqualMat(-1)).equalsApproximately(
+                    Mat3f.copyOf(genAlmostEqualMat(idxToDiff))
                 ),
                 "Should be approximately equal when differing by small amount at index $idxToDiff"
             )
             assertTrue(
-                !Mat3f.fromFloatArray(genNotAlmostEqualMat(-1)).equalsApproximately(
-                    Mat3f.fromFloatArray(genNotAlmostEqualMat(idxToDiff))
+                !Mat3f.copyOf(genNotAlmostEqualMat(-1)).equalsApproximately(
+                    Mat3f.copyOf(genNotAlmostEqualMat(idxToDiff))
                 ),
                  "Should not be approximately equal when differing by large amount at index $idxToDiff"
             )
@@ -166,13 +166,13 @@ class Mat3Test {
         for (i in relevantIndices.indices) {
             val idxToDiff = relevantIndices[i]
             assertTrue(
-                Mat3f.fromFloatArray(genNotEqualMat(idxToDiff)) == // Uses the overridden equals operator
-                        Mat3f.fromFloatArray(genNotEqualMat(idxToDiff)),
+                Mat3f.copyOf(genNotEqualMat(idxToDiff)) == // Uses the overridden equals operator
+                        Mat3f.copyOf(genNotEqualMat(idxToDiff)),
                  "Should be exactly equal when values are the same at index $idxToDiff"
             )
             assertTrue(
-                Mat3f.fromFloatArray(genNotEqualMat(-1)) != // Uses the overridden equals operator
-                        Mat3f.fromFloatArray(genNotEqualMat(idxToDiff)),
+                Mat3f.copyOf(genNotEqualMat(-1)) != // Uses the overridden equals operator
+                        Mat3f.copyOf(genNotEqualMat(idxToDiff)),
                 "Should not be exactly equal when values are different at index $idxToDiff"
             )
         }
@@ -190,7 +190,7 @@ class Mat3Test {
 
     @Test
     fun testSet() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(2f, 3f, 4f, 0f, 22f, 33f, 44f, 0f, 222f, 333f, 444f, 0f))
+        val expected = Mat3f.copyOf(floatArrayOf(2f, 3f, 4f, 0f, 22f, 33f, 44f, 0f, 222f, 333f, 444f, 0f))
         testMat3({ dst ->
             val targetMat = dst ?: Mat3f()
             targetMat.set(2f, 3f, 4f, 22f, 33f, 44f, 222f, 333f, 444f)
@@ -199,7 +199,7 @@ class Mat3Test {
 
     @Test
     fun testIdentity() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f
@@ -209,7 +209,7 @@ class Mat3Test {
 
     @Test
     fun testTranspose() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f, 4f, 8f, 0f,
             1f, 5f, 9f, 0f,
             2f, 6f, 10f, 0f
@@ -218,12 +218,12 @@ class Mat3Test {
     }
 
     private fun testMultiply(fn: (a: Mat3f, b: Mat3f, dst: Mat3f) -> Mat3f) {
-        val m2 = Mat3f.fromFloatArray(floatArrayOf(
+        val m2 = Mat3f.copyOf(floatArrayOf(
             4f,  5f,  6f, 0f,
             1f,  2f,  3f, 0f,
             9f, 10f, 11f, 0f
         ))
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             m2.toFloatArray()[0 * 4 + 0] * m.toFloatArray()[0 * 4 + 0] + m2.toFloatArray()[0 * 4 + 1] * m.toFloatArray()[1 * 4 + 0] + m2.toFloatArray()[0 * 4 + 2] * m.toFloatArray()[2 * 4 + 0],
             m2.toFloatArray()[0 * 4 + 0] * m.toFloatArray()[0 * 4 + 1] + m2.toFloatArray()[0 * 4 + 1] * m.toFloatArray()[1 * 4 + 1] + m2.toFloatArray()[0 * 4 + 2] * m.toFloatArray()[2 * 4 + 1],
             m2.toFloatArray()[0 * 4 + 0] * m.toFloatArray()[0 * 4 + 2] + m2.toFloatArray()[0 * 4 + 1] * m.toFloatArray()[1 * 4 + 2] + m2.toFloatArray()[0 * 4 + 2] * m.toFloatArray()[2 * 4 + 2],
@@ -252,29 +252,29 @@ class Mat3Test {
 
     private fun testInverse(fn: (m: Mat3f, dst: Mat3f) -> Mat3f) {
         val tests = listOf(
-            Mat3f.fromFloatArray(floatArrayOf(
+            Mat3f.copyOf(floatArrayOf(
                 2f, 1f, 3f, 0f,
                 1f, 2f, 1f, 0f,
                 3f, 1f, 2f, 0f
-            )) to Mat3f.fromFloatArray(floatArrayOf(
+            )) to Mat3f.copyOf(floatArrayOf(
                 -0.375f, -0.125f,  0.625f, 0f,
                 -0.125f,  0.625f, -0.125f, 0f,
                 0.625f, -0.125f, -0.375f, 0f
             )),
-            Mat3f.fromFloatArray(floatArrayOf(
+            Mat3f.copyOf(floatArrayOf(
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 2f, 3f, 4f, 0f
-            )) to Mat3f.fromFloatArray(floatArrayOf(
+            )) to Mat3f.copyOf(floatArrayOf(
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 -0.5f, -0.75f, 0.25f, 0f
             )),
-            Mat3f.fromFloatArray(floatArrayOf(
+            Mat3f.copyOf(floatArrayOf(
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 -0.5f, -0.75f, 0.25f, 0f
-            )) to Mat3f.fromFloatArray(floatArrayOf(
+            )) to Mat3f.copyOf(floatArrayOf(
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 2f, 3f, 4f, 0f
@@ -298,12 +298,12 @@ class Mat3Test {
     @Test
     fun testDeterminant() {
         val tests = listOf(
-            Mat3f.fromFloatArray(floatArrayOf(
+            Mat3f.copyOf(floatArrayOf(
                 2f, 1f, 3f, 0f,
                 1f, 2f, 1f, 0f,
                 3f, 1f, 2f, 0f
             )) to -8f,
-            Mat3f.fromFloatArray(floatArrayOf(
+            Mat3f.copyOf(floatArrayOf(
                 2f, 0f, 0f, 0f,
                 0f, 3f, 0f, 0f,
                 0f, 0f, 4f, 0f
@@ -318,7 +318,7 @@ class Mat3Test {
     fun testSetTranslation() {
         // Expected: <0.0, 1.0, 2.0, 0.0, 4.0, 5.0, 6.0, 0.0, 11.0, 22.0, 1.0, 0.0>
         // Actual:   <1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 11.0, 22.0, 1.0, 0.0>
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f,  1f,  2f, 0f,
             4f,  5f,  6f, 0f,
             11f, 22f,  1f, 0f // Note: the TS test has 1 here, which seems incorrect for a pure translation setting on Mat3 layout
@@ -346,12 +346,12 @@ class Mat3Test {
     @Test
     fun testSetAxis() {
         val tests = listOf(
-            0 to Mat3f.fromFloatArray(floatArrayOf(
+            0 to Mat3f.copyOf(floatArrayOf(
                 11f, 22f,  2f,  0f,
                 4f,  5f,  6f,  0f,
                 8f,  9f, 10f,  0f
             )),
-            1 to Mat3f.fromFloatArray(floatArrayOf(
+            1 to Mat3f.copyOf(floatArrayOf(
                 0f,  1f,  2f,  0f,
                 11f, 22f,  6f,  0f,
                 8f,  9f, 10f,  0f
@@ -365,7 +365,7 @@ class Mat3Test {
 
     @Test
     fun testGetScaling() {
-        val testM = Mat3f.fromFloatArray(floatArrayOf(
+        val testM = Mat3f.copyOf(floatArrayOf(
             2f,  8f,  3f, 0f,
             5f,  6f,  7f, 0f,
             9f, 10f, 11f, 0f
@@ -379,7 +379,7 @@ class Mat3Test {
 
     @Test
     fun testGet3DScaling() {
-        val testM = Mat3f.fromFloatArray(floatArrayOf(
+        val testM = Mat3f.copyOf(floatArrayOf(
             1f,  2f,  3f, 4f,
             5f,  6f,  7f, 8f,
             9f, 10f, 11f, 12f
@@ -394,7 +394,7 @@ class Mat3Test {
 
     @Test
     fun testMakeTranslationMatrix() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             2f, 3f, 1f, 0f
@@ -404,7 +404,7 @@ class Mat3Test {
 
     @Test
     fun testTranslate() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f,  1f,  2f,  0f,
             4f,  5f,  6f,  0f,
             8f + 0f * 2f + 4f * 3f,
@@ -419,7 +419,7 @@ class Mat3Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             c, s, 0f, 0f,
             -s, c, 0f, 0f,
             0f, 0f, 1f, 0f
@@ -442,7 +442,7 @@ class Mat3Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             1f,  0f, 0f, 0f,
             0f,  c, s, 0f,
             0f, -s, c, 0f
@@ -464,7 +464,7 @@ class Mat3Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             c, 0f, -s, 0f,
             0f, 1f,  0f, 0f,
             s, 0f,  c, 0f
@@ -486,7 +486,7 @@ class Mat3Test {
         val angle = 1.23f
         val c = cos(angle)
         val s = sin(angle)
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             c, s, 0f, 0f,
             -s, c, 0f, 0f,
             0f, 0f, 1f, 0f
@@ -505,7 +505,7 @@ class Mat3Test {
 
     @Test
     fun testMakeScalingMatrix() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             2f, 0f, 0f, 0f,
             0f, 3f, 0f, 0f,
             0f, 0f, 1f, 0f
@@ -515,7 +515,7 @@ class Mat3Test {
 
     @Test
     fun testScale() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f * 2f,  1f * 2f,  2f * 2f,  0f,
             4f * 3f,  5f * 3f,  6f * 3f,  0f,
             8f,  9f, 10f,  0f
@@ -525,7 +525,7 @@ class Mat3Test {
 
     @Test
     fun testMake3DScalingMatrix() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             2f, 0f, 0f, 0f,
             0f, 3f, 0f, 0f,
             0f, 0f, 4f, 0f
@@ -535,7 +535,7 @@ class Mat3Test {
 
     @Test
     fun testScale3D() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f * 2f,  1f * 2f,  2f * 2f,  0f,
             4f * 3f,  5f * 3f,  6f * 3f,  0f,
             8f * 4f,  9f * 4f, 10f * 4f,  0f
@@ -545,7 +545,7 @@ class Mat3Test {
 
     @Test
     fun testMakeUniformScalingMatrix() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             2f, 0f, 0f, 0f,
             0f, 2f, 0f, 0f,
             0f, 0f, 1f, 0f
@@ -556,7 +556,7 @@ class Mat3Test {
     @Test
     fun testUniformScale() {
         val s = 2f
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f * s,  1f * s,  2f * s,  0f,
             4f * s,  5f * s,  6f * s,  0f,
             8f,  9f, 10f,  0f
@@ -566,7 +566,7 @@ class Mat3Test {
 
     @Test
     fun testMakeUniformScaling3DMatrix() {
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             2f, 0f, 0f, 0f,
             0f, 2f, 0f, 0f,
             0f, 0f, 2f, 0f
@@ -577,7 +577,7 @@ class Mat3Test {
     @Test
     fun testUniformScale3D() {
         val s = 2f
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             0f * s,  1f * s,  2f * s,  0f,
             4f * s,  5f * s,  6f * s,  0f,
             8f * s,  9f * s, 10f * s,  0f
@@ -593,7 +593,7 @@ class Mat3Test {
             9f, 10f, 11f, 12f,
             13f, 14f, 15f, 16f
         )
-        val expected = Mat3f.fromFloatArray(floatArrayOf(
+        val expected = Mat3f.copyOf(floatArrayOf(
             1f, 2f, 3f, 0f,
             5f, 6f, 7f, 0f,
             9f, 10f, 11f, 0f
