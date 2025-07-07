@@ -34,6 +34,11 @@ fun assertVec3Equals(expected: Vec3f, actual: Vec3f, message: String? = null) {
     assertEquals(expected.z, actual.z, "$msg (z mismatch)")
 }
 
+fun assertFloatEquals(expected: Float, actual: Float, message: String? = null) {
+    val msg = message ?: "Expected $expected, got $actual"
+    assertEquals(expected, actual, msg)
+}
+
 fun assertVec3EqualsApproximately(expected: Vec3f, actual: Vec3f, tolerance: Float = EPSILON, message: String? = null) {
     val msgPrefix = message ?: "Expected Vec3 approx $expected, got $actual."
     assertTrue(abs(expected.x - actual.x) < tolerance, "$msgPrefix x diff: ${abs(expected.x - actual.x)}")

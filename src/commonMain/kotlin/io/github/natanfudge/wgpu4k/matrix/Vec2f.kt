@@ -291,18 +291,14 @@ class Vec2f(var x: Float, var y: Float) {
      * Computes the 2D cross product (returns the Z component) of `this` vector and [other].
      *
      */
-    fun cross(other: Vec2f, dst: Vec3f = Vec3f()): Vec3f {
-        val z = this.x * other.y - this.y * other.x
-        dst[0] = 0f
-        dst[1] = 0f
-        dst[2] = z
-        return dst
+    infix fun cross(other: Vec2f): Float {
+        return this.x * other.y - this.y * other.x
     }
 
     /**
      * Computes the dot product of `this` vector and [other].
      */
-    fun dot(other: Vec2f): Float {
+    infix fun dot(other: Vec2f): Float {
         return this.x * other.x + this.y * other.y
     }
 

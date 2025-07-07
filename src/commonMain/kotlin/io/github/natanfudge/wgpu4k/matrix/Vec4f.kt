@@ -327,7 +327,7 @@ class Vec4f(
     /**
      * Computes the dot product of `this` and [other].
      */
-    fun dot(other: Vec4f): Float {
+    infix fun dot(other: Vec4f): Float {
         return (this.x * other.x) + (this.y * other.y) + (this.z * other.z) + (this.w * other.w)
     }
 

@@ -3,6 +3,7 @@ package io.github.natanfudge.wgpu4k.matrix.test
 import io.github.natanfudge.wgpu4k.matrix.EPSILON
 import io.github.natanfudge.wgpu4k.matrix.Vec2f
 import io.github.natanfudge.wgpu4k.matrix.Vec3f
+import io.github.natanfudge.wgpu4k.matrix.test.js.assertFloatEquals
 import io.github.natanfudge.wgpu4k.matrix.test.js.assertVec3Equals
 import kotlin.math.abs
 import kotlin.math.acos
@@ -326,17 +327,17 @@ class Vec2fOperatorTest {
         val v1 = Vec2f(1f, 0f)
         val v2 = Vec2f(0f, 1f)
         val cross1 = v1.cross(v2)
-        assertVec3Equals(Vec3f(0f, 0f, 1f), cross1, "Cross i x j = k")
+        assertFloatEquals( 1f, cross1, "Cross i x j = k")
 
         val v3 = Vec2f(0f, 1f)
         val v4 = Vec2f(1f, 0f)
         val cross2 = v3.cross(v4)
-        assertVec3Equals(Vec3f(0f, 0f, -1f), cross2, "Cross j x i = -k")
+        assertFloatEquals(-1f, cross2, "Cross j x i = -k")
 
         val v5 = Vec2f(2f, 3f)
         val v6 = Vec2f(4f, 6f) // Parallel vector
         val cross3 = v5.cross(v6)
-        assertVec3Equals(Vec3f(0f, 0f, 0f), cross3, "Cross parallel vectors")
+        assertFloatEquals(0f, cross3, "Cross parallel vectors")
     }
 
     @Test
