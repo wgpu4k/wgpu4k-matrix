@@ -20,6 +20,7 @@ class Vec4f(
     companion object {
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
+        const val ELEMENT_COUNT = 4u
 
         /**
          * Creates a vec4 with initial values [x], [y], [z], and [w].

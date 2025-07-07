@@ -64,6 +64,8 @@ class Mat3f private constructor(val array: FloatArray) {
 
         // 12 * 4 bytes
         const val SIZE_BYTES = 48u
+        const val LOGICAL_ELEMENT_COUNT = 12u
+        const val ALIGN_ELEMENT_COUNT = 9u
 
         /**
          * Constructs a [Mat3f] in row-major order.

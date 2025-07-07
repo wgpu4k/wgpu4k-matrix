@@ -28,6 +28,7 @@ data class Quatf(
     companion object {
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
+        const val ELEMENT_COUNT = 4u
 
         // Static temporary variables to avoid allocation in methods like rotationTo
         // Note: Be cautious with static mutable state in concurrent environments if applicable.
