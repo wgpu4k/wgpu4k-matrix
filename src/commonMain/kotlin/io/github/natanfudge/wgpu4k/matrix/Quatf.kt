@@ -28,6 +28,7 @@ data class Quatf(
     companion object {
         // 4 * 4 bytes
         const val SIZE_BYTES = 16u
+        const val ELEMENT_COUNT = 4u
 
         // Static temporary variables to avoid allocation in methods like rotationTo
         // Note: Be cautious with static mutable state in concurrent environments if applicable.
@@ -737,6 +738,8 @@ data class Quatf(
         this.w = w
         return this
     }
+
+    inline fun set(quat: Quatf): Quatf = set(quat.x, quat.y, quat.z, quat.w)
 
     /**
      * @param round if true, floating point values will look nicer by doing some rounding operations. The default is true.

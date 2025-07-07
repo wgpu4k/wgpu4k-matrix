@@ -43,6 +43,8 @@ class Vec3f(
          * For vertex attributes you usually want [ACTUAL_SIZE_BYTES]
          */
         const val ALIGN_BYTES = 16u
+        const val ALIGN_ELEMENT_COUNT = 4u
+        const val ELEMENT_COUNT = 3u
 
         /**
          * Creates a vec3 with initial values [x], [y], and [z].

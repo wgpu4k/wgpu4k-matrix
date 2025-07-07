@@ -17,6 +17,7 @@ class Vec2f(var x: Float, var y: Float) {
     companion object {
         // 2 * 4 bytes
         const val SIZE_BYTES = 8u
+        const val ELEMENT_COUNT = 2u
 
         /** Creates a new Vec2 instance. */
         fun create(x: Float = 0f, y: Float = 0f): Vec2f = Vec2f(x, y)

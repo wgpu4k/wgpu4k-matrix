@@ -28,7 +28,7 @@ import kotlin.math.sqrt
  * Do not depend on the values in the padding cells, as the behavior of those may change in the future.
  */
 /*@JvmInline value*/ @Serializable
-class Mat3f private constructor(val array: FloatArray) {
+class Mat3f (val array: FloatArray) {
 
     constructor() : this(FloatArray(12))
 
@@ -64,6 +64,8 @@ class Mat3f private constructor(val array: FloatArray) {
 
         // 12 * 4 bytes
         const val SIZE_BYTES = 48u
+        const val LOGICAL_ELEMENT_COUNT = 12u
+        const val ALIGN_ELEMENT_COUNT = 9u
 
         /**
          * Constructs a [Mat3f] in row-major order.
@@ -83,7 +85,7 @@ class Mat3f private constructor(val array: FloatArray) {
          * Creates a Mat3 from a 12-element FloatArray [values].
          * Assumes the array is already in the correct internal format.
          */
-        fun fromFloatArray(values: FloatArray): Mat3f {
+        fun copyOf(values: FloatArray): Mat3f {
             if (values.size != 12) {
                 throw IllegalArgumentException("Mat3.fromFloatArray requires a 12-element FloatArray.")
             }
