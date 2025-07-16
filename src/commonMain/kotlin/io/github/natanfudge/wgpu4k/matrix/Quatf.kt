@@ -66,15 +66,42 @@ data class Quatf(
             return dst
         }
 
+        fun xRotation(angleRad: Float, dst: Quatf = Quatf()): Quatf {
+            val half = angleRad * 0.5f
+            dst.x = sin(half)
+            dst.y = 0f
+            dst.z = 0f
+            dst.w = cos(half)
+            return dst
+        }
+
+        fun yRotation(angleRad: Float, dst: Quatf = Quatf()): Quatf {
+            val half = angleRad * 0.5f
+            dst.x = 0f
+            dst.y = sin(half)
+            dst.z = 0f
+            dst.w = cos(half)
+            return dst
+        }
+
+        fun zRotation(angleRad: Float, dst: Quatf = Quatf()): Quatf {
+            val half = angleRad * 0.5f
+            dst.x = 0f
+            dst.y = 0f
+            dst.z = sin(half)
+            dst.w = cos(half)
+            return dst
+        }
+
         /**
          * Creates a quaternion representing a rotation of [angleInRadians] around the normalized [axis].
          **/
         fun fromAxisAngle(axis: Vec3f, angleInRadians: Float, dst: Quatf = Quatf()): Quatf {
             val halfAngle = angleInRadians * 0.5f
             val s = sin(halfAngle)
-            dst.x = s * axis.x // Use property access
-            dst.y = s * axis.y // Use property access
-            dst.z = s * axis.z // Use property access
+            dst.x = s * axis.x
+            dst.y = s * axis.y
+            dst.z = s * axis.z
             dst.w = cos(halfAngle)
             return dst
         }
