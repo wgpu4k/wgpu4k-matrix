@@ -177,6 +177,27 @@ class Vec3f(
     }
 
     inline operator fun plus(other: Vec3f) = add(other)
+    inline fun plusX(increase: Float, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x + increase
+        dst.y = this.y
+        dst.z = this.z
+        return dst
+    }
+
+    inline fun plusY(increase: Float, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x
+        dst.y = this.y + increase
+        dst.z = this.z
+        return dst
+    }
+
+    inline fun plusZ(increase: Float, dst: Vec3f = Vec3f()): Vec3f {
+        dst.x = this.x
+        dst.y = this.y
+        dst.z = this.z + increase
+        return dst
+    }
+
     inline operator fun minus(other: Vec3f) = subtract(other)
     inline operator fun times(scalar: Float) = mulScalar(scalar)
 
@@ -298,7 +319,7 @@ class Vec3f(
         return dst
     }
 
-    inline fun normalized(dst: Vec3f = Vec3f()): Vec3f  = normalize(dst)
+    inline fun normalized(dst: Vec3f = Vec3f()): Vec3f = normalize(dst)
 
 
     /**
