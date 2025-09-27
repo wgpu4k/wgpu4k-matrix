@@ -11,7 +11,7 @@ import kotlin.random.Random
  * including optional 'dst' parameter support.
  */
 @Serializable
-class Vec2f(var x: Float, var y: Float) {
+data class Vec2f(var x: Float, var y: Float) {
     constructor() : this(0f, 0f)
 
     companion object {
@@ -494,13 +494,4 @@ class Vec2f(var x: Float, var y: Float) {
     fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns})" else "($x,$y)"
     override fun toString(): String = toString(round = true)
 
-    override fun equals(other: Any?): Boolean {
-        return other is Vec2f && other.x == x && other.y == y
-    }
-
-    override fun hashCode(): Int {
-        var result = x.hashCode()
-        result = 31 * result + y.hashCode()
-        return result
-    }
 }

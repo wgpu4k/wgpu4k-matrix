@@ -776,24 +776,4 @@ data class Quatf(
      */
     fun toString(round: Boolean): String = if (round) "(${x.ns},${y.ns},${z.ns},${w.ns})" else "($x,$y,$z,$w)"
     override fun toString(): String = toString(round = true)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Quatf) return false
-
-        if (x != other.x) return false
-        if (y != other.y) return false
-        if (z != other.z) return false
-        if (w != other.w) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = x.hashCode()
-        result = 31 * result + y.hashCode()
-        result = 31 * result + z.hashCode()
-        result = 31 * result + w.hashCode()
-        return result
-    }
 }
